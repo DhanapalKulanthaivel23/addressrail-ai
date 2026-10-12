@@ -7,14 +7,14 @@ const classify=()=>{
   const utm=(query.get('utm_source')||'').toLowerCase();
   let host='';
   try{host=new URL(document.referrer).hostname.toLowerCase()}catch{}
-  const value=host||utm;
+  const value=utm||host;
   if(!value)return 'Direct / Unknown';
-  if(/(^|\.)google\./.test(value)||value==='google')return 'Google';
   if(/(^|\.)bing\.com$/.test(value)||value==='bing')return 'Bing';
   if(/(^|\.)github\.com$/.test(value)||value==='github')return 'GitHub';
   if(/(^|\.)(chatgpt\.com|chat\.openai\.com)$/.test(value)||value==='chatgpt'||value==='openai')return 'ChatGPT';
   if(/(^|\.)perplexity\.ai$/.test(value)||value==='perplexity')return 'Perplexity';
   if(/(^|\.)gemini\.google\.com$/.test(value)||value==='gemini')return 'Gemini';
+  if(/(^|\.)google\./.test(value)||value==='google')return 'Google';
   if(/(^|\.)claude\.ai$/.test(value)||value==='claude')return 'Claude';
   if(/(^|\.)(copilot\.microsoft\.com|copilot\.com)$/.test(value)||value==='copilot')return 'Copilot';
   if(/(^|\.)(duckduckgo\.com|yahoo\.com|baidu\.com|yandex\.)/.test(value))return 'Other search';
@@ -49,3 +49,4 @@ async function registerVisit(){
 }
 registerVisit().then(show);
 })();
+

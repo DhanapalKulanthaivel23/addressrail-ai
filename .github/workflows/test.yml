@@ -21,3 +21,5 @@ jobs:
       - run: node --check web/app.js
       - run: node --check web/analytics.js
       - run: node --check analytics/worker.js
+      - run: node --test tests/analytics.test.mjs
+
