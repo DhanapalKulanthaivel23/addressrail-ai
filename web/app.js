@@ -74,6 +74,7 @@ function analyze(body){
 function add(tag,text,cls){const e=document.createElement(tag);e.textContent=text;if(cls)e.className=cls;return e}
 function render(r){
  result=r;
+ renderComparison();
  $('parties').textContent=r.summary.partiesInspected;
  $('reviews').textContent=r.summary.partiesNeedingReview;
  $('candidates').textContent=r.summary.repairCandidates;
@@ -116,23 +117,61 @@ $('export').onclick=()=>{
 const geminiBackend=String(window.ADDRESSRAIL_API_URL||'').trim().replace(/\/$/,'');
 const aiOutput=$('ai-output');
 function message(value){aiOutput.replaceChildren(document.createTextNode(value))}
+function fieldLine(label, value){
+ const line=add('div','','address-field');
+ line.append(add('strong',label+': '));
+ line.append(document.createTextNode(value||'Not provided'));
+ return line;
+}
+function renderComparison(){
+ aiOutput.replaceChildren();
+ const parties=result?.parties||[];
+ if(!parties.length){aiOutput.append(add('p','No postal addresses were found for comparison.'));return}
+ let proposed=0;
+ for(const p of parties){
+  const section=add('section','','compare-section');
+  section.append(add('h3',p.party+' address'));
+  const grid=add('div','','compare-grid');
+  const before=add('div','','compare-card');
+  before.append(add('h4','Before · Current address'));
+  before.append(fieldLine('Address lines',p.address.lines.join(' | ')||'Not provided'));
+  before.append(fieldLine('Town',p.address.town));
+  before.append(fieldLine('Country',p.address.country));
+  grid.append(before);
+  const after=add('div','','compare-card proposed');
+  const suggestion=p.suggestion;
+  after.append(add('h4',suggestion?'After · Suggested correction':'After · No proposed change'));
+  if(suggestion){
+   proposed++;
+   after.append(fieldLine('Address lines',suggestion.addressLine));
+   after.append(fieldLine('Town',suggestion.town));
+   after.append(fieldLine('Country',suggestion.country));
+   after.append(add('p','Extracted from the original address text — review before using.','compare-note'));
+  }else{
+   after.append(fieldLine('Address lines',p.address.lines.join(' | ')||'Not provided'));
+   after.append(fieldLine('Town',p.address.town));
+   after.append(fieldLine('Country',p.address.country));
+   after.append(add('p',p.findings.length?'Unable to propose a reliable correction. Manual review is needed.':'No missing town or country fields detected.','compare-note'));
+  }
+  grid.append(after);
+  section.append(grid);
+  aiOutput.append(section);
+ }
+ aiOutput.append(add('p',proposed?'Suggested changes are not applied to the payment message.':'No automatic changes have been made.','ai-caution'));
+}
 function renderAdvice(advice){
  if(!advice||typeof advice!=='object'){message('Gemini returned an unexpected response. Please retry.');return}
- aiOutput.replaceChildren();
- const section=(title,content)=>{
-   aiOutput.append(add('h3',title));
-   if(Array.isArray(content)){
-     const items=content.filter(v=>typeof v==='string'&&v.trim());
-     if(!items.length){aiOutput.append(add('p','No suggestions provided.'));return}
-     const ul=add('ul');
-     for(const item of items)ul.append(add('li',item));
-     aiOutput.append(ul);
-   }else aiOutput.append(add('p',String(content||'No details provided.')));
- };
- section('What is wrong?',advice.summary);
- section('Suggested next steps',advice.actions);
- if(Array.isArray(advice.cautions)&&advice.cautions.length)section('Important checks',advice.cautions);
- aiOutput.append(add('p','For review only. The original message has not been changed.','ai-caution'));
+ renderComparison();
+ const explanation=add('section','','ai-explanation');
+ explanation.append(add('h3','Gemini explanation'));
+ explanation.append(add('p',String(advice.summary||'No explanation provided.')));
+ if(Array.isArray(advice.cautions)&&advice.cautions.length){
+  explanation.append(add('h4','What to check'));
+  const list=add('ul');
+  for(const caution of advice.cautions.filter(x=>typeof x==='string'&&x.trim()).slice(0,4))list.append(add('li',caution));
+  explanation.append(list);
+ }
+ aiOutput.append(explanation);
 }
 let challengeToken='';
 let challengeWidget=null;
@@ -214,7 +253,8 @@ $('ask').onclick=async()=>{
    return;
  }
  $('ask').disabled=true;
- message('Gemini is reviewing the address findings…');
+ renderComparison();
+ $('ask').textContent='Asking Gemini…';
  try{
    const resp=await fetch(host+'/api/ai-explain',{
      method:'POST',
@@ -227,6 +267,7 @@ $('ask').onclick=async()=>{
    message('Gemini is temporarily unavailable. Address checks still work.');
  }finally{
    $('ask').disabled=false;
+   $('ask').textContent='Ask Gemini ↗';
    challengeToken='';
    if(window.turnstile&&challengeWidget!==null)window.turnstile.reset(challengeWidget);
  }
