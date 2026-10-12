@@ -37,4 +37,4 @@ Google reads robots.txt only at the host root, `https://dhanapalkulanthaivel23.g
 
 Source: https://developers.google.com/crawling/docs/robots-txt/create-robots-txt
 
-Verification status on 12 October 2026: account sign-in and ownership verification pending. No sitemap submission confirmed yet.
+Verification status on 12 October 2026: Google ownership is verified and sitemap submission was accepted; its report currently shows Couldn't fetch despite the public sitemap loading in Safari. The MT103 guide indexing request was accepted into Google's priority crawl queue. Bing ownership is verified and the sitemap is Submitted / Processing with zero reported errors or warnings. These are submission confirmations, not proof of search indexing or ranking.
