@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: addressrail-ai-gemini
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: ENABLE_AI
+        value: "false"
+      - key: GEMINI_MODEL
+        value: gemini-3.1-flash-lite
+      - key: ALLOWED_ORIGINS
+        value: https://dhanapalkulanthaivel23.github.io
+      - key: TURNSTILE_EXPECTED_HOSTNAME
+        value: dhanapalkulanthaivel23.github.io
+      - key: MAX_AI_CALLS_PROCESS
+        value: "30"
+      - key: MAX_AI_CALLS_PER_IP_HOUR
+        value: "3"
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: TURNSTILE_SITE_KEY
+        sync: false
+      - key: TURNSTILE_SECRET_KEY
+        sync: false

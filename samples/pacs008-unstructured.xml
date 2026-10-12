@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.08">
+<FIToFICstmrCdtTrf><GrpHdr><MsgId>SYNTHETIC-001</MsgId></GrpHdr>
+<CdtTrfTxInf><Dbtr><Nm>Sample Trading Ltd</Nm><PstlAdr><AdrLine>10 High Street, London, GB</AdrLine></PstlAdr></Dbtr>
+<Cdtr><Nm>Demo Exports GmbH</Nm><PstlAdr><TwnNm>Berlin</TwnNm><Ctry>DE</Ctry></PstlAdr></Cdtr>
+</CdtTrfTxInf></FIToFICstmrCdtTrf>
+</Document>
