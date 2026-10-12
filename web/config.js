@@ -3,4 +3,4 @@
 window.ADDRESSRAIL_API_URL = '';
 // HTTPS URL for optional Cloudflare Worker/D1 visitor counter (free-tier setup required).
 // Example: 'https://addressrail-visitors.YOUR_SUBDOMAIN.workers.dev'
-window.ADDRESSRAIL_STATS_URL = '';
+window.ADDRESSRAIL_STATS_URL = 'https://addressrail-visitors.dhanapalkav.workers.dev';
