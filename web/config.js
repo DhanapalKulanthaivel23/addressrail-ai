@@ -1,3 +1,6 @@
-// Public configuration only. After backend deployment, replace blank with its HTTPS URL.
-// Never put Gemini keys or Cloudflare secret keys in this file.
+// Public configuration only. NEVER add Gemini, Turnstile or other secrets here.
+// HTTPS URL for separately hosted Gemini backend (optional)
 window.ADDRESSRAIL_API_URL = '';
+// HTTPS URL for optional Cloudflare Worker/D1 visitor counter (free-tier setup required).
+// Example: 'https://addressrail-visitors.YOUR_SUBDOMAIN.workers.dev'
+window.ADDRESSRAIL_STATS_URL = '';

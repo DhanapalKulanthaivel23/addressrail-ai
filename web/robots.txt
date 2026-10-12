@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://dhanapalkulanthaivel23.github.io/addressrail-ai/sitemap.xml

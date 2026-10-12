@@ -46,6 +46,23 @@ Browser user → GitHub Pages → JavaScript address checks → JSON findings
                                      └→ optional secured FastAPI backend → Gemini
 ```
 
+## Find AddressRail AI through search
+
+Search-friendly tutorials, canonical links, sitemap, robots rules and free metadata are published on GitHub Pages. Search ranking and AI-answer placement cannot be guaranteed.
+
+- [SWIFT MT103 address correction](https://dhanapalkulanthaivel23.github.io/addressrail-ai/mt103-address-correction/)
+- [ISO 20022 structured/hybrid addresses](https://dhanapalkulanthaivel23.github.io/addressrail-ai/iso20022-structured-address/)
+- [pacs.008 address validation](https://dhanapalkulanthaivel23.github.io/addressrail-ai/pacs008-address-validation/)
+- [CBPR+ postal-address concepts](https://dhanapalkulanthaivel23.github.io/addressrail-ai/cbpr-address-guide/)
+
+Search setup: [Free Google/Bing indexing guide](docs/SEO.md).
+
+## Free public visitor statistics (optional)
+
+The site is prepared to show aggregate **estimated visits** and referral groups such as Google, Bing, GitHub, ChatGPT, Gemini, Claude and Direct/Unknown. Activate it using **Cloudflare Workers Free + D1 Free** as described in [Visitor Analytics Setup](docs/VISITOR-ANALYTICS.md). Until then, the public page explicitly says the counter is not active.
+
+Visitor counts are browser-session estimates, **not validated unique people**. Search engines and AI assistants may omit referral information, and prior visits cannot be counted retroactively. No domain purchases or subscription upgrades are required for the prototype within free-tier limits.
+
 ## Release status
 
 This is a **demonstration prototype**, not yet a multi-tenant SaaS product. Authentication, billing, authoritative scheme rule validation, durable audit records, API throttling and commercial integrations are future work.

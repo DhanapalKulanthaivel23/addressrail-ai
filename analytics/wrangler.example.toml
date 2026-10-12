@@ -1,0 +1,10 @@
+# Copy to analytics/wrangler.toml and fill in the Cloudflare D1 ID from 'wrangler d1 create'.
+name = "addressrail-visitors"
+main = "worker.js"
+compatibility_date = "2026-10-12"
+workers_dev = true
+
+[[d1_databases]]
+binding = "VISITS"
+database_name = "addressrail-visits"
+database_id = "REPLACE-WITH-YOUR-CLOUDFLARE-D1-DATABASE-ID"
