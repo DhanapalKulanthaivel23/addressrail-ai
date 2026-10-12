@@ -113,8 +113,27 @@ $('export').onclick=()=>{
  setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
 // Gemini is opt-in. No API key is ever used in the browser.
-const backendInput=$('backend');
-backendInput.value=String(window.ADDRESSRAIL_API_URL||'').trim();
+const geminiBackend=String(window.ADDRESSRAIL_API_URL||'').trim().replace(/\/$/,'');
+const aiOutput=$('ai-output');
+function message(value){aiOutput.replaceChildren(document.createTextNode(value))}
+function renderAdvice(advice){
+ if(!advice||typeof advice!=='object'){message('Gemini returned an unexpected response. Please retry.');return}
+ aiOutput.replaceChildren();
+ const section=(title,content)=>{
+   aiOutput.append(add('h3',title));
+   if(Array.isArray(content)){
+     const items=content.filter(v=>typeof v==='string'&&v.trim());
+     if(!items.length){aiOutput.append(add('p','No suggestions provided.'));return}
+     const ul=add('ul');
+     for(const item of items)ul.append(add('li',item));
+     aiOutput.append(ul);
+   }else aiOutput.append(add('p',String(content||'No details provided.')));
+ };
+ section('What is wrong?',advice.summary);
+ section('Suggested next steps',advice.actions);
+ if(Array.isArray(advice.cautions)&&advice.cautions.length)section('Important checks',advice.cautions);
+ aiOutput.append(add('p','For review only. The original message has not been changed.','ai-caution'));
+}
 let challengeToken='';
 let challengeWidget=null;
 let challengeHost='';
@@ -147,7 +166,7 @@ function resetChallenge(){
 async function configureGemini(){
  resetChallenge();
  challengeHost='';
- const base=backendInput.value.trim().replace(/\/$/,'');
+ const base=geminiBackend;
  if(!/^https:\/\//.test(base)){
    $('ai-availability').textContent='The Gemini backend is not yet hosted. Local address validation is available.';
    return;
@@ -170,32 +189,32 @@ async function configureGemini(){
      'expired-callback':()=>{challengeToken='';},
      'error-callback':()=>{challengeToken='';}
    });
-   $('ai-availability').textContent='Gemini '+(config.model||'')+' available. Complete human verification to request an explanation.';
+   $('ai-availability').textContent='Gemini is ready. Complete the security check, then select Ask Gemini.';
  }catch{
    $('ai-availability').textContent='Gemini backend is unreachable. The local address analyzer still works.';
  }
 }
-backendInput.addEventListener('change',configureGemini);
+
 
 $('ask').onclick=async()=>{
- if(!result){$('ai-output').textContent='Run address checks first.';return}
- if(!$('consent').checked){$('ai-output').textContent='Confirm synthetic/anonymised data consent.';return}
- const host=backendInput.value.trim().replace(/\/$/,'');
+ if(!result){message('Run address checks first.');return}
+ if(!$('consent').checked){message('Please confirm you are using synthetic or fully anonymised test data.');return}
+ const host=geminiBackend;
  if(!/^https:\/\//.test(host)){
-   $('ai-output').textContent='Gemini backend is not configured. No API key should be entered into this page.';
+   message('Gemini is not connected. Address checks still work.');
    return;
  }
  if(challengeHost!==host){
    await configureGemini();
-   $('ai-output').textContent='Please complete the human-verification challenge before requesting Gemini.';
+   message('Complete the security check before asking Gemini.');
    return;
  }
  if(!challengeToken){
-   $('ai-output').textContent='Complete the human-verification challenge before requesting Gemini.';
+   message('Complete the security check before asking Gemini.');
    return;
  }
  $('ask').disabled=true;
- $('ai-output').textContent='Requesting a review-only Gemini explanation…';
+ message('Gemini is reviewing the address findings…');
  try{
    const resp=await fetch(host+'/api/ai-explain',{
      method:'POST',
@@ -203,9 +222,9 @@ $('ask').onclick=async()=>{
      body:JSON.stringify({analysis:result,confirm_synthetic:true,turnstile_token:challengeToken})
    });
    const data=await resp.json();
-   $('ai-output').textContent=resp.ok?JSON.stringify(data.advice,null,2):(data.detail||'AI service unavailable');
+   if(resp.ok)renderAdvice(data.advice);else message(typeof data.detail==='string'?data.detail:'AI explanation unavailable.');
  }catch{
-   $('ai-output').textContent='Gemini backend is unavailable. Local address inspection still works.';
+   message('Gemini is temporarily unavailable. Address checks still work.');
  }finally{
    $('ask').disabled=false;
    challengeToken='';
@@ -213,5 +232,5 @@ $('ask').onclick=async()=>{
  }
 };
 load();
-if(backendInput.value)configureGemini();
+if(geminiBackend)configureGemini();
 })();
