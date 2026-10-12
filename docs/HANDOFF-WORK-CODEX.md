@@ -31,7 +31,7 @@ You are receiving project context through this file, not through live access to 
 
 The Cloudflare setup below describes earlier screenshots and is superseded by direct verification in Codex: Worker `addressrail-visitors` has D1 binding `VISITS` connected to `addressrail-visits`, active visitor-counter version `8b105a60`, and `/api/stats` returned HTTP 200 with 2 aggregate visits. The live website displayed the same total. Its two explanatory visitor paragraphs were removed at the owner's request; headings, total and last-30-days/source breakdown remain.
 
-PR #1 corrected Gemini referrals previously classified as Google and added five dependency-free analytics tests to CI; CI passed before merge. Do not redeploy Hello World or recreate existing resources. Google/Bing verification is still pending account sign-in; Gemini is disabled and the owner has not created a private key. The current Python test file contains eight backend tests; older claims of 19 parser tests do not match the present repository.
+PR #1 corrected Gemini referrals previously classified as Google and added five dependency-free analytics tests to CI; CI passed before merge. Do not redeploy Hello World or recreate existing resources. Google ownership is verified, its sitemap submission accepted (currently Couldn't fetch), and the MT103 guide indexing request accepted. Bing ownership is verified and its sitemap is Submitted / Processing. The sitemap opens publicly in Safari. Gemini remains disabled; private key/backend setup is not yet verified. The current Python test file contains eight backend tests; older claims of 19 parser tests do not match the present repository.
 
 ## Cloudflare account state reported by user screenshots
 
