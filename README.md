@@ -59,7 +59,7 @@ Search setup: [Free Google/Bing indexing guide](docs/SEO.md).
 
 ## Free public visitor statistics (optional)
 
-The site is prepared to show aggregate **estimated visits** and referral groups such as Google, Bing, GitHub, ChatGPT, Gemini, Claude and Direct/Unknown. Activate it using **Cloudflare Workers Free + D1 Free** as described in [Visitor Analytics Setup](docs/VISITOR-ANALYTICS.md). Until then, the public page explicitly says the counter is not active.
+The site is prepared to show aggregate **estimated visits** and referral groups such as Google, Bing, GitHub, ChatGPT, Gemini, Claude and Direct/Unknown. The project’s public counter is active using **Cloudflare Workers + D1**, with aggregate counts verified on 12 October 2026. For your own deployment, follow [Visitor Analytics Setup](docs/VISITOR-ANALYTICS.md).
 
 Visitor counts are browser-session estimates, **not validated unique people**. Search engines and AI assistants may omit referral information, and prior visits cannot be counted retroactively. No domain purchases or subscription upgrades are required for the prototype within free-tier limits.
 
