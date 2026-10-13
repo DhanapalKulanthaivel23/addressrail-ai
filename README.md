@@ -22,36 +22,3 @@ Developers who want to host their own instance can follow the [deployment guide]
 ## Running the demo locally
 
 Open `web/index.html` with a browser. It loads `web/app.js`. No Python or API key is needed for local checks.
-
-## Optional Gemini backend
-
-**Gemini 3.1 Flash-Lite integration is implemented but disabled until deployed.** GitHub Pages cannot protect Gemini credentials. Never place `GEMINI_API_KEY` in JavaScript, chat or a public repository.
-
-For the free-tier pilot, the backend **fails closed unless Gemini and Cloudflare Turnstile are both configured**. It forwards only small address findings, not the original payment message.
-
-1. Create a Gemini key in [Google AI Studio](https://aistudio.google.com/api-keys).
-2. Create a Cloudflare Turnstile widget restricted to `dhanapalkulanthaivel23.github.io`.
-3. Deploy the `render.yaml` Blueprint through Render (Free plan if available).
-4. Configure `GEMINI_API_KEY`, `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` on the Render service.
-5. Enable `ENABLE_AI=true` in the backend environment.
-6. Set the **public backend URL only** in `web/config.js` and push to redeploy GitHub Pages.
-
-See **[complete Gemini deployment walkthrough](docs/DEPLOY.md)**. Do not upload confidential customer/bank messages. This is for a limited test group; process-local quotas are **not** adequate protection for a production SaaS. Gemini free-tier eligibility, quota and data-use terms depend on account/model/region.
-
-## Architecture
-
-```text
-Browser user → GitHub Pages → JavaScript address checks → JSON findings
-                                     |
-                                     └→ optional secured FastAPI backend → Gemini
-```
-
-## Find AddressRail AI through search
-
-Search-friendly tutorials, canonical links, sitemap, robots rules and free metadata are published on GitHub Pages. Search ranking and AI-answer placement cannot be guaranteed.
-
-- [SWIFT MT103 address correction](https://dhanapalkulanthaivel23.github.io/addressrail-ai/mt103-address-correction/)
-- [ISO 20022 structured/hybrid addresses](https://dhanapalkulanthaivel23.github.io/addressrail-ai/iso20022-structured-address/)
-- [pacs.008 address validation](https://dhanapalkulanthaivel23.github.io/addressrail-ai/pacs008-address-validation/)
-- [CBPR+ postal-address concepts](https://dhanapalkulanthaivel23.github.io/addressrail-ai/cbpr-address-guide/)
-
