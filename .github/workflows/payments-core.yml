@@ -1,0 +1,26 @@
+name: Check Payments Core
+on:
+  push:
+    paths:
+      - 'payments-core/**'
+      - '.github/workflows/payments-core.yml'
+  pull_request:
+    paths:
+      - 'payments-core/**'
+      - '.github/workflows/payments-core.yml'
+jobs:
+  payments-core-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: payments-core/pom.xml
+      - name: Run isolated Quarkus tests
+        working-directory: payments-core
+        run: mvn --batch-mode --no-transfer-progress test
