@@ -31,6 +31,14 @@ public class PaymentsResourceTest {
     }
     @Test
     void noPaymentMutationsExposed() {
-        given().contentType("application/json").body("{}").post("/api/v1/payments").then().statusCode(405);
+        // Collection has no matching resource method, so RESTEasy returns 404.
+        given().contentType("application/json").body("{}")
+                .post("/api/v1/payments").then().statusCode(404);
+        // An existing item path does exist but does not support POST, hence 405.
+        given().contentType("application/json").body("{}")
+                .post("/api/v1/payments/PAY-10001").then().statusCode(405);
+        // A rejected mutation must not alter the persisted payment.
+        given().get("/api/v1/payments/PAY-10001").then().statusCode(200)
+                .body("status", is("RJCT"), "synthetic", is(true));
     }
 }
