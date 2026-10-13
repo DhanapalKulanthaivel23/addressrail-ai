@@ -14,7 +14,7 @@ curl http://127.0.0.1:8081/api/v1/payments/PAY-10001/events
 curl http://127.0.0.1:8081/api/v1/payments/PAY-10001/investigation
 ```
 
-The dev database is a local file at `payments-core/data/` (H2), so data survives restarts. Tests use an isolated in-memory H2 database. **Do not put real payment or personal information in this service.**
+The dev database is a local file as `payments-core/addressrail-payments.mv.db` (H2), so data survives restarts. Tests use an isolated in-memory H2 database. **Do not put real payment or personal information in this service.**
 
 For a future, explicitly provisioned deployment, PostgreSQL JDBC configuration is available through `PAYMENTS_JDBC_URL`, `PAYMENTS_DB_USER` and `PAYMENTS_DB_PASSWORD` under the Quarkus production profile. Production schema provisioning/migration is **not** implemented; Hibernate validates existing schema, it does not create it.
 
