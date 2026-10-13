@@ -34,3 +34,26 @@ By default the deterministic investigation works with **no LLM or credentials**.
 The service logs outcome, whether AI was used and duration (not raw payments or prompts). This is an educational stage: it lacks identity/tenant isolation, persistent case approvals, source-attested events, production policy enforcement, durable traces and public deployment. Human approval is *required by contract*, not yet an operational approval UI.
 
 Run tests without Java or Gemini: tests use `httpx.MockTransport`. Next: stateful case persistence, prompt registry, evaluation corpus, local UI, authenticated tool access, and optional source-grounded RAG.
+
+## Testing Gemini locally (optional)
+
+The Gemini advisory is **disabled by default** and never changes the deterministic payment status, evidence references or review requirement. It requests JSON, checks an exact status and exact evidence reference list, and refuses malformed or unsupported conclusions. These checks are defensive filters, **not a guarantee** of factual AI accuracy.
+
+With the local Quarkus and investigation services running, restart the investigation process after setting the environment variables in its own terminal:
+
+```bash
+export INVESTIGATION_ENABLE_GEMINI=true
+export INVESTIGATION_GEMINI_MODEL=gemini-2.5-flash
+# Enter your own key securely in the terminal; do not paste it into chat or commit it.
+read -s GEMINI_API_KEY
+export GEMINI_API_KEY
+PYTHONPATH=ai-agents python -m uvicorn investigation.app:app --host 127.0.0.1 --port 8092
+```
+
+Then POST the same synthetic PAY-10001 case. If the selected Gemini model is supported, the quota permits a response and the output passes evidence checks, `ai_used` becomes `true`. Otherwise it remains `false` with the deterministic evidence preserved. **Do not connect this unauthenticated local API to a public network.**
+
+For offline AI-output evaluations (no network or API key), run:
+
+```bash
+PYTHONPATH=ai-agents python -m pytest -q ai-agents/investigation/tests
+```
