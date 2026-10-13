@@ -55,16 +55,3 @@ Search-friendly tutorials, canonical links, sitemap, robots rules and free metad
 - [pacs.008 address validation](https://dhanapalkulanthaivel23.github.io/addressrail-ai/pacs008-address-validation/)
 - [CBPR+ postal-address concepts](https://dhanapalkulanthaivel23.github.io/addressrail-ai/cbpr-address-guide/)
 
-Search setup: [Free Google/Bing indexing guide](docs/SEO.md).
-
-## Free public visitor statistics (optional)
-
-The site is prepared to show aggregate **estimated visits** and referral groups such as Google, Bing, GitHub, ChatGPT, Gemini, Claude and Direct/Unknown. The project’s public counter is active using **Cloudflare Workers + D1**, with aggregate counts verified on 12 October 2026. For your own deployment, follow [Visitor Analytics Setup](docs/VISITOR-ANALYTICS.md).
-
-Visitor counts are browser-session estimates, **not validated unique people**. Search engines and AI assistants may omit referral information, and prior visits cannot be counted retroactively. No domain purchases or subscription upgrades are required for the prototype within free-tier limits.
-
-## Release status
-
-This is a **demonstration prototype**, not yet a multi-tenant SaaS product. Authentication, billing, authoritative scheme rule validation, durable audit records, API throttling and commercial integrations are future work.
-
-Project name: **AddressRail AI**. No association with any payment network operator or standards body is implied.
