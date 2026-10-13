@@ -5,7 +5,8 @@ import time
 import httpx
 from langgraph.graph import StateGraph, START, END
 from typing import TypedDict
-from .models import InvestigationResult, Finding\nfrom .llm import gemini_explanation
+from .models import InvestigationResult, Finding
+from .llm import gemini_explanation
 from .tools import PaymentTools, PaymentNotFound, CoreUnavailable
 
 log = logging.getLogger("addressrail.investigation")
