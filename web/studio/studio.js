@@ -19,16 +19,16 @@ function fillModules(){
  }
  const route=new URLSearchParams(location.search).get("module");
  if(modules.some(m=>m.id===route))sel.value=route;
- choose();
+ choose(false);
 }
-function choose(){
+function choose(updateUrl=true){
  const m=current(); const s=byId("scenario");
  s.replaceChildren();
  for(const [v,label] of [["normal","Illustrative successful path"],["failure",m.failure.label]]){const o=elt("option",label);o.value=v;s.append(o)}
  byId("rail-meta").textContent=m.kind+" — "+m.description;
  const ref=byId("references");ref.replaceChildren();
  for(const [label,url] of m.references){const a=elt("a",label+" ↗");a.href=url;a.target="_blank";a.rel="noopener noreferrer";ref.append(a)}
- history.replaceState(null,"",location.pathname+"?module="+encodeURIComponent(m.id)+"#simulator");
+ if(updateUrl) history.replaceState(null,"",location.pathname+"?module="+encodeURIComponent(m.id)+"#simulator");
  simulate();
 }
 function simulate(){
