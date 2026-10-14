@@ -43,7 +43,7 @@ With the local Quarkus and investigation services running, restart the investiga
 
 ```bash
 export INVESTIGATION_ENABLE_GEMINI=true
-export INVESTIGATION_GEMINI_MODEL=gemini-2.5-flash
+export INVESTIGATION_GEMINI_MODEL=gemini-3.8-flash
 # Enter your own key securely in the terminal; do not paste it into chat or commit it.
 read -s GEMINI_API_KEY
 export GEMINI_API_KEY
@@ -57,3 +57,9 @@ For offline AI-output evaluations (no network or API key), run:
 ```bash
 PYTHONPATH=ai-agents python -m pytest -q ai-agents/investigation/tests
 ```
+
+## Diagnosing structured Gemini output
+
+The request specifies a JSON schema and a 1024 output-token budget. The adapter checks Gemini's `finishReason` before parsing; `MAX_TOKENS`, `SAFETY`, missing/empty output, invalid JSON or unsupported evidence claims fall back to deterministic investigation. Uvicorn logs include only safe reason codes, such as `finish_MAX_TOKENS`, `invalid_json`, `empty_output`, `evidence_validation`, or `http_status_503`. They do not include prompts, responses or credentials. A passing mock test does **not** verify a successful live Gemini response; check for `ai_used: true` in a real synthetic investigation.
+
+Only use models available to your own free-tier account. No paid plan or billing change is needed for the deterministic workflow.
