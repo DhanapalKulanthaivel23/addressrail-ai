@@ -5,12 +5,14 @@ on:
       - 'web/studio/**'
       - 'web/index.html'
       - 'tests/studio.test.mjs'
+      - 'tests/sepa-sct.test.mjs'
       - '.github/workflows/studio.yml'
   pull_request:
     paths:
       - 'web/studio/**'
       - 'web/index.html'
       - 'tests/studio.test.mjs'
+      - 'tests/sepa-sct.test.mjs'
       - '.github/workflows/studio.yml'
 permissions:
   contents: read
@@ -23,4 +25,6 @@ jobs:
         with:
           node-version: '22'
       - run: node --check web/studio/studio.js
-      - run: node --test tests/studio.test.mjs
+      - run: node --check web/studio/sepa-sct/core.mjs
+      - run: node --check web/studio/sepa-sct/lab.mjs
+      - run: node --test tests/studio.test.mjs tests/sepa-sct.test.mjs
