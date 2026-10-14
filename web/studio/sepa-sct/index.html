@@ -1,0 +1,37 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SEPA SCT Message Builder | AddressRail AI</title>
+<meta name="description" content="Generate synthetic SEPA SCT pain.001 and pacs.008 examples, compare illustrative pain.002/pacs.002 statuses and trace STEP2 educational scenarios.">
+<link rel="canonical" href="https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/sepa-sct/">
+<link rel="stylesheet" href="../studio.css"><style>
+.lab-grid{display:grid;grid-template-columns:minmax(230px,.75fr) minmax(0,1.25fr);gap:18px;margin:20px 0}.lab-form label{display:block;font-weight:700;font-size:12px;margin:14px 0 5px}.lab-form input,.lab-form select{width:100%;padding:12px;border:1px solid #d2c4b7;background:#fff;max-width:100%;font:inherit}.lab-form button{margin-top:20px}.message-actions{display:flex;flex-wrap:wrap;gap:7px;margin:15px 0}.message-actions button{border:1px solid #bba897;background:#f1e5d7;padding:10px;font-size:12px;cursor:pointer}.message-actions button[aria-pressed=true]{background:#282522;color:#fff}.xml-box{white-space:pre;overflow:auto;background:#252321;color:#e6f0f2;padding:19px;max-height:470px;font:12px/1.6 ui-monospace,Consolas,monospace;min-height:150px}.lab-events{display:grid;gap:9px}.lab-events article{padding:12px;border-left:4px solid #936242;background:#f5ede4}.lab-events b{display:block}.lab-events small{display:block;margin-top:8px;color:#715843}#lab-feedback{font-size:13px;line-height:1.75}#lab-feedback strong{display:block;margin-bottom:5px}.mini{font-size:12px;line-height:1.75}.note{background:#f3e6d6;padding:16px;margin:15px 0;font-size:12px;line-height:1.7}@media(max-width:850px){.lab-grid{grid-template-columns:1fr}}
+</style></head><body><a class="skip" href="#main">Skip to content</a><div class="app">
+<aside><a class="brand" href="../../">AddressRail <span>AI</span><small>PAYMENT INTELLIGENCE PLATFORM</small></a><a href="../">← Banking Studio</a><a href="#builder">Message Builder</a><a href="#lab-result">Lifecycle &amp; XML</a><a href="../../#ai">Address AI advisory ↗</a><p class="side-note">Local browser simulation only. No real bank connectivity, official certification, settlement, registration or API key.</p></aside>
+<div class="body"><header><span>Workspace / SEPA SCT Message Builder</span><a href="../?module=sepa#simulator">Explore SCT overview ↗</a></header><main id="main">
+<section class="hero"><div class="kicker">MESSAGE STUDIO / SEPA SCT</div><h1>Build the message.<br><em>Trace the journey.</em></h1><p>Generate synthetic ISO 20022 XML, test basic IBAN checks and compare a bank-side rejection with an illustrative interbank CSM response. Learn exactly what status evidence can—and cannot—prove.</p><div class="steps">PAIN.001 → BANK CHECKS → PACS.008 → STEP2 TEACHING PATH → STATUS EVIDENCE</div></section>
+<div class="notice"><b>Scope:</b> XML examples for learning only. No XSD validation, rulebook-specific conformance, actual STEP2 submission or settlement. IBAN check digits and basic field syntax are not full PSP verification. Account and BIC examples are synthetic teaching fixtures.</div>
+<section class="section" id="builder"><div class="kicker">01 / GENERATE &amp; VALIDATE</div><h2>SEPA Credit Transfer</h2><div class="lab-grid"><form class="card lab-form" id="sct-form">
+<label for="debtorName">Debtor name (synthetic)</label><input id="debtorName" maxlength="70" required>
+<label for="debtorIban">Debtor IBAN</label><input id="debtorIban" maxlength="34" required>
+<label for="debtorBic">Debtor BIC (format only)</label><input id="debtorBic" maxlength="11" required>
+<label for="creditorName">Creditor name (synthetic)</label><input id="creditorName" maxlength="70" required>
+<label for="creditorIban">Creditor IBAN</label><input id="creditorIban" maxlength="34" required>
+<label for="creditorBic">Creditor BIC (format only)</label><input id="creditorBic" maxlength="11" required>
+<label for="amount">Amount (EUR)</label><input id="amount" inputmode="decimal" maxlength="14" required>
+<label for="reference">End-to-end reference</label><input id="reference" maxlength="35" required>
+<label for="sct-scenario">Synthetic scenario</label><select id="sct-scenario"><option value="accepted">Technically accepted — final outcome unverified</option><option value="invalid-iban">Bank-side rejection — invalid creditor IBAN</option><option value="csm-reject">Illustrative interbank CSM rejection</option></select>
+<button type="submit" class="button">Generate synthetic messages →</button>
+<p class="mini">Only sample or wholly invented data. No uploads, remote calls or key entry.</p>
+</form><div class="card" id="lab-result" aria-live="polite">
+<div class="kicker">02 / EVIDENCE &amp; MESSAGES</div><h3>Payment lifecycle</h3><div id="lab-feedback" role="status"></div><div id="lab-events" class="lab-events"></div>
+<h3>Generated ISO 20022 messages</h3><p class="mini">Each XML document is a teaching illustration. Use the tabs to inspect message roles and differences.</p><div id="message-tabs" class="message-actions" role="group" aria-label="Generated message types"></div><pre id="generated-xml" class="xml-box">Choose Generate to start.</pre>
+<button id="copy-xml" type="button" class="button" disabled>Copy current XML</button> <button id="download-xml" type="button" class="button" disabled>Download XML</button>
+<p id="copy-state" class="mini" role="status"></p></div></div></section>
+<section class="section"><div class="kicker">03 / LEARN THE DISTINCTIONS</div><h2>One payment. Different messages.</h2><div class="cards">
+<article class="card"><h3>pain.001</h3><p>A customer-to-bank credit transfer initiation. Its presence does not establish that the bank accepted or processed the payment.</p></article>
+<article class="card"><h3>pacs.008</h3><p>An interbank customer credit transfer. It represents messaging between financial institutions—not proof of settlement or beneficiary credit.</p></article>
+<article class="card"><h3>pain.002 / pacs.002</h3><p>Customer-facing and FI-to-FI status reporting have different contexts. A local bank validation rejection is not a fictional response from STEP2.</p></article>
+</div><p class="note">STEP2 SCT processes transfers using a continuous gross settlement model. These browser events are fictional learning steps and contain no official clearing responses. Message names and sample versions are illustrative; bank implementation guides, current rulebooks, schemas and infrastructure requirements must be verified separately.</p>
+<p><a href="https://www.europeanpaymentscouncil.eu/what-we-do/sepa-credit-transfer" target="_blank" rel="noopener noreferrer">EPC SCT scheme ↗</a> &nbsp; <a href="https://www.ebaclearing.eu/services/step2-sct/" target="_blank" rel="noopener noreferrer">STEP2 SCT service ↗</a> &nbsp; <a href="../">Return to Banking Studio ↗</a></p>
+</section>
+<p class="disclaimer">Educational synthetic messages only; not official ISO XSD, EPC, STEP2, bank or Swift conformance; no interbank transmission or verified settlement. No AI analysis is performed in this builder. The separate Investigation Agent is currently a local-only service.</p><footer>AddressRail AI · Synthetic payments learning lab · <a href="../">All modules</a></footer></main></div></div>
+<script type="module" src="./lab.mjs"></script></body></html>
