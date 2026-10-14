@@ -99,7 +99,7 @@ public class SepaSctLabResource {
         boolean localReject = "invalid-iban".equals(request.scenario());
         boolean csmReject = "csm-reject".equals(request.scenario());
         String finalStatus = localReject || csmReject ? "RJCT" : "ACTC";
-        PaymentRecord payment = new PaymentRecord(paymentId, "SEPA SCT synthetic", "pacs.008",
+        PaymentRecord payment = new PaymentRecord(paymentId, "SEPA SCT synthetic", localReject ? "pain.001" : "pacs.008",
                 request.amount(), "EUR", request.debtorBic(), request.creditorBic(), finalStatus);
         em.persist(payment);
         Instant base = Instant.now();
