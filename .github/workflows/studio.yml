@@ -1,0 +1,26 @@
+name: Check Banking Studio
+on:
+  push:
+    paths:
+      - 'web/studio/**'
+      - 'web/index.html'
+      - 'tests/studio.test.mjs'
+      - '.github/workflows/studio.yml'
+  pull_request:
+    paths:
+      - 'web/studio/**'
+      - 'web/index.html'
+      - 'tests/studio.test.mjs'
+      - '.github/workflows/studio.yml'
+permissions:
+  contents: read
+jobs:
+  studio:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check web/studio/studio.js
+      - run: node --test tests/studio.test.mjs
