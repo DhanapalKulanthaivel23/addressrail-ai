@@ -56,7 +56,7 @@ def test_mocked_gemini_valid_json(monkeypatch):
     original = httpx.AsyncClient
     def make_client(*args, **kwargs):
         return original(*args, transport=httpx.MockTransport(
-            lambda req: httpx.Response(200, json={"candidates":[{"content":{"parts":[{"text": json.dumps(GOOD)}]}}]})
+            lambda req: httpx.Response(200, json={"candidates":[{"finishReason":"STOP","content":{"parts":[{"text": json.dumps(GOOD)}]}}]})
         ), **kwargs)
     with patch("investigation.llm.httpx.AsyncClient", side_effect=make_client):
         assert asyncio.run(gemini_explanation(BASE)) == GOOD["explanation"]
@@ -67,7 +67,60 @@ def test_mocked_gemini_invalid_json_falls_back(monkeypatch):
     original = httpx.AsyncClient
     def make_client(*args, **kwargs):
         return original(*args, transport=httpx.MockTransport(
-            lambda req: httpx.Response(200, json={"candidates":[{"content":{"parts":[{"text": "not JSON"}]}}]})
+            lambda req: httpx.Response(200, json={"candidates":[{"finishReason":"STOP","content":{"parts":[{"text": "not JSON"}]}}]})
         ), **kwargs)
     with patch("investigation.llm.httpx.AsyncClient", side_effect=make_client):
         assert asyncio.run(gemini_explanation(BASE)) is None
+
+def _mock_gemini_response(monkeypatch, candidate):
+    monkeypatch.setenv("INVESTIGATION_ENABLE_GEMINI", "true")
+    monkeypatch.setenv("GEMINI_API_KEY", "dummy-test-key")
+    original = httpx.AsyncClient
+    captured = []
+    def client(*args, **kwargs):
+        def handle(request):
+            body = json.loads(request.content)
+            config = body["generationConfig"]
+            captured.append(config)
+            return httpx.Response(200, json={"candidates": [candidate]})
+        return original(*args, transport=httpx.MockTransport(handle), **kwargs)
+    with patch("investigation.llm.httpx.AsyncClient", side_effect=client):
+        output = asyncio.run(gemini_explanation(BASE))
+    return output, captured[0]
+
+def test_explicit_json_schema_and_larger_budget(monkeypatch):
+    outcome, config = _mock_gemini_response(monkeypatch, {
+        "finishReason": "STOP", "content": {"parts": [{"text": json.dumps(GOOD)}]}})
+    assert outcome == GOOD["explanation"]
+    assert config["responseMimeType"] == "application/json"
+    assert config["responseSchema"]["required"] == list(GOOD)
+    assert config["maxOutputTokens"] >= 1024
+
+def test_truncated_model_output_is_not_parsed(monkeypatch, caplog):
+    output, _ = _mock_gemini_response(monkeypatch, {
+        "finishReason": "MAX_TOKENS", "content": {"parts": [{"text": '{"payment_status":"RJCT"'}]}})
+    assert output is None
+    assert "finish_MAX_TOKENS" in caplog.text
+
+def test_blocked_response_falls_back(monkeypatch):
+    outcome, _ = _mock_gemini_response(monkeypatch, {
+        "finishReason": "SAFETY", "content": {"parts": []}})
+    assert outcome is None
+
+def test_empty_stop_response_falls_back(monkeypatch, caplog):
+    outcome, _ = _mock_gemini_response(monkeypatch, {
+        "finishReason": "STOP", "content": {"parts": []}})
+    assert outcome is None
+    assert "empty_output" in caplog.text
+
+def test_multiple_text_parts_are_combined(monkeypatch):
+    raw = json.dumps(GOOD)
+    midpoint = len(raw) // 2
+    outcome, _ = _mock_gemini_response(monkeypatch, {
+        "finishReason": "STOP", "content": {"parts": [{"text": raw[:midpoint]}, {"text": raw[midpoint:]}]}})
+    assert outcome == GOOD["explanation"]
+
+def test_invalid_evidence_still_fails_even_if_json_valid(monkeypatch):
+    outcome, _ = _mock_gemini_response(monkeypatch, {
+        "finishReason": "STOP", "content": {"parts": [{"text": json.dumps({**GOOD, "payment_status": "ACSP"})}]}})
+    assert outcome is None
