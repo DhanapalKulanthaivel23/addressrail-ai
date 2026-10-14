@@ -289,10 +289,10 @@ footer{
 </head><body>
 <div class="app"><aside>
 <a class="brand" href="#home">AddressRail <span>AI</span><small>PAYMENT INTELLIGENCE</small></a>
-<a href="#home">◫ Address analyzer</a><a href="#report">◇ Validation report</a><a href="#ai">✳ AI advisory</a>
+<a href="#home">◫ Address analyzer</a><a href="#report">◇ Validation report</a><a href="#ai">✳ AI advisory</a><a href="studio/">▦ Banking &amp; Payment Studio ↗</a>
 <div class="muted">● Browser-only checking available<br>No account or API key required.<p>Synthetic payments only.</p></div>
 </aside><div><header><span>Workspace / Address Intelligence</span><a href="https://github.com/DhanapalKulanthaivel23/addressrail-ai" target="_blank" rel="noopener">GitHub source ↗</a></header><main id="home">
-<section class="hero"><div class="kicker">ISO 20022 &amp; MT ADDRESS QUALITY</div><h1>Payment addresses,<br><em>made clearer.</em></h1><p>Inspect synthetic pacs.008 and MT103 payments, identify missing structured fields and review conservative address repair candidates.</p><div class="steps">01 INSPECT &nbsp; → &nbsp; 02 REVIEW &nbsp; → &nbsp; 03 EXPLAIN</div></section>
+<section class="hero"><div class="kicker">ISO 20022 &amp; MT ADDRESS QUALITY</div><h1>Payment addresses,<br><em>made clearer.</em></h1><p>Inspect synthetic pacs.008 and MT103 payments, identify missing structured fields and review conservative address repair candidates.</p><div class="steps">01 INSPECT &nbsp; → &nbsp; 02 REVIEW &nbsp; → &nbsp; 03 EXPLAIN</div><p style="margin-top:19px"><a href="studio/" class="btn" style="display:inline-block;text-decoration:none">Explore banking products &amp; payment flows →</a></p></section>
 <div class="columns"><section class="panel">
 <div class="kicker">STEP 01</div><h2>Payment message</h2><p>Try a sample or paste a synthetic payment.</p>
 <label for="sample">Choose a synthetic example</label>
@@ -315,6 +315,18 @@ footer{
 <div id="turnstile-challenge" aria-label="Human verification"></div><p id="ai-availability" role="status">Connecting to Gemini…</p>
 <p>AI guidance is for review only. No payment correction is automatically approved.</p>
 </div><div class="aiout" id="ai-output" role="status" aria-live="polite">Run address checks to see Before and Suggested After.</div></div></section>
+<section class="panel" id="address-agent-workflow" style="margin-top:20px">
+<div class="kicker">HOW ADDRESSRAIL AI WORKS</div>
+<h2>Address quality → AI explanation → human review</h2>
+<p>Our existing address analyzer combines deterministic checks with optional Gemini commentary. It does not treat AI output as validation or automatically change payment messages.</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:21px 0">
+<div class="finding"><b>01 / Parse &amp; inspect</b><p>Load synthetic MT103 or pacs.008 and identify the address parties.</p></div>
+<div class="finding"><b>02 / Apply rules</b><p>Detect missing structured town/country fields and review-only repair candidates supported by original text.</p></div>
+<div class="finding"><b>03 / Optional Gemini</b><p>Use the existing protected AI service for an explanation, only with synthetic or anonymised input and consent.</p></div>
+<div class="finding"><b>04 / Human decision</b><p>Compare original and proposed addresses. No repair is approved or applied automatically.</p></div>
+</div>
+<p><a href="studio/#agent-lab">Explore the shared Agentic AI approach, payment investigation and scheme labs ↗</a></p>
+</section>
 <p class="disclaimer">Demo only. Use synthetic or fully anonymised messages. The application is not an official SWIFT, ISO 20022, EPC or CBPR+ conformance validator. No suggested repair is automatically applied.</p>
 <section class="panel" style="margin-top:20px" aria-label="SWIFT and ISO 20022 learning resources">
 <div class="kicker">LEARN &amp; EXPLORE</div>
