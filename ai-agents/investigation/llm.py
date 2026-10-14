@@ -1,5 +1,6 @@
 """Optional Gemini advisory: structured output, evidence gates and fail-closed fallback."""
 import logging
+import json
 import os
 import re
 import httpx
@@ -43,7 +44,7 @@ async def gemini_explanation(result: InvestigationResult) -> str | None:
     key = os.getenv("GEMINI_API_KEY", "")
     if not key or result.outcome != "EVIDENCE_FOUND" or result.finding.status not in ("RJCT", "OTHER"):
         return None
-    model = os.getenv("INVESTIGATION_GEMINI_MODEL", "gemini-2.5-flash")
+    model = os.getenv("INVESTIGATION_GEMINI_MODEL", "gemini-3.8-flash")
     if not re.fullmatch(r"[A-Za-z0-9_.-]{1,80}", model):
         return None
 
@@ -60,23 +61,68 @@ async def gemini_explanation(result: InvestigationResult) -> str | None:
     prompt = instruction + "\nGround truth (synthetic): " + result.model_dump_json(
         include={"payment_id", "payment_status", "last_event_type", "finding", "synthetic"}
     )
+    # Explicit Gemini response schema limits output shape; validation below remains authoritative.
+    response_schema = {
+        "type": "OBJECT",
+        "properties": {
+            "payment_status": {"type": "STRING"},
+            "evidence_refs": {"type": "ARRAY", "items": {"type": "STRING"}},
+            "explanation": {"type": "STRING"},
+            "human_review_required": {"type": "BOOLEAN"},
+        },
+        "required": ["payment_status", "evidence_refs", "explanation", "human_review_required"],
+        "propertyOrdering": ["payment_status", "evidence_refs", "explanation", "human_review_required"],
+    }
     try:
-        async with httpx.AsyncClient(timeout=8, trust_env=False) as client:
+        async with httpx.AsyncClient(timeout=15, trust_env=False) as client:
             response = await client.post(
                 f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
                 headers={"x-goog-api-key": key},
                 json={"contents": [{"parts": [{"text": prompt}]}],
-                      "generationConfig": {"temperature": 0, "maxOutputTokens": 300,
-                                           "responseMimeType": "application/json"}},
+                      "generationConfig": {
+                          "temperature": 0,
+                          # Allow space for models that consume thinking tokens.
+                          "maxOutputTokens": 1024,
+                          "responseMimeType": "application/json",
+                          "responseSchema": response_schema,
+                      }},
             )
             response.raise_for_status()
             data = response.json()
-            raw = data["candidates"][0]["content"]["parts"][0]["text"]
-            if len(raw) > 2500:
+            candidates = data.get("candidates", [])
+            if not candidates:
+                log.warning("gemini_advisory_fallback reason=no_candidates")
                 return None
-            import json
-            return validate_advisory(json.loads(raw), result)
-    except (httpx.HTTPError, KeyError, IndexError, TypeError, ValueError) as error:
-        # Don't log response bodies, prompts, credentials or payment details.
-        log.warning("gemini_advisory_fallback reason=%s", type(error).__name__)
+            candidate = candidates[0]
+            finish = candidate.get("finishReason", "UNKNOWN")
+            if finish != "STOP":
+                # No attempts to parse partial/truncated or blocked responses.
+                log.warning("gemini_advisory_fallback reason=finish_%s", str(finish)[:30])
+                return None
+            parts = candidate.get("content", {}).get("parts", [])
+            raw = "".join(part.get("text", "") for part in parts if isinstance(part, dict))
+            if not raw or not raw.strip():
+                log.warning("gemini_advisory_fallback reason=empty_output")
+                return None
+            if len(raw) > 2500:
+                log.warning("gemini_advisory_fallback reason=oversized_output")
+                return None
+            try:
+                payload = json.loads(raw)
+            except json.JSONDecodeError:
+                log.warning("gemini_advisory_fallback reason=invalid_json")
+                return None
+            if not isinstance(payload, dict):
+                log.warning("gemini_advisory_fallback reason=invalid_json_shape")
+                return None
+            accepted = validate_advisory(payload, result)
+            if accepted is None:
+                log.warning("gemini_advisory_fallback reason=evidence_validation")
+            return accepted
+    except httpx.HTTPStatusError as error:
+        # Safe: status code only; do not log URL, headers, response, key, or payment.
+        log.warning("gemini_advisory_fallback reason=http_status_%d", error.response.status_code)
+        return None
+    except (httpx.HTTPError, KeyError, IndexError, TypeError, ValueError):
+        log.warning("gemini_advisory_fallback reason=transport_or_response_error")
         return None
