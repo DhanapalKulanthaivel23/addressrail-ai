@@ -27,7 +27,7 @@ public class SepaSctLabResourceTest {
     void localRejectionPersistsExactlyTwoEventsAndNoInterbankSubmission() {
         String id=run("invalid-iban");
         given().get("/api/v1/payments/"+id).then().statusCode(200)
-                .body("status",is("RJCT"),"synthetic",is(true),"scheme",is("SEPA SCT synthetic"));
+                .body("status",is("RJCT"),"synthetic",is(true),"scheme",is("SEPA SCT synthetic"), "messageType",is("pain.001"));
         given().get("/api/v1/payments/"+id+"/events").then().statusCode(200)
                 .body("size()",is(2),"[0].type",is("INITIATED"),
                       "[1].type",is("RJCT"),"[1].description",containsString("no pacs.008 submitted"));
@@ -51,6 +51,8 @@ public class SepaSctLabResourceTest {
                 .then().statusCode(201)
                 .body("status",is("ACTC"),"settlement",is("UNVERIFIED"))
                 .extract().path("paymentId");
+        given().get("/api/v1/payments/"+id).then().statusCode(200)
+                .body("messageType",is("pacs.008"));
         given().get("/api/v1/payments/"+id+"/events").then().statusCode(200)
                 .body("size()",is(4),"[3].type",is("ACTC"),
                       "[3].description",containsString("settlement and credit unverified"));
