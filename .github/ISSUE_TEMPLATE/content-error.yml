@@ -1,0 +1,27 @@
+name: Report a factual or accessibility error
+description: Report incorrect information on an AddressRail AI page.
+title: "[Content] "
+labels: ["content"]
+body:
+  - type: input
+    id: page_url
+    attributes:
+      label: Page URL
+      description: The page that contains the error (the link from the site should prefill it).
+      placeholder: https://dhanapalkulanthaivel23.github.io/addressrail-ai/...
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What needs correction?
+      description: Describe the error and expected change. Never include real payment data or account identifiers.
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Official source or supporting information
+      description: Link to rulebook/standards source and effective date if relevant.
+    validations:
+      required: false
