@@ -31,7 +31,7 @@ button.alt{background:#566975}.small{font-size:12px;line-height:1.65;color:#5163
 <label for="username">User alias</label><input id="username" name="username" autocomplete="username" required pattern="[a-z][a-z0-9_-]{2,31}" placeholder="admin_demo">
 <label for="password">Local training password</label><input id="password" name="password" type="password" autocomplete="current-password" required minlength="12">
 <button type="submit">Sign in</button>
-</form><p class="small">First admin must be created manually through the bootstrap CLI. No predefined users or passwords exist.</p></section>
+</form><p id="login-error" role="status" class="small"></p><p class="small">First admin must be created manually through the bootstrap CLI. No predefined users or passwords exist.</p></section>
 <div id="workspace" hidden>
 <section class="panel"><strong id="identity">Not authenticated</strong> <span class="badge" id="role"></span>
 <button class="alt" id="logout" type="button">Log out</button>
