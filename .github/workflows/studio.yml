@@ -6,6 +6,7 @@ on:
       - 'web/index.html'
       - 'tests/studio.test.mjs'
       - 'tests/sepa-sct.test.mjs'
+      - 'tests/chaps.test.mjs'
       - '.github/workflows/studio.yml'
   pull_request:
     paths:
@@ -13,6 +14,7 @@ on:
       - 'web/index.html'
       - 'tests/studio.test.mjs'
       - 'tests/sepa-sct.test.mjs'
+      - 'tests/chaps.test.mjs'
       - '.github/workflows/studio.yml'
 permissions:
   contents: read
@@ -27,4 +29,6 @@ jobs:
       - run: node --check web/studio/studio.js
       - run: node --check web/studio/sepa-sct/core.mjs
       - run: node --check web/studio/sepa-sct/lab.mjs
-      - run: node --test tests/studio.test.mjs tests/sepa-sct.test.mjs
+      - run: node --check web/studio/chaps/core.mjs
+      - run: node --check web/studio/chaps/lab.mjs
+      - run: node --test tests/studio.test.mjs tests/sepa-sct.test.mjs tests/chaps.test.mjs
