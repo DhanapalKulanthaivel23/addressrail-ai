@@ -1,6 +1,6 @@
 """Local synthetic investigation lab API. No CORS; do not expose publicly."""
 from contextlib import asynccontextmanager
-from pathlib import Path
+from pathlib import Path as FilePath
 from fastapi import FastAPI, HTTPException, Query, Path
 from pydantic import BaseModel, Field
 from typing import Literal
@@ -22,12 +22,12 @@ def health():
 @app.get("/dashboard", include_in_schema=False)
 async def dashboard():
     """Static local UI; no credentials or server-side templates."""
-    return FileResponse(Path(__file__).parent / "dashboard.html",
+    return FileResponse(FilePath(__file__).parent / "dashboard.html",
                         media_type="text/html", headers={"Cache-Control":"no-store"})
 
 @app.get("/dashboard.js", include_in_schema=False)
 async def dashboard_script():
-    return FileResponse(Path(__file__).parent / "dashboard.js",
+    return FileResponse(FilePath(__file__).parent / "dashboard.js",
                         media_type="text/javascript", headers={"Cache-Control":"no-store"})
 
 @app.get("/api/dashboard/cases")
