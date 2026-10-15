@@ -44,10 +44,37 @@ def _evidence(payment, events, payment_id):
                 explanation="Stored payment status conflicts with the last recorded event.",
                 recommended_action="Escalate for human investigation of inconsistent evidence."))
     refs = [last.evidenceRef]
+    # A single last event establishes only the *recorded synthetic status*.
+    # No status here is independently attested by a scheme or settlement provider.
     if last.type == "RJCT":
         finding = Finding(status="RJCT", evidence_refs=refs,
             explanation="The last synthetic event records a payment rejection: " + last.description,
-            recommended_action="Have an authorised operator verify beneficiary details and the rejection evidence.")
+            recommended_action="Have an authorised operator verify the rejection reason and evidence.")
+    elif last.type == "PENDING":
+        finding = Finding(status="PENDING", evidence_refs=refs,
+            explanation="The last synthetic event records a pending payment: " + last.description +
+                        " No settlement or beneficiary credit is confirmed.",
+            recommended_action="Check liquidity or processing holds with an authorised source; do not assume settlement.")
+    elif last.type == "UNKNOWN":
+        finding = Finding(status="UNKNOWN", evidence_refs=refs,
+            explanation="The synthetic payment outcome is unknown: " + last.description +
+                        " A missing response is not evidence of rejection or settlement.",
+            recommended_action="Reconcile the payment with authoritative status evidence before retrying or acting.")
+    elif last.type == "ACTC":
+        finding = Finding(status="ACTC", evidence_refs=refs,
+            explanation="The last synthetic event records technical acceptance only. " +
+                        "This does not confirm settlement or beneficiary credit.",
+            recommended_action="Obtain authoritative subsequent processing and settlement evidence.")
+    elif last.type == "ACSC":
+        finding = Finding(status="ACSC", evidence_refs=refs,
+            explanation="The synthetic record contains an ACSC status. " +
+                        "The lab has no independent confirmation from a payment infrastructure.",
+            recommended_action="Verify the actual scheme and account outcome with an authorised source.")
+    elif last.type == "SIMULATED":
+        finding = Finding(status="SIMULATED", evidence_refs=refs,
+            explanation="The last event records a completed teaching simulation only. " +
+                        "No actual payment transmission, settlement or beneficiary credit occurred in this lab.",
+            recommended_action="Do not use the synthetic trace as evidence of real payment completion.")
     else:
         finding = Finding(status="OTHER", evidence_refs=refs,
             explanation="Last recorded synthetic event: " + last.type + ". No additional outcome is established.",
