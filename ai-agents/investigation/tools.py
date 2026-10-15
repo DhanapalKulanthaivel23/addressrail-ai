@@ -49,3 +49,24 @@ class PaymentTools:
         rows = [r for r in data if isinstance(r, dict) and r.get("synthetic") is True
                 and isinstance(r.get("paymentId"), str)]
         return rows[:limit]
+
+    async def training_case_request(self, path: str, payload: dict | None = None) -> dict:
+        """Forward only fixed local training-case paths. Never expose arbitrary proxy URLs."""
+        if not path.startswith("/api/v1/labs/investigation-cases/") and path != "/api/v1/labs/investigation-cases":
+            raise ValueError("Unsupported training-case endpoint")
+        method = "GET" if payload is None else "POST"
+        try:
+            async with httpx.AsyncClient(base_url=self.base_url, timeout=4,
+                                         follow_redirects=False, trust_env=False,
+                                         transport=self.transport) as client:
+                response = await client.request(method, path, json=payload)
+            if response.status_code == 404:
+                raise PaymentNotFound()
+            if response.status_code in (400, 409):
+                return {"error": response.status_code}
+            response.raise_for_status()
+            return response.json()
+        except PaymentNotFound:
+            raise
+        except (httpx.HTTPError, ValueError) as error:
+            raise CoreUnavailable() from error
