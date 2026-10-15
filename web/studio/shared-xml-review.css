@@ -1,0 +1,6 @@
+.ar-xml-review{margin:25px 0;padding:18px;border:1px solid #d6c7b7;background:#fffaf4}
+.ar-xml-review h2{margin-top:0}.ar-xml-review textarea{display:block;width:100%;min-height:190px;resize:vertical;background:#fdfcf9;color:#27231f;border:1px solid #c8b5a3;padding:12px;font:11px/1.6 ui-monospace,Consolas,monospace}
+.ar-xml-review .ar-xml-actions{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.ar-xml-review button{padding:10px;background:#416c72;color:#fff;border:0;cursor:pointer;font-size:12px}
+.ar-xml-review [data-xml-findings] p{padding:7px;border-left:3px solid #b27958;background:#f8f0e8;font:11px/1.5 Arial,sans-serif;overflow-wrap:anywhere}
+@media(max-width:620px){.ar-xml-review{padding:12px}.ar-xml-review button{width:100%}}
