@@ -12,7 +12,7 @@
 <a href="../">← Banking Studio</a><a href="#audience">Choose experience</a><a href="#connections">Connections explorer</a>
 <a href="#journey">Six detailed journeys</a><a href="#ai-workflow">AI investigation replay</a><a href="#learn-check">Test your knowledge</a>
 <div class="navlabel">RELATED LABS</div>
-<a href="../payment-intelligence/">43-context catalogue ↗</a><a href="../open-demo/">Private guest cases ↗</a>
+<a href="../start/">Start Here for beginners ↗</a><a href="../sct-inst/">SCT Inst timeout lab ↗</a><a href="../chaps/#case-lab">CHAPS RTGS lab ↗</a><a href="../ai-lab/">AI guardrail playground ↗</a><a href="../payment-intelligence/">43-context catalogue ↗</a><a href="../open-demo/">Private guest cases ↗</a>
 <a href="../sepa-sct/">SEPA message builder ↗</a><a href="../chaps/">CHAPS message explorer ↗</a>
 <p class="side-note">Synthetic educational simulations only. No bank connectivity, payment execution, official conformance or live LLM.</p>
 </aside><div class="body"><header><span>Workspace / Interactive Payment Journeys</span><a href="../">Banking Studio ↗</a></header>
@@ -51,8 +51,11 @@
 <h2>Follow an instruction through the system.</h2><p>Select a payment journey and inject a fictional success, rejection, pending state, return or unknown outcome. The simulator stops the trace where the scenario occurs; it never fabricates downstream completion.</p>
 <div class="card journey-selectors"><div><label for="journey-select">Detailed payment journey</label><select id="journey-select"></select></div>
 <div><label for="scenario-select">Fictional outcome</label><select id="scenario-select"></select></div></div>
-<div class="journey-intro card"><h3 id="journey-title">Select a payment journey</h3><p id="journey-intro"></p>
+<div class="journey-intro card"><p id="journey-rule-meta" class="tiny">Educational example · Last reviewed 15 October 2026</p><h3 id="journey-title">Select a payment journey</h3><p id="journey-intro"></p>
 <p id="journey-distinction"></p><a id="journey-reference" href="#" target="_blank" rel="noopener noreferrer">Authoritative background ↗</a></div>
+<div class="card" id="presenter-panel"><h3>Three-minute presenter script</h3>
+<p class="tiny">Read this walkthrough while the audience follows the selected fictional scenario.</p>
+<ol id="presenter-script" class="event-grid"></ol></div>
 <div class="journey-stage-grid">
 <div class="card stage-navigation"><div class="section-heading"><h3>Processing steps</h3><strong id="step-count" class="tiny">Step 1</strong></div>
 <ol id="stage-list" class="stage-list" aria-label="Synthetic payment processing steps"></ol>
@@ -70,7 +73,7 @@
 <p>Compare the selected stage's concept with a deliberately incomplete teaching message or conceptual retail record.</p>
 <button id="sample-message" class="text-action" type="button">Show synthetic message ↓</button>
 <pre id="journey-message" class="message-preview" hidden></pre>
-<button id="run-journey-checks" class="button" type="button">Test deterministic checks</button>
+<button id="run-journey-checks" class="button" type="button">Re-run teaching checks / rule IDs</button>
 <div id="journey-findings" role="status" aria-live="polite"></div>
 <div class="journey-actions">
 <a id="open-deep-validator" href="../payment-intelligence/">Open the existing validation lab ↗</a>
@@ -84,6 +87,7 @@
 <div class="ai-grid"><div class="card"><h3>Deterministic controls</h3><p id="ai-rules"></p><h4>Evidence supplied</h4><p id="ai-evidence"></p></div>
 <div class="card"><h3>Hypothetical LLM assistant</h3><p id="ai-replay"></p><h4>Human action</h4><p id="ai-review"></p></div></div>
 <p id="ai-boundary" class="notice"></p>
+<p><a href="../ai-lab/">Run eight AI guardrail test cases with reproducible rule IDs →</a></p>
 <p><a href="https://github.com/DhanapalKulanthaivel23/addressrail-ai/tree/main/ai-agents/investigation" target="_blank" rel="noopener noreferrer">Explore the separate local LangGraph agent, tests and optional Gemini integration ↗</a></p>
 </section>
 <section class="section" id="learn-check"><div class="kicker">05 / PRACTICE & UNDERSTANDING</div>

@@ -14,6 +14,7 @@ const button=(label,click,style="rail-item")=>{
  item.addEventListener("click",click);return item;
 };
 let currentRail="cbpr";
+const BEGINNER_RAILS=new Set(["cbpr","chaps","fps","bacs-credit","bacs-debit","sct","sct-inst","t2"]);
 let currentMessage=null;
 let currentReport=null;
 let currentOutput="";
@@ -27,7 +28,8 @@ function disableExports(){
 }
 function replaceRailList(){
  const region=$("region").value,query=$("search-rails").value;
- const matching=listRails({region,query});
+ const beginner=$("beginner-mode").value==="essentials";
+ const matching=listRails({region,query}).filter(r=>!beginner||BEGINNER_RAILS.has(r.id));
  const selected=$("rail");
  selected.replaceChildren();
  for(const rail of matching){
@@ -249,6 +251,7 @@ const requestedRail=incoming.get("rail");
 if(RAILS.some(r=>r.id===requestedRail))currentRail=requestedRail;
 const requestedScenario=incoming.get("scenario");
 $("scenario").value=SCENARIOS.some(s=>s.id===requestedScenario)?requestedScenario:"missing-town";
+$("beginner-mode").addEventListener("change",()=>{if(replaceRailList())loadSynthetic()});
 $("region").addEventListener("change",()=>{if(replaceRailList())loadSynthetic()});
 $("search-rails").addEventListener("input",()=>{if(replaceRailList())loadSynthetic()});
 $("rail").addEventListener("change",()=>chooseRail($("rail").value));
@@ -314,5 +317,6 @@ $("send-case").addEventListener("click",()=>{
   $("handoff-status").textContent="Browser session storage unavailable or invalid report; download JSON instead. "+error.message;
  }
 });
+if(new URLSearchParams(window.location.search).get("beginner")==="1")$("beginner-mode").value="essentials";
 replaceRailList();
 loadSynthetic();

@@ -61,3 +61,5 @@ body.presentation-active .stage-detail{min-height:410px}body.presentation-active
 .mode-card{min-height:0}.map-neighbours{grid-template-columns:1fr}.stage-detail dl{grid-template-columns:1fr;gap:4px}
 .stage-detail dt{margin-top:12px}.step-controls button{flex:1}.journeys-hero{padding:28px 20px}
 body.presentation-active .journey-stage-grid{grid-template-columns:1fr}}
+
+#presenter-panel{margin:14px 0}.event-grid li{padding:11px 15px;border-left:4px solid #7e8f81;background:#f6f1e7;font-size:12px;line-height:1.7}.event-grid li::marker{font-size:10px}

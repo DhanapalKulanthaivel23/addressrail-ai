@@ -1,5 +1,6 @@
 import {AUDIENCES,JOURNEYS,ALL_CONTEXTS,getJourney,connectionsFor,simulate,aiReplay,gradeQuiz} from "./core.mjs";
 import {getRail} from "../payment-intelligence/catalog.mjs";
+import {educationalRules,presenterScript,guideMetadata} from "./presenter.mjs";
 import {teachingMessage,serializeReport} from "../payment-intelligence/messages.mjs";
 import {HANDOFF_KEY,prepareHandoff} from "../payment-intelligence/handoff.mjs";
 const $=id=>document.getElementById(id);
@@ -16,6 +17,11 @@ let scenarioId="success",stepIndex=0,simulation=null;
 let passed=[];
 try{const v=JSON.parse(sessionStorage.getItem(PROGRESS_KEY)||"[]");if(Array.isArray(v))passed=v.filter(x=>JOURNEYS.some(j=>j.id===x));}catch{}
 const store=(key,value)=>{try{sessionStorage.setItem(key,value);}catch{/* session-private storage may be blocked */}};
+function updateUrl(){
+ const next=new URL(location.href);next.searchParams.set("mode",mode);
+ next.searchParams.set("rail",journeyId);next.searchParams.set("scenario",scenarioId);
+ history.replaceState(null,"",next.pathname+next.search+next.hash);
+}
 function selectMode(id){
  if(!Object.hasOwn(AUDIENCES,id))return;
  mode=id;store(MODE_KEY,id);
@@ -24,6 +30,7 @@ function selectMode(id){
  $("learner-help").hidden=id!=="learner";
  $("presenter-help").hidden=id!=="professional";
  $("ai-workflow").classList.toggle("mode-featured",id==="ai");
+ if(simulation)updateUrl();
 }
 function renderMap(id){
  const r=getRail(id);
@@ -50,17 +57,32 @@ function loadJourney(id){
 function runScenario(){
  simulation=simulate(journeyId,scenarioId);stepIndex=0;
  set("journey-title",simulation.journey.title);
+ const meta=guideMetadata(journeyId);
+ set("journey-rule-meta","Last reviewed "+meta.reviewed+" · "+meta.ruleVersion);
  set("journey-intro",simulation.journey.intro);
  set("journey-distinction","Important boundary: "+simulation.journey.distinction);
  $("journey-reference").href=getRail(journeyId).reference;
  $("journey-message").hidden=true;$("sample-message").textContent="Show synthetic message ↓";
- $("journey-findings").replaceChildren();set("journey-feedback","");
+ renderTeachingRules();renderPresenter();set("journey-feedback","");
  renderStage();renderAI();renderQuiz();
  const original=String(scenarioId).toLowerCase();
  const faultMap={"address-review":"missing-town","iban-reject":"invalid-iban","timeout":"timeout","tracking-gap":"timeout",
    "unknown":"timeout","response-lost":"timeout","liquidity-hold":"liquidity","mandate":"mandate"};
  const mapped=faultMap[original]||"baseline";
  $("open-deep-validator").href="../payment-intelligence/?rail="+encodeURIComponent(journeyId)+"&scenario="+encodeURIComponent(mapped);
+ updateUrl();
+}
+function renderTeachingRules(){
+ const list=$("journey-findings");list.replaceChildren();
+ const codes=educationalRules(simulation);
+ list.append(el("strong",codes.length+" educational rule/scenario ID(s) — not official scheme validation"));
+ for(const rule of codes)list.append(el("p",rule.id+" / "+rule.severity+" / "+rule.kind+": "+rule.description));
+}
+function renderPresenter(){
+ const container=$("presenter-script");container.replaceChildren();
+ for(const item of presenterScript(simulation)){
+  const li=el("li",item.minute+" — "+item.action+": "+item.say);container.append(li);
+ }
 }
 function renderStage(){
  const {scenario,journey}=simulation;
@@ -123,7 +145,7 @@ function downloadJson(){
  const data={version:1,synthetic:true,educationalOnly:true,journey:journeyId,
   scenario:scenarioId,stages:simulation.stages,evidence:simulation.evidence,
   assessment:JSON.parse(serializeReport(simulation.report,simulation.fixture)),
-  aiReplay:aiReplay(simulation),disclaimer:simulation.disclaimer};
+  aiReplay:aiReplay(simulation),rulesFired:educationalRules(simulation),presenterScript:presenterScript(simulation),disclaimer:simulation.disclaimer};
  const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:"application/json"}));
  const a=el("a","");a.href=url;a.download="addressrail-"+journeyId+"-"+scenarioId+"-synthetic-journey.json";a.click();
  setTimeout(()=>URL.revokeObjectURL(url),1200);
@@ -148,13 +170,7 @@ $("sample-message").addEventListener("click",()=>{
  try{preview.textContent=teachingMessage(simulation.fixture);preview.hidden=false;
   $("sample-message").textContent="Hide synthetic message ↑";}catch(e){set("journey-feedback",e.message)}
 });
-$("run-journey-checks").addEventListener("click",()=>{
- const r=simulation.report,region=$("journey-findings");region.replaceChildren();
- region.append(el("strong",r.assessment+" · "+r.issues.length+" basic-rule finding(s)"));
- if(!r.issues.length)region.append(el("p","No injected failure found by this limited deterministic rule set. This is NOT official scheme or settlement validation."));
- for(const issue of r.issues.slice(0,12))region.append(el("p",issue.code+" ("+issue.severity+"): "+issue.explanation));
- region.append(el("p","Operational scenario: "+simulation.scenario.label+". Basic field checks do not validate a live payment lifecycle."));
-});
+$("run-journey-checks").addEventListener("click",renderTeachingRules);
 $("download-journey").addEventListener("click",downloadJson);
 $("handoff-journey").addEventListener("click",()=>{
  try{const payload=prepareHandoff(simulation.report);

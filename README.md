@@ -19,6 +19,15 @@ Developers who want to host their own instance can follow the [deployment guide]
 
 **Not a production system:** This is not an official Swift, ISO 20022, EPC or CBPR+ validator. MT parsing is intentionally heuristic. The demo does not transmit payments, perform sanctions screening or approve repairs.
 
+## v2 entry points — learn, present and test AI
+
+- **[Start Here](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/start/)** — five foundational lessons, glossary and tab-private progress.
+- **[SCT Inst instant exception lab](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/sct-inst/?scenario=timeout)** — illustrative RT1 **or** TIPS route, rejections and unknown outcomes.
+- **[CHAPS liquidity investigation](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/chaps/?scenario=liquidity-hold#case-lab)** — fictional BoE RTGS liquidity hold, evidence and rule IDs.
+- **[Banking AI guardrails](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/ai-lab/)** — eight authored claim fixtures, deterministic checks; **not real recorded LLM outputs**.
+
+Release marker **v2 · 15 October 2026** is displayed on Banking Studio. The new page links use separate routes; a browser/CDN cached older /studio/ cannot be diagnosed from GitHub repository state alone. Verified deployment workflow outcome is recorded in GitHub Actions.
+
 ## Interactive banking journeys — three audiences
 
 **[Open the free Learn / Present / Banking AI Journeys](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/journeys/)**
