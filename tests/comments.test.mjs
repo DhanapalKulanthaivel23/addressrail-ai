@@ -95,7 +95,7 @@ test("post requires origin, consent, verified challenge, approved page and safe 
  assert.equal((await post({...data,message:"hi"})).status,422);
  assert.equal((await post({...data,agree:false})).status,422);
  assert.equal((await post({...data,website:"https://spam.invalid"})).status,400);
- assert.equal((await post(data)).status,403);
+ assert.equal((await post({...data,turnstileToken:"bad"})).status,403);
  assert.equal(db.calls.length,0);
  const previous=globalThis.fetch;
  try{
