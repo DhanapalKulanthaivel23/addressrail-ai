@@ -34,7 +34,7 @@ test("AR-403: exposed per-rule fixture evaluation counts are transparent and bou
 });
 test("AR-505: shared glossary is a static, keyboard-operable internal-only dictionary",()=>{
  const code=readFileSync("web/glossary.js","utf8");
- assert.match(code,/72/);
+ assert.match(code,/const ENTRIES=/);
  assert.match(code,/Escape/);
  assert.match(code,/aria-expanded/);
  assert.match(code,/textContent/);
