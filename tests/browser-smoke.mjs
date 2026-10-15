@@ -57,6 +57,46 @@ try{
  assert.equal(await privatePage.locator("#import-intelligence").isDisabled(),true);
  assert.doesNotMatch(await privatePage.locator("#case-list").textContent(),/SWIFT CBPR\+/);
  await isolated.close();
+ const journeys=await browser.newContext({acceptDownloads:true,viewport:{width:1280,height:800}});
+ const guided=await journeys.newPage();
+ guided.on("pageerror",error=>exceptions.push("journeys: "+error.message));
+ await guided.goto(base+"/studio/journeys/");
+ await guided.locator("#map-rail option").first().waitFor({state:"attached"});
+ assert.equal(await guided.locator("#map-rail option").count(),43);
+ assert.equal(await guided.locator("#journey-select option").count(),6);
+ await guided.locator('[data-mode="professional"]').click();
+ assert.equal(await guided.locator('[data-mode="professional"]').getAttribute("aria-pressed"),"true");
+ await guided.selectOption("#map-rail","chaps");
+ assert.match(await guided.locator("#map-neighbours").textContent(),/Bank of England RTGS/);
+ await guided.locator('[data-mode="ai"]').click();
+ assert.match(await guided.locator("#ai-boundary").textContent(),/SCRIPTED/);
+ await guided.selectOption("#journey-select","sct-inst");
+ await guided.selectOption("#scenario-select","timeout");
+ assert.equal(await guided.locator("#stage-list li").count(),5);
+ assert.equal(await guided.locator("#stage-list button:disabled").count(),1);
+ for(let i=0;i<3;i++)await guided.locator("#step-next").click();
+ assert.equal(await guided.locator("#step-next").isDisabled(),true);
+ assert.match(await guided.locator("#scenario-outcome").textContent(),/UNKNOWN/);
+ assert.equal(await guided.locator("#journey-evidence article").count(),5);
+ await guided.locator("#run-journey-checks").click();
+ assert.match(await guided.locator("#journey-findings").textContent(),/basic-rule finding/);
+ await guided.locator("#sample-message").click();
+ assert.match(await guided.locator("#journey-message").textContent(),/EDUCATIONAL/);
+ await guided.locator("#quiz-options button").nth(1).click();
+ assert.match(await guided.locator("#quiz-result").textContent(),/Correct/);
+ const journeyDownloadWait=guided.waitForEvent("download");
+ await guided.locator("#download-journey").click();
+ const journeyDownload=await journeyDownloadWait;
+ const exportedJourney=JSON.parse(await readFile(await journeyDownload.path(),"utf8"));
+ assert.equal(exportedJourney.journey,"sct-inst");
+ assert.equal(exportedJourney.assessment.paymentStatus,"UNKNOWN");
+ assert.equal(exportedJourney.aiReplay.liveModel,false);
+ await guided.locator("#handoff-journey").click();
+ await guided.waitForURL("**/studio/open-demo/#import-intelligence");
+ await guided.locator("#entry-form button[type=submit]").click();
+ await guided.locator("#import-intelligence").click();
+ assert.match(await guided.locator("#action-status").textContent(),/imported as/);
+ await journeys.close();
  await context.close();
  const mobile=await browser.newContext({viewport:{width:390,height:844},isMobile:true,
   deviceScaleFactor:2,hasTouch:true,acceptDownloads:true});
@@ -80,9 +120,18 @@ try{
  assert.deepEqual(await small.locator("#currency option").allTextContents(),["PLN"]);
  await small.locator("#validate").click();
  assert.equal(await small.locator("#download-report").isDisabled(),false);
+ await small.goto(base+"/studio/journeys/");
+ await small.locator("#journey-select option").first().waitFor({state:"attached"});
+ const journeyOverflow=await small.evaluate(()=>({documentWidth:document.documentElement.scrollWidth,screenWidth:window.innerWidth}));
+ assert.ok(journeyOverflow.documentWidth<=journeyOverflow.screenWidth+2,
+   "Journey mobile overflow: "+JSON.stringify(journeyOverflow));
+ await small.locator('[data-mode="learner"]').click();
+ await small.selectOption("#journey-select","bacs-debit");
+ await small.selectOption("#scenario-select","mandate");
+ assert.match(await small.locator("#journey-intro").textContent(),/batch/i);
  await mobile.close();
  assert.deepEqual(exceptions,[]);
- console.log("BROWSER PASS: desktop five-currency validation, JSON/message export, same-tab handoff, isolated visitor, mobile controls, no runtime errors");
+ console.log("BROWSER PASS: six-journey modes, mapping, failure-stage evidence, AI replay, quiz, JSON and guest import; desktop five-currency validation, JSON/message export, same-tab handoff, isolated visitor, mobile controls, no runtime errors");
 }finally{
  await browser.close();
 }
