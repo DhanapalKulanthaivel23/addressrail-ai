@@ -224,3 +224,21 @@ test("unrelated fault injections are labelled not applicable instead of a false 
  const applicable=validateFixture(generateFixture("cbpr","invalid-iban"));
  assert.equal(applicable.issues.some(i=>i.code==="DEMO_SCENARIO_NOT_APPLICABLE"),false);
 });
+
+test("SWIFT gpi and g4C provide distinct non-live tracking education",()=>{
+ const gpi=JSON.parse(teachingMessage(generateFixture("gpi")));
+ const g4c=JSON.parse(teachingMessage(generateFixture("g4c")));
+ assert.equal(gpi.tracker.illustrative_transaction_status,"ACSP");
+ assert.equal(gpi.tracker.illustrative_reason,"G000");
+ assert.match(gpi.tracker.label,/not attested settlement/);
+ assert.equal(g4c.corporateVisibility.payAndTrace,true);
+ assert.equal(g4c.corporateVisibility.inboundTrackingExample,true);
+ assert.match(g4c.corporateVisibility.scope,/not a real g4C subscription/);
+ assert.equal(gpi.corporateVisibility,undefined);
+ const fps=JSON.parse(teachingMessage(generateFixture("fps")));
+ assert.match(fps.retailContext.processing,/net settlement not verified/);
+ const bacs=JSON.parse(teachingMessage(generateFixture("bacs-credit")));
+ assert.match(bacs.retailContext.processing,/multi-day batch/);
+ const vop=JSON.parse(teachingMessage(generateFixture("vop")));
+ assert.equal(vop.payeeCheck.verified,false);
+});
