@@ -1,0 +1,34 @@
+name: Browser smoke - public cross-rail lab
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'web/studio/**'
+      - 'tests/browser-smoke.mjs'
+      - '.github/workflows/browser-smoke.yml'
+  pull_request:
+    paths:
+      - 'web/studio/**'
+      - 'tests/browser-smoke.mjs'
+      - '.github/workflows/browser-smoke.yml'
+permissions:
+  contents: read
+jobs:
+  guest-browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm install --no-save --no-package-lock playwright@1.56.1
+      - run: npx playwright install --with-deps chromium
+      - run: |
+          python3 -m http.server 8765 --directory web --bind 127.0.0.1 > /tmp/addressrail-static.log 2>&1 &
+          echo "Starting local static site"
+          sleep 2
+      - run: node tests/browser-smoke.mjs
