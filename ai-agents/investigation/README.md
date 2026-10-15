@@ -63,3 +63,22 @@ PYTHONPATH=ai-agents python -m pytest -q ai-agents/investigation/tests
 The request specifies a JSON schema and a 1024 output-token budget. The adapter checks Gemini's `finishReason` before parsing; `MAX_TOKENS`, `SAFETY`, missing/empty output, invalid JSON or unsupported evidence claims fall back to deterministic investigation. Uvicorn logs include only safe reason codes, such as `finish_MAX_TOKENS`, `invalid_json`, `empty_output`, `evidence_validation`, or `http_status_503`. They do not include prompts, responses or credentials. A passing mock test does **not** verify a successful live Gemini response; check for `ai_used: true` in a real synthetic investigation.
 
 Only use models available to your own free-tier account. No paid plan or billing change is needed for the deterministic workflow.
+
+## Investigation Agent v2 — SEPA SCT, SCT Inst, and CHAPS
+
+This release extends the **read-only** evidence-grounded workflow to the synthetic events produced by all three Quarkus teaching modules. It distinguishes recorded `RJCT`, `PENDING`, `UNKNOWN`, `ACTC`, `ACSC`, and `SIMULATED` statuses. Unsupported event types continue to be reported as `OTHER`. No model can change the payment status or override a mismatched last event; every result requires human review.
+
+| Recorded synthetic status | Deterministic interpretation |
+| --- | --- |
+| `RJCT` | Rejected according to the last recorded synthetic event, with its evidence reference. |
+| `PENDING` | Recorded processing or liquidity hold; no settlement is established. |
+| `UNKNOWN` | Missing or uncertain outcome; reconcile before retrying or taking an action. |
+| `ACTC` | Technical acceptance only; not settlement. |
+| `ACSC` | Lab-recorded ACSC; no external settlement or beneficiary-credit attestation. |
+| `SIMULATED` | A teaching trace, not an actual payment. |
+
+Optional Gemini structured commentary now accepts all these evidence-grounded findings (and `OTHER`). The model must echo **exact** payment status, ordered evidence references, and human-review requirement. Existing unsupported-settlement checks and deterministic fallback remain in place.
+
+**Gemini availability:** HTTP 503 triggers **one** extra attempt after a short 250 ms wait; a second 503 falls back immediately. HTTP 429 is **not retried**. No retries occur after a success. This does not ensure availability, and a real successful CHAPS/SCT Inst Gemini response remains unverified until tested with a legitimate synthetic local case. HTTP reason codes are logged without response content or credentials. The extra request can consume an additional quota unit; Gemini is opt-in only.
+
+Run the offline test suite with `PYTHONPATH=ai-agents python -m pytest -q ai-agents/investigation/tests`. For integration, start Quarkus dev mode, create a synthetic SCT, SCT Inst, or CHAPS record in its local lab and pass the generated ID to `/investigate`. A result with `ai_used: false` still retains evidence-grounded deterministic findings. The lab has no real-world state authority or autonomous payment-repair actions.
