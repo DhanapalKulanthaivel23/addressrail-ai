@@ -12,7 +12,7 @@ const ROUTES=[
  ["/","Home"],["/studio/","Studio"],["/studio/start/","Start Here"],
  ["/studio/journeys/","Journeys"],["/studio/payment-intelligence/","Payment Systems"],
  ["/studio/sepa-sct/","SCT"],["/studio/sct-inst/","SCT Inst"],
- ["/studio/chaps/","CHAPS"],["/studio/ai-lab/","AI Lab"],
+ ["/studio/chaps/","CHAPS"],["/studio/sdd/","SDD"],["/studio/fps/","FPS"],["/studio/bacs/","Bacs"],["/studio/t2/","T2"],["/studio/cbpr/","CBPR+"],["/studio/cls/","CLS"],["/studio/ai-lab/","AI Lab"],
  ["/studio/open-demo/","Guest Cases"],
  ["/mt103-address-correction/","MT103 Guide"],
  ["/iso20022-structured-address/","ISO Addresses"],

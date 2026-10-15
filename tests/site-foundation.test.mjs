@@ -4,14 +4,14 @@ import {readFileSync} from "node:fs";
 const pages=[
  "/", "/studio/", "/studio/start/", "/studio/journeys/",
  "/studio/payment-intelligence/", "/studio/sepa-sct/", "/studio/sct-inst/",
- "/studio/chaps/", "/studio/ai-lab/", "/studio/open-demo/",
+ "/studio/chaps/", "/studio/ai-lab/", "/studio/open-demo/", "/studio/sdd/", "/studio/fps/", "/studio/bacs/", "/studio/t2/", "/studio/cbpr/", "/studio/cls/",
  "/mt103-address-correction/", "/iso20022-structured-address/",
  "/pacs008-address-validation/", "/cbpr-address-guide/"
 ];
 const path=uri=>"web"+(uri==="/"?"/index.html":uri+"index.html");
 const script=readFileSync("web/site-shell.js","utf8");
 test("AR-101 AR-102 AR-205 AR-206 AR-207: every content page uses one shell and trust box",()=>{
- assert.equal(pages.length,14);
+ assert.equal(pages.length,20);
  for(const url of pages){
   const html=readFileSync(path(url),"utf8");
   assert.equal((html.match(/site-shell.js/g)||[]).length,1,url);

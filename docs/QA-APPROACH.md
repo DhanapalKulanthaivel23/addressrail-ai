@@ -57,3 +57,6 @@ G-01/G-03 + one path per lab + HOME-01/A-01/U-05 pass; no critical/high bugs; ax
 Expert: present SCT Inst timeout and share link in 3 minutes. AI expert: reject unsupported claim and explain uncovered cases in <5 minutes. Learner: complete start path and correctly explain who/what/success-vs-failure/AI help.
 
 **Noncoverage disclosure:** Several acceptance cases need licensed schemas, real browser/device farms, external link scans and human expert review; no result is inferred without execution.
+
+## Expanded module coverage
+Six dedicated rail URLs (SDD, FPS, Bacs, T2, CBPR+, CLS) extend the original 14-page/21-URL baseline to **20 content pages and 27 URL/deep-link combinations**. The original attached test IDs remain the acceptance baseline; check new cases and links in the same global suite.

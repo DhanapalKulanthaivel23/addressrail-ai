@@ -7,7 +7,7 @@ const pages=[
  "index.html","studio/index.html","studio/start/index.html",
  "studio/journeys/index.html","studio/payment-intelligence/index.html",
  "studio/sepa-sct/index.html","studio/sct-inst/index.html",
- "studio/chaps/index.html","studio/ai-lab/index.html",
+ "studio/chaps/index.html","studio/ai-lab/index.html","studio/sdd/index.html","studio/fps/index.html","studio/bacs/index.html","studio/t2/index.html","studio/cbpr/index.html","studio/cls/index.html",
  "studio/open-demo/index.html","mt103-address-correction/index.html",
  "iso20022-structured-address/index.html","pacs008-address-validation/index.html",
  "cbpr-address-guide/index.html"
@@ -30,7 +30,7 @@ const env=db=>({VISITS:db,COMMENTS_TURNSTILE_SITE_KEY:"site-key",
  COMMENTS_TURNSTILE_SECRET_KEY:"private-turnstile-secret",
  COMMENTS_ADMIN_TOKEN:"a".repeat(48)});
 test("all 14 public content pages end with a comments area and shared assets",()=>{
- assert.equal(pages.length,14);
+ assert.equal(pages.length,20);
  for(const path of pages){
   const html=readFileSync(root+"/"+path,"utf8");
   assert.equal((html.match(/id="comments"/g)||[]).length,1,path);

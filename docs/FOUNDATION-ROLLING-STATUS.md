@@ -14,3 +14,5 @@ Current date: 15 October 2026. This repository includes a browser-only shared sh
 **Not claimed complete:** licensed ISO base XSD validation of full message instances; 7 dedicated new rail laboratories; real recorded model output generation; browser-side schema parser for arbitrary XML; full 60+ glossary and authenticated learner records. These have separate story IDs and must be implemented and verified before being marked as accepted.
 
 **Date owner:** AddressRail AI repository maintainer. Recheck source releases before a new stated hard deadline; update the status component and verify its tests.
+
+**Additional delivered modules:** dedicated synthetic reference pages for SDD Core/B2B, FPS, Bacs, T2, CBPR+ and CLS (AR-107). Each has source, messages, three-minute script, exception scenarios and JSON teaching reports. These are **not** official validators or live scheme integrations.

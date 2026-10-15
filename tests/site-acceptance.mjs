@@ -8,7 +8,7 @@ const base="http://127.0.0.1:8765";
 const routes=[
  "/", "/studio/", "/studio/start/", "/studio/journeys/",
  "/studio/payment-intelligence/", "/studio/sepa-sct/", "/studio/sct-inst/",
- "/studio/chaps/", "/studio/ai-lab/", "/studio/open-demo/",
+ "/studio/chaps/", "/studio/ai-lab/", "/studio/open-demo/", "/studio/sdd/", "/studio/fps/", "/studio/bacs/", "/studio/t2/", "/studio/cbpr/", "/studio/cls/",
  "/mt103-address-correction/", "/iso20022-structured-address/",
  "/pacs008-address-validation/", "/cbpr-address-guide/"
 ];
@@ -30,7 +30,7 @@ try{
   const response=await page.goto(base+path,{waitUntil:"load"});
   assert.equal(response.status(),200,path);
   await page.locator("#ar-shared-nav").waitFor({state:"attached"});
-  assert.equal(await page.locator("#ar-shared-nav .ar-nav-pages a").count(),14,path);
+  assert.equal(await page.locator("#ar-shared-nav .ar-nav-pages a").count(),20,path);
   assert.equal(await page.locator("#ar-shared-nav [aria-current=page]").count(),1,path);
   assert.equal(await page.locator("h1").count(),1,path);
   const expected=new URL(base+path).pathname;
@@ -41,7 +41,7 @@ try{
   assert.equal(await page.locator(".ar-trust-box p").count(),3,path);
   assert.match(await page.locator("footer").textContent(),/v2\.1/);
  }
- assert.equal(routes.length+deep.length,21);
+ assert.equal(routes.length+deep.length,27);
  for(const [route,kind,value] of deep){
   await page.goto(base+route);
   await page.locator("#ar-shared-nav").waitFor({state:"attached"});

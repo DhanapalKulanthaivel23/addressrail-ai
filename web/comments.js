@@ -7,7 +7,7 @@ const ROOT="/addressrail-ai/";
 const allowed=new Set([
  "/","/studio/","/studio/start/","/studio/journeys/",
  "/studio/payment-intelligence/","/studio/sepa-sct/","/studio/sct-inst/",
- "/studio/chaps/","/studio/ai-lab/","/studio/open-demo/",
+ "/studio/chaps/","/studio/ai-lab/","/studio/open-demo/", "/studio/sdd/", "/studio/fps/", "/studio/bacs/", "/studio/t2/", "/studio/cbpr/", "/studio/cls/",
  "/mt103-address-correction/","/iso20022-structured-address/",
  "/pacs008-address-validation/","/cbpr-address-guide/"
 ]);
