@@ -133,5 +133,5 @@ try{
  }
  await context.close();
  assert.deepEqual(errors,[]);
- console.log("ACCEPTANCE PASS: 14 pages + 7 deep links, role navigation, source status, storage-blocked, 360/768/1280/1920 viewports");
+ console.log("ACCEPTANCE PASS: 20 pages + 7 deep links, role navigation, source status, storage-blocked, 360/768/1280/1920 viewports");
 }finally{await browser.close()}
