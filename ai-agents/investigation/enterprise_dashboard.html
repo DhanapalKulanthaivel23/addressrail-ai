@@ -1,0 +1,60 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Enterprise Security Lab | AddressRail AI</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+:root{font-family:system-ui,-apple-system,sans-serif;color:#232c36;background:#eef2f4}*{box-sizing:border-box}body{margin:0}
+header{padding:24px 5%;background:#17232d;color:#f5fbff}h1,h2,h3{margin:8px 0 15px}h1{font-size:clamp(26px,4vw,42px)}
+header p{max-width:850px;line-height:1.65;color:#d3e2e9;font-size:14px}
+main{max-width:1350px;margin:22px auto;padding:0 4%}.panel{background:white;border:1px solid #d4dee3;border-radius:9px;padding:22px;margin-bottom:18px;min-width:0}
+.columns{display:grid;grid-template-columns:minmax(270px,.85fr) minmax(0,1.5fr);gap:18px}
+label{display:block;font-size:13px;font-weight:650;margin:12px 0 5px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #9eafb9;border-radius:5px;font:inherit;background:white}
+textarea{min-height:90px;resize:vertical}
+button{padding:11px 16px;font:inherit;background:#15456a;color:#fff;border:0;border-radius:5px;cursor:pointer;margin:8px 6px 8px 0}
+button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #d29c42;outline-offset:2px}
+button.alt{background:#566975}.small{font-size:12px;line-height:1.65;color:#51636e}
+.notice{border-left:4px solid #a66b30;padding:15px 18px;background:#fef2e3;font-size:13px;line-height:1.7}
+.badge{font-size:12px;font-weight:700;display:inline-block;background:#e4edf4;border-radius:4px;padding:5px 8px;margin:7px 0}
+.list{display:grid;gap:9px;max-height:440px;overflow:auto}.case{width:100%;text-align:left;background:#f4f8fa;color:#20364b;border:1px solid #dae5eb;margin:0}
+.case[aria-current=true]{border-left:5px solid #1d648b;background:#e6f1f8}
+.case span{display:block;font-size:11px;margin-top:4px}.detail{background:#f1f6f8;padding:14px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;line-height:1.6}
+[hidden]{display:none!important}#feedback{font-size:13px;min-height:22px}footer{padding:10px 5% 25px;font-size:12px;color:#526672}
+@media(max-width:800px){.columns{grid-template-columns:1fr}}
+</style></head><body>
+<header><div>ADDRESSRAIL AI / ENTERPRISE SECURITY TRAINING</div><h1>Tenant-scoped Case Workspace</h1>
+<p>A local-only demonstration of authenticated roles, synthetic case separation, review decisions and audit verification. This workspace is separate from the payment investigation dashboard and never changes a payment.</p></header>
+<main>
+<p class="notice"><strong>Training only:</strong> No real bank identities, payments or customer data. A training approval does not authorise a payment or attest settlement. The browser holds the session token only in memory and clears it on logout or page reload. Use localhost only.</p>
+<section class="panel" id="login-panel"><h2>Sign in to your synthetic organisation</h2>
+<form id="login-form">
+<label for="tenant">Tenant alias</label><input id="tenant" name="tenant" autocomplete="off" required pattern="[a-z][a-z0-9_-]{2,31}" placeholder="bank_demo">
+<label for="username">User alias</label><input id="username" name="username" autocomplete="username" required pattern="[a-z][a-z0-9_-]{2,31}" placeholder="admin_demo">
+<label for="password">Local training password</label><input id="password" name="password" type="password" autocomplete="current-password" required minlength="12">
+<button type="submit">Sign in</button>
+</form><p class="small">First admin must be created manually through the bootstrap CLI. No predefined users or passwords exist.</p></section>
+<div id="workspace" hidden>
+<section class="panel"><strong id="identity">Not authenticated</strong> <span class="badge" id="role"></span>
+<button class="alt" id="logout" type="button">Log out</button>
+<p id="feedback" role="status" aria-live="polite"></p></section>
+<div class="columns">
+<div><section class="panel"><h2>Synthetic cases</h2><button id="refresh" type="button">Refresh cases</button><div id="case-list" class="list" aria-label="Tenant case list"></div><p class="small">Only records for the authenticated tenant are returned by the server. At most 100 cases.</p></section>
+<section class="panel" id="create-panel" hidden><h2>Open a synthetic case</h2><form id="create-form">
+<label for="payment-id">Synthetic payment reference</label><input id="payment-id" required pattern="(PAY|SCT|INST|CHAPS)-[A-Za-z0-9_-]{1,76}" placeholder="CHAPS-DEMO-001">
+<label for="evidence">Synthetic evidence note</label><textarea id="evidence" required minlength="1" maxlength="4000" placeholder="SYNTHETIC: illustrative event E-001. Do not paste real bank data."></textarea>
+<button type="submit">Open training case</button></form></section>
+<section class="panel" id="admin-panel" hidden><h2>Create training user</h2><form id="user-form">
+<label for="new-username">New user alias</label><input id="new-username" required pattern="[a-z][a-z0-9_-]{2,31}">
+<label for="new-password">Training password</label><input id="new-password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>
+<label for="new-role">Role</label><select id="new-role"><option>VIEWER</option><option>INVESTIGATOR</option><option>REVIEWER</option><option>ADMIN</option></select>
+<button type="submit">Create training user</button></form>
+<h3>Audit integrity</h3><button id="verify" type="button">Verify local audit chain</button><p id="audit-result" class="small"></p></section>
+</div>
+<div><section class="panel"><h2 id="detail-title">Select a case</h2><div id="detail" class="detail">Choose a case to review its synthetic metadata and permitted evidence.</div></section>
+<section class="panel" id="review-panel" hidden><h2>Independent training review</h2>
+<p class="small">Only reviewers can submit decisions. Review is prohibited for the same user who opened a case, and already-reviewed cases cannot be decided again.</p>
+<form id="review-form"><label for="decision">Training outcome</label><select id="decision"><option>APPROVED_FOR_TRAINING</option><option>REJECTED_FOR_TRAINING</option></select>
+<label for="review-note">Synthetic review note</label><textarea id="review-note" maxlength="500" minlength="3" required></textarea>
+<button type="submit" id="submit-review" disabled>Record training decision</button></form></section>
+</div></div></div></main>
+<footer>AddressRail AI · Isolated localhost security training · Not a production IAM, approval or immutable-audit system.</footer>
+<script src="/enterprise/dashboard.js" defer></script></body></html>
