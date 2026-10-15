@@ -4,7 +4,7 @@
 
 This is a browser-only, **free, no-login** training product that helps a visitor compare major UK, European and SWIFT payment systems and services; run **small deterministic checks** on synthetic structured JSON examples; inspect educational XML/MT/retail message sketches; correlate fictional UETR events; apply a narrow, evidenced **review-only town-address proposal**; export JSON; and import a case into the **private Guest Case Management** page.
 
-The lab has **43 distinct catalogued services/contexts**. This is broad *teaching coverage*, not every domestic payment system in every country and not 43 officially conformant parsers or live connectors.
+The lab has **43 distinct catalogued services/contexts**. See the [complete 43-row UK/EU and cross-border coverage matrix](UK-EU-PAYMENT-COVERAGE-MATRIX.md), including scheme classifications, messages, references and EUR/GBP/SEK/PLN/DKK teaching currency policies. This is broad *teaching coverage*, not every domestic payment system in every country and not 43 officially conformant parsers or live connectors.
 
 ## Coverage and how to interpret it
 
@@ -22,7 +22,7 @@ Each catalog item includes a classification, relevant illustrative message famil
 
 ## What works in v1
 
-1. Select a payment service, geography or search term from the 43-context catalogue.
+1. Select a payment service, geography or search term from the 43-context catalogue. The dashboard handles no-result searches without loading a stale rail. Select an illustrative transaction currency: **EUR, GBP, SEK, PLN or DKK** for global/CLS examples, fixed GBP for UK, EUR for SEPA/euro contexts, and fixed local SEK/PLN/DKK for the modelled Swedish, Polish and Danish national contexts.
 2. Choose one of **nine fictional scenarios**: baseline, missing structured town, invalid IBAN, invalid BIC, missing UETR, missing response, liquidity hold, missing debit mandate or status/event conflict. If a fault does not apply to the selected service, a notice explains that it is not a modeled check.
 3. Optionally edit the **synthetic-only** JSON representation. The demo refuses records not explicitly marked synthetic and limits input size to 18 KB. Do not paste real payment data.
 4. Run rule checks. The toy rules cover basic IBAN check digits, BIC form, UETR syntax for SWIFT tracking contexts, selected party fields and deterministic evidence consistency. They **do not** verify external registers, XSDs, scheme rulebooks, sanctions, settlement, routing or payment truth.
@@ -56,7 +56,7 @@ node --check web/studio/payment-intelligence/lab.mjs
 node --test tests/payment-intelligence.test.mjs tests/open-demo.test.mjs
 ```
 
-GitHub Actions also runs existing Banking Studio, SEPA SCT, CHAPS and Guest Case Management regression tests.
+GitHub Actions runs every JavaScript test using `node --test tests/*.test.mjs`, the existing Python suite, and a dedicated Chromium/Playwright smoke workflow for desktop and mobile UI behaviour, JSON downloads, empty-search handling, private cross-page import and visitor isolation. The browser workflow runs on GitHub-hosted free tooling; it does not add production dependencies or collect user data.
 
 ## Primary reference material
 
