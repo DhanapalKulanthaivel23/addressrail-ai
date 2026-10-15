@@ -26,3 +26,6 @@ Updated 15 October 2026 (Europe/London).
 - [Banking AI Guardrails](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/ai-lab/) evaluates **eight authored sample claims**, not real model outputs. No LLM invocation, provider keys or bank action.
 - Banking Studio shows the release stamp `v2 · 2026-10-15`. GitHub Pages workflow additionally tests public plain, cache-busted, and `?module=chaps` responses after deployment. Browser-private-window observations still depend on local caches.
 - Four guides updated for correct postal address element ordering, explicit MT103 legacy context, Sept 2026 EPC v1.2 delay of the Nov 2026 unstructured address deadline, and source/version labels. EPC rules are not Swift CBPR+ rules.
+
+## Community comments (15 October 2026)
+All 14 public content pages include a bottom-of-page comments form and a separate discussion stream keyed by canonical page. Comment API, D1 table and Turnstile moderation controls are committed, but **shared comment submission is not live until the site owner deploys the updated Cloudflare Worker, migrates D1 and configures the required private Turnstile/admin secrets**. See [setup](COMMUNITY-COMMENTS.md). This is distinct from the existing tab-local guest cases.

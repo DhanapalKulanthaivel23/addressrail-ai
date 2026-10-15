@@ -20,6 +20,7 @@ jobs:
       - run: python -m pytest -q
       - run: node --check web/app.js
       - run: node --check web/analytics.js
+      - run: node --check web/comments.js
       - run: node --check analytics/worker.js
       - run: node --test tests/*.test.mjs
 

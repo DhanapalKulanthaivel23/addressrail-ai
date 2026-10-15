@@ -134,6 +134,26 @@ try{
  await ai.fill("#model-claim","The payment is settled.");
  await ai.locator("#check-claim").click();
  assert.match(await ai.locator("#decision").textContent(),/AI-G01/);
+ const commentsPage=await journeys.newPage();
+ commentsPage.on("pageerror",error=>exceptions.push("comments: "+error.message));
+ const commentPaths=[
+  "/","/studio/","/studio/start/","/studio/journeys/",
+  "/studio/payment-intelligence/","/studio/sepa-sct/","/studio/sct-inst/",
+  "/studio/chaps/","/studio/ai-lab/","/studio/open-demo/",
+  "/mt103-address-correction/","/iso20022-structured-address/",
+  "/pacs008-address-validation/","/cbpr-address-guide/"
+ ];
+ for(const path of commentPaths){
+  await commentsPage.goto(base+path);
+  await commentsPage.locator("#comments .ra-comment-form").waitFor({state:"attached"});
+  assert.equal(await commentsPage.locator("#comments").count(),1,path);
+  assert.equal(await commentsPage.locator("#ra-comment-name").count(),1,path);
+  assert.equal(await commentsPage.locator("#ra-comment-message").count(),1,path);
+  assert.equal(await commentsPage.locator("#comments .ra-comment-submit").isDisabled(),true,
+   "Local visitor must not get a fake shared-comment submission: "+path);
+  assert.match(await commentsPage.locator("#comments .ra-comment-feedback").textContent(),/deployed site/i);
+ }
+ await commentsPage.close();
  await journeys.close();
  await context.close();
  const mobile=await browser.newContext({viewport:{width:390,height:844},isMobile:true,

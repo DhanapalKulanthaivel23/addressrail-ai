@@ -1,3 +1,11 @@
+## Community comments on all pages
+
+Every one of the **14 public content pages** now contains a **Comments & discussion** section. Visitors can read approved comments and submit a public display-name/comment without accounts **after** the Cloudflare Worker, D1 comments table, Turnstile and moderator secret are activated.
+
+**Activation is still required.** GitHub Pages cannot provide a persistent database on its own. Until the owner deploys the updated backend, the comments widget honestly reports that submissions are unavailable rather than claiming to save comments. Submitted comments are private/pending until the owner approves them.
+
+[Owner setup and moderation instructions](docs/COMMUNITY-COMMENTS.md).
+
 # AddressRail AI
 
 A public, independent **payment-address quality demo** for synthetic ISO 20022 `pacs.008` and MT103 messages.

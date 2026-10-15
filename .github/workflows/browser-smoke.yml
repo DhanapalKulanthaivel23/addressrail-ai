@@ -4,6 +4,10 @@ on:
     branches: [main]
     paths:
       - 'web/studio/**'
+      - 'web/comments.js'
+      - 'web/comments.css'
+      - 'web/config.js'
+      - 'analytics/worker.js'
       - 'tests/browser-smoke.mjs'
       - '.github/workflows/browser-smoke.yml'
   pull_request:
