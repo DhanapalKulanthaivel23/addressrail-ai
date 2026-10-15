@@ -1,6 +1,6 @@
-import {getJourney,simulate} from "../journeys/core.mjs";
-import {presenterScript,educationalRules,guideMetadata} from "../journeys/presenter.mjs";
-import {teachingMessage,serializeReport} from "../payment-intelligence/messages.mjs";
+import {getJourney,simulate} from "./journeys/core.mjs";
+import {presenterScript,educationalRules,guideMetadata} from "./journeys/presenter.mjs";
+import {teachingMessage,serializeReport} from "./payment-intelligence/messages.mjs";
 const $=id=>document.getElementById(id);
 const el=(tag,v)=>{const n=document.createElement(tag);n.textContent=String(v??"");return n;};
 export function mountRailWorkbench(railId){
