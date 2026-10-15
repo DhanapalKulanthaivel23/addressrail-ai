@@ -63,3 +63,13 @@ body.presentation-active .stage-detail{min-height:410px}body.presentation-active
 body.presentation-active .journey-stage-grid{grid-template-columns:1fr}}
 
 #presenter-panel{margin:14px 0}.event-grid li{padding:11px 15px;border-left:4px solid #7e8f81;background:#f6f1e7;font-size:12px;line-height:1.7}.event-grid li::marker{font-size:10px}
+
+.ar-compare-picks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.ar-compare-picks label{font-size:12px;display:flex;align-items:center;gap:8px;background:#f3eee8;padding:8px}
+.ar-compare-table-wrap{max-width:100%;overflow-x:auto;border:1px solid #e4d7c8;margin:12px 0}
+.ar-compare-table{border-collapse:collapse;min-width:680px;width:100%;font-size:11px}
+.ar-compare-table th,.ar-compare-table td{text-align:left;vertical-align:top;border:1px solid #e0d3c4;padding:9px;line-height:1.5}
+.ar-compare-table thead th{background:#e6ecec}
+@media(max-width:650px){.ar-compare-picks{grid-template-columns:1fr 1fr}}
+@media print{#ar-shared-nav,aside,.step-controls,.ra-comments{display:none!important}
+#compare-rails{break-before:page}#compare-results{font-size:9px}.ar-compare-table-wrap{overflow:visible}main{max-width:none}}
