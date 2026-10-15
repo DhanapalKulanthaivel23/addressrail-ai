@@ -5,11 +5,10 @@ on:
       - 'web/studio/**'
       - 'web/index.html'
       - 'tests/studio.test.mjs'
-      - 'tests/dashboard.test.mjs'
       - 'tests/sepa-sct.test.mjs'
       - 'tests/chaps.test.mjs'
       - 'tests/open-demo.test.mjs'
-      - 'tests/payment-intelligence.test.mjs tests/dashboard.test.mjs'
+      - 'tests/payment-intelligence.test.mjs'
       - '.github/workflows/studio.yml'
   pull_request:
     paths:
@@ -32,7 +31,6 @@ jobs:
         with:
           node-version: '22'
       - run: node --check web/studio/studio.js
-      - run: node --check web/studio/dashboard.js
       - run: node --check web/studio/sepa-sct/core.mjs
       - run: node --check web/studio/sepa-sct/lab.mjs
       - run: node --check web/studio/chaps/core.mjs

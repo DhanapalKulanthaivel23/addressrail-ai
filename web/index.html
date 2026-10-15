@@ -7,8 +7,8 @@
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="AddressRail AI">
-<meta property="og:title" content="AddressRail AI | Banking Payments &amp; AI Simulation Dashboard">
-<meta property="og:description" content="Explore payment systems, synthetic banking simulations, AI guardrail demonstrations, beginner lessons and address quality checks.">
+<meta property="og:title" content="SWIFT MT103 &amp; ISO 20022 Address Validation Demo | AddressRail AI">
+<meta property="og:description" content="Try free MT103 and pacs.008 postal-address checks with synthetic examples, review-only repair suggestions and JSON results.">
 <meta property="og:url" content="https://dhanapalkulanthaivel23.github.io/addressrail-ai/">
 <meta name="twitter:card" content="summary">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"AddressRail AI","applicationCategory":"FinanceApplication","operatingSystem":"Web","url":"https://dhanapalkulanthaivel23.github.io/addressrail-ai/","description":"Browser-based educational demonstration for synthetic SWIFT MT103 and ISO 20022 pacs.008 postal-address quality checks and review-only repair suggestions.","offers":{"@type":"Offer","price":"0","priceCurrency":"GBP"},"isAccessibleForFree":true}</script>
@@ -285,79 +285,21 @@ footer{
   .btn:hover:not(:disabled){transform:none}
 }
 
-
-/* Align the public entry URL with the interactive Studio dashboard without removing the original address validator. */
-body.root-portal{background:#eef4ff;color:#0d2b54;font-family:Inter,Arial,sans-serif}
-.root-portal .app{display:block;background:linear-gradient(180deg,#edf4ff,#f9fbff 700px)}
-.root-portal aside{display:none}
-.root-topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:20px;min-height:68px;padding:11px max(24px,calc((100vw - 1660px)/2));background:linear-gradient(110deg,#071c3b,#0b2854);color:#fff;box-shadow:0 4px 18px #11335620}
-.root-topbar a{text-decoration:none;color:#f4f8ff!important}
-.root-brand{flex:0 0 205px;font-size:23px;font-weight:850;letter-spacing:-.8px;line-height:1.05}
-.root-brand b{color:#79d3ff}
-.root-brand small{display:block;font-size:10px;font-weight:500;letter-spacing:.1px;color:#bdd7f7;margin-top:6px}
-.root-navlinks{display:flex;align-items:center;justify-content:space-around;gap:6px;min-width:0;flex:1;overflow-x:auto;scrollbar-width:thin}
-.root-navlinks a{white-space:nowrap;font-size:12px;padding:11px 9px;border-radius:5px}
-.root-navlinks a.selected,.root-navlinks a:hover{background:#0c6ac4}
-.root-portal main{max-width:1630px;padding:22px 3% 45px}
-.root-portal header{background:#fff;border-bottom:1px solid #e3eaf4;border-top:0;color:#516785;padding:14px 3%}
-.root-portal .root-welcome{background:linear-gradient(135deg,#e2efff,#f9fcff 60%);border:1px solid #d4e4f7;box-shadow:0 10px 35px #14396613;border-radius:16px;padding:23px 26px 18px!important;margin-bottom:19px!important}
-.root-portal .root-eyebrow{font-size:10px;font-weight:850;letter-spacing:1.5px;color:#27689b}
-.root-hero-heading{display:flex;align-items:center;gap:18px;justify-content:space-between}
-.root-hero-heading h1{font-size:clamp(28px,3vw,46px);line-height:1.08;letter-spacing:-1.5px;color:#0e2c58;margin:10px 0}
-.root-hero-heading h1 em{font-style:normal;color:#1173cb}
-.root-hero-heading p{color:#506a8b;font-size:13px;max-width:720px;line-height:1.6;margin:7px 0}
-.root-hero-heading .root-contexts{font-size:11px;color:#34618a;margin:12px 0 20px;font-weight:700}
-.root-dashboard-link{background:#0b63c0;color:white!important;font-weight:750;padding:13px 19px;border-radius:6px;text-decoration:none;flex-shrink:0}
-.root-audience-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
-.root-audience-card{background:#fff;border:1px solid #d7e5f5;border-radius:13px;padding:20px;display:flex;flex-direction:column;min-width:0}
-.root-icon{display:grid;place-items:center;border-radius:50%;background:#e1f0ff;color:#0a64bc;height:42px;width:42px;font-size:22px;margin-bottom:12px}
-.root-audience-card h2{font:850 19px/1.23 Inter,Arial,sans-serif;color:#103059;margin:0 0 9px}
-.root-audience-card p{font-size:12px;color:#546b89;line-height:1.6;margin:0 0 15px}
-.root-audience-card>a{margin-top:auto;background:#0b5eb1;color:#fff!important;text-align:center;padding:12px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:800}
-.root-audience-card.ai-card>a{background:#6729b9}.root-audience-card.green-card>a{background:#008066}
-.root-audience-card.ai-card .root-icon{background:#f1e5ff;color:#682aaf}.root-audience-card.green-card .root-icon{background:#dff6e8;color:#007e66}
-.root-secondary-links{font-size:12px;color:#3b587b;padding:17px 0 3px;line-height:1.8}
-.root-secondary-links a{font-weight:800;color:#0c64b6}
-.root-portal .root-note{font-size:10px!important;color:#68809a!important}
-.root-portal .hero{border-radius:13px;background:#0b2852;box-shadow:0 6px 28px #12335a16}
-.root-portal .hero em{color:#8ccfff}
-.root-portal .panel:not(.root-welcome){background:#fff;border-color:#d9e7f6;border-radius:12px}
-.root-portal .btn{background:#0c67c1;border-color:#0b5ead;color:white}
-.root-portal footer{background:#0d2b54}
-@media(max-width:1050px){.root-topbar{flex-wrap:wrap;padding:10px 20px}.root-navlinks{order:3;flex-basis:100%;justify-content:flex-start}.root-brand{flex:1}.root-hero-heading{align-items:flex-start}.root-dashboard-link{margin-top:8px}}
-@media(max-width:650px){.root-topbar{padding:11px 15px}.root-topbar a{font-size:11px}.root-portal main{padding:15px}.root-portal .root-welcome{padding:18px!important}.root-hero-heading{display:block}.root-dashboard-link{display:inline-block;margin:12px 0}.root-audience-grid{grid-template-columns:1fr}.root-audience-card{padding:15px}.root-hero-heading h1{font-size:30px}.root-portal header{padding:13px 15px}}
-
 </style>
-</head><body class="root-portal">
-<nav class="root-topbar" aria-label="Main platform navigation">
-<a class="root-brand" href="studio/">AddressRail <b>AI</b><small>Explore · Learn · Validate · Demonstrate</small></a>
-<div class="root-navlinks"><a class="selected" href="studio/">Home Dashboard</a><a href="studio/start/">Start Here</a>
-<a href="studio/payment-intelligence/">Payment Systems</a><a href="studio/#simulator">Simulation Lab</a><a href="studio/ai-lab/">Banking AI Lab</a><a href="studio/open-demo/">Case Management</a><a href="#home">Address Validator</a></div>
-</nav>
+</head><body>
 <div class="app"><aside>
 <a class="brand" href="#home">AddressRail <span>AI</span><small>PAYMENT INTELLIGENCE</small></a>
 <a href="#home">◫ Address analyzer</a><a href="#report">◇ Validation report</a><a href="#ai">✳ AI advisory</a><a href="studio/?v=20261015-v2">▦ Banking &amp; Payment Studio v2 ↗</a><a href="studio/start/">◎ Start here: Learn UK/EU payments ↗</a><a href="studio/ai-lab/">✳ Explore evidence-based AI guardrails ↗</a><a href="studio/journeys/">◎ Learn / Present / Banking AI Journeys ↗</a><a href="studio/payment-intelligence/">◇ UK, EU &amp; SWIFT Payment Intelligence Lab — EUR / GBP / SEK / PLN / DKK ↗</a><a href="studio/open-demo/">◈ Open Case Management Demo (No Login) ↗</a>
 <div class="muted">● Browser-only checking available<br>No account or API key required.<p>Synthetic payments only.</p></div>
 </aside><div><header><span>Workspace / Address Intelligence</span><a href="https://github.com/DhanapalKulanthaivel23/addressrail-ai" target="_blank" rel="noopener">GitHub source ↗</a></header><main id="home">
-<section class="panel root-welcome" aria-label="Choose your banking learning experience">
-<div class="root-hero-heading"><div><span class="root-eyebrow">ADDRESSRAIL AI / BANKING · PAYMENTS · AI</span>
-<h1>Understand. Explore. Validate.<br><em>The Future of Payments with AI.</em></h1>
-<p>One platform to explain UK and European payment systems, explore synthetic banking journeys and demonstrate safe applications of AI.</p>
-<p class="root-contexts">🇬🇧 UK payments &nbsp; · &nbsp; 🇪🇺 SEPA &nbsp; · &nbsp; ◎ SWIFT &nbsp; · &nbsp; € RTGS &nbsp; · &nbsp; ▣ CLS</p></div>
-<a href="studio/" class="root-dashboard-link">Open Interactive Dashboard →</a></div>
-<div class="root-audience-grid">
- <article class="root-audience-card"><span class="root-icon" aria-hidden="true">♙</span><h2>For Banking &amp; Finance Experts</h2><p>Present payment flows, compare systems and run exception demonstrations.</p><a href="studio/journeys/?mode=professional">View Demo Labs →</a></article>
- <article class="root-audience-card ai-card"><span class="root-icon" aria-hidden="true">✳</span><h2>For AI &amp; LLM Specialists</h2><p>Explore evidence-grounded claims, deterministic checks and human controls.</p><a href="studio/ai-lab/">Open AI Lab →</a></article>
- <article class="root-audience-card green-card"><span class="root-icon" aria-hidden="true">▤</span><h2>For Beginners</h2><p>Follow guided UK/EU lessons, interactive exercises and quizzes.</p><a href="studio/start/">Start Learning →</a></article>
-</div>
-<div class="root-secondary-links"><strong>Explore working labs:</strong>
-<a href="studio/payment-intelligence/">43-context Explorer</a> ·
-<a href="studio/sct-inst/?scenario=timeout">SCT Inst Timeout</a> ·
-<a href="studio/chaps/?scenario=liquidity-hold#case-lab">CHAPS Liquidity</a> ·
-<a href="studio/open-demo/">Guest Case Management</a>
-</div>
-<p class="root-note">All examples synthetic · No official payment scheme certification · No live model in the banking AI guardrail playground</p>
-</section>
+<section class="panel" style="margin-bottom:18px"><div class="kicker">ADDRESSRAIL AI / BANKING · PAYMENTS · AI · NEW v2</div>
+<h2>Learn, present and test how banking payments work.</h2>
+<p>Three experiences built on the same fictional payment journeys—choose your route, inspect messages, investigate failures and understand what AI can and cannot prove.</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:17px">
+<a class="btn" style="text-decoration:none;display:block" href="studio/start/">New to Banking — Start Here →</a>
+<a class="btn" style="text-decoration:none;display:block" href="studio/journeys/?mode=professional">Banking Expert — Present →</a>
+<a class="btn" style="text-decoration:none;display:block" href="studio/ai-lab/">AI / LLM Expert — Guardrails →</a></div>
+<p><a href="studio/sct-inst/?scenario=timeout">SCT Inst timeout lab</a> · <a href="studio/chaps/?scenario=liquidity-hold#case-lab">CHAPS liquidity lab</a> · <a href="studio/payment-intelligence/">43-context explorer</a></p></section>
 <section class="hero"><div class="kicker">ISO 20022 &amp; MT ADDRESS QUALITY / SPECIALIST TOOL</div><h1>Payment addresses,<br><em>made clearer.</em></h1><p>Inspect synthetic pacs.008 and MT103 payments, identify missing structured fields and review conservative address repair candidates.</p><div class="steps">01 INSPECT &nbsp; → &nbsp; 02 REVIEW &nbsp; → &nbsp; 03 EXPLAIN</div><p style="margin-top:19px"><a href="studio/journeys/" class="btn" style="display:inline-block;text-decoration:none">Explore UK/EU payment journeys · 3 learning modes →</a> <a href="studio/" class="btn" style="display:inline-block;text-decoration:none">Explore banking products &amp; payment flows →</a></p></section>
 <div class="columns"><section class="panel">
 <div class="kicker">STEP 01</div><h2>Payment message</h2><p>Try a sample or paste a synthetic payment.</p>

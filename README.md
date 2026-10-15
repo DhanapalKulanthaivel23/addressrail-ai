@@ -1,9 +1,3 @@
-## New visual dashboard (v3 — 15 October 2026)
-
-[Open the interactive dashboard](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/).
-
-Navy header and blue/white dashboard, three audiences, payment explorer with 43 contexts and eight beginner essentials, working eight-module simulation, synthetic AI claim guardrails, learning preview and labs. The original address validator remains on the homepage. The studio query module=chaps remains supported. No live LLM or bank connectivity.
-
 # AddressRail AI
 
 A public, independent **payment-address quality demo** for synthetic ISO 20022 `pacs.008` and MT103 messages.

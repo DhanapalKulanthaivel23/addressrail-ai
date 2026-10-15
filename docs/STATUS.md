@@ -26,9 +26,3 @@ Updated 15 October 2026 (Europe/London).
 - [Banking AI Guardrails](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/ai-lab/) evaluates **eight authored sample claims**, not real model outputs. No LLM invocation, provider keys or bank action.
 - Banking Studio shows the release stamp `v2 · 2026-10-15`. GitHub Pages workflow additionally tests public plain, cache-busted, and `?module=chaps` responses after deployment. Browser-private-window observations still depend on local caches.
 - Four guides updated for correct postal address element ordering, explicit MT103 legacy context, Sept 2026 EPC v1.2 delay of the Nov 2026 unstructured address deadline, and source/version labels. EPC rules are not Swift CBPR+ rules.
-
-## Visual dashboard v3 — 15 October 2026
-
-- Studio UI redesigned to match the selected navy/blue three-audience reference layout. Original simulation and agent tools preserved.
-- Uses only browser-side 43-context catalogue, eight authored AI claim fixtures and five learning previews. No real financial messages or model output.
-- Studio release marker and Pages public freshness workflow bumped to v3.

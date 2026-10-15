@@ -1,176 +1,54 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AddressRail AI | Banking Payments & AI Dashboard</title>
-<meta name="description" content="Explore UK and European payment systems through a free interactive banking dashboard: visual payment maps, synthetic simulations, AI guardrails and beginner learning.">
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Banking Payments & AI Studio | AddressRail AI</title>
+<meta name="description" content="Explore synthetic SEPA, SCT Inst, CHAPS, Bacs, T2, Faster Payments, SWIFT CBPR+ and CLS flows, enterprise value and agentic AI.">
 <link rel="canonical" href="https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/">
-<link rel="stylesheet" href="studio.css?v=20261015-v3">
-<link rel="stylesheet" href="dashboard.css?v=20261015-v3"></head>
-<body class="dashboard-body">
-<a class="skip" href="#main">Skip to dashboard</a>
-<nav class="site-topbar" aria-label="Main navigation">
- <a class="top-logo" href="../"><span>AddressRail <b>AI</b></span><small>Explore · Learn · Validate · Demonstrate</small></a>
- <div class="top-links">
-  <a class="active" href="./" aria-current="page">Home</a>
-  <a href="start/">Start Here</a>
-  <a href="#payment-explorer">Payment Systems</a>
-  <a href="#simulator">Simulation Lab</a>
-  <a href="ai-lab/">Banking AI Lab</a>
-  <a href="#academy">Banking Academy</a>
-  <a href="open-demo/">Case Management</a>
-  <a href="#resources">Resources</a>
- </div>
- <a class="region-pill" href="payment-intelligence/">◎ UK &amp; Europe ↗</a>
-</nav>
-<main class="dashboard-layout" id="main">
- <section class="dashboard-overview" aria-label="Welcome and explorer">
-  <div class="welcome-stack">
-   <div class="welcome-copy">
-    <div class="overline">ADDRESSRAIL AI · INTERACTIVE PAYMENT INTELLIGENCE</div>
-    <h1>Understand. Explore. Validate.<br><em>The Future of Payments with AI.</em></h1>
-    <p>Learn, present and test UK, European and international banking payment concepts through interactive flows and entirely synthetic examples.</p>
-    <div class="welcome-categories" aria-label="Featured contexts"><span>🇬🇧 UK payments</span><span>🇪🇺 SEPA</span><span>◎ SWIFT</span><span>€ RTGS</span><span>▣ CLS</span></div>
-    <p class="coverage-line"><strong>43 payment contexts</strong> · 6 detailed journeys · 24 fictional scenarios · 3 learning experiences</p>
-   </div>
-   <div class="audience-cards">
-    <article class="audience-card bankers">
-     <div class="audience-icon" aria-hidden="true">♙</div><h2>For Banking &amp;<br>Finance Experts</h2>
-     <p>Present payment flows, compare systems and demonstrate exceptions with clear evidence.</p>
-     <a class="tile-cta" href="journeys/?mode=professional">View Demo Labs →</a>
-    </article>
-    <article class="audience-card ai-experts">
-     <div class="audience-icon" aria-hidden="true">✳</div><h2>For AI &amp; LLM<br>Specialists</h2>
-     <p>Explain AI-supported banking operations, claim checks and human-review boundaries.</p>
-     <a class="tile-cta" href="ai-lab/">Open AI Lab →</a>
-    </article>
-    <article class="audience-card beginners">
-     <div class="audience-icon" aria-hidden="true">▤</div><h2>For Beginners</h2>
-     <p>Learn payments step by step with message examples, quizzes and guided practice.</p>
-     <a class="tile-cta" href="start/">Start Learning →</a>
-    </article>
-   </div>
-  </div>
-  <article class="explorer-panel" id="payment-explorer">
-   <div class="explorer-header">
-    <span class="section-symbol" aria-hidden="true">◎</span>
-    <div><h2>Payment Systems Explorer</h2><p>43 UK, European and cross-border reference contexts</p></div>
-   </div>
-   <div class="explorer-filters" id="dashboard-filters" aria-label="Filter payment systems">
-    <button type="button" data-filter="all" aria-pressed="true">All (43)</button>
-    <button type="button" data-filter="beginner" aria-pressed="false">Beginner (8)</button>
-    <button type="button" data-filter="uk" aria-pressed="false">UK</button>
-    <button type="button" data-filter="eu" aria-pressed="false">Europe</button>
-    <button type="button" data-filter="global" aria-pressed="false">Global</button>
-   </div>
-   <div class="explorer-inner">
-    <div class="explorer-rail-column"><div class="column-caption">PAYMENT CONTEXT</div>
-     <div id="dashboard-rail-list" class="explorer-rail-list" role="group" aria-label="Available payment systems"></div>
-    </div>
-    <div class="explorer-detail">
-     <div class="rail-title-row"><div><span class="column-caption">SELECTED SYSTEM</span><h3 id="dashboard-map-title">CHAPS</h3>
-      <p id="dashboard-map-type">UK · High value</p></div><span id="dashboard-map-region" class="rail-region">UK</span>
-     </div>
-     <div class="map-view-tabs"><span class="selected">Connections</span><span>Participants</span><span>Messages</span></div>
-     <div id="dashboard-map-flow" class="connection-flow" aria-label="Illustrative connections"></div>
-     <p id="dashboard-map-description" class="map-description"></p>
-     <p id="dashboard-map-related" class="map-related"></p>
-     <a id="dashboard-map-reference" href="payment-intelligence/" target="_blank" rel="noopener noreferrer">Official background ↗</a>
-     <a class="explorer-open-link" id="dashboard-map-open" href="journeys/?mode=professional&rail=chaps">Open interactive journey →</a>
-    </div>
-   </div>
-   <p class="explorer-caution">Illustrative relationships, not live participant routing, production connectivity or scheme certification.</p>
-  </article>
- </section>
- <section class="dashboard-boards" aria-label="Three interactive experiences">
-  <article class="dashboard-board banking-board" id="simulator">
-   <h2 class="board-heading"><span class="board-number">1</span> Banking &amp; Finance Experts <small>DEMONSTRATE &amp; VALIDATE</small></h2>
-   <div class="board-body">
-    <h3>Interactive Payment Simulation</h3>
-    <p class="board-lede">Run a synthetic success or failure scenario and inspect exactly where the trace stops.</p>
-    <div class="board-tabs"><a href="chaps/?scenario=liquidity-hold#case-lab">CHAPS / RTGS</a><a href="sct-inst/?scenario=timeout">SCT Inst</a><a href="sepa-sct/">SEPA SCT</a><a href="journeys/?mode=professional">Presenter Scripts</a></div>
-    <div class="banking-controls">
-     <div class="control"><label for="rail">Payment system</label><select id="rail"></select></div>
-     <div class="control"><label for="scenario">Scenario</label><select id="scenario"></select></div>
-     <button class="board-button bank-run" type="button" id="simulate">Run Simulation →</button>
-    </div>
-    <p id="rail-meta" class="lab-explanation"></p>
-    <div class="trace-title"><strong id="flow-title">Synthetic payment flow</strong><a href="journeys/?mode=professional">Detailed lab ↗</a></div>
-    <p id="flow-description" class="lab-explanation"></p>
-    <div class="banking-timeline" id="trace" aria-live="polite"></div>
-    <p class="result" id="scenario-result"></p>
-    <details class="dashboard-details"><summary>Official references and practice quiz</summary>
-     <div class="refs"><h4>Operator references</h4><div id="references"></div></div>
-     <div class="quiz"><h4 id="question">Check your understanding</h4><div class="answers" id="answers"></div><p id="quiz-feedback" role="status"></p></div>
-    </details>
-    <nav id="module-nav" class="module-nav" aria-label="Switch between teaching payment modules"></nav>
-    <p class="lab-footnote">No actual payment is transmitted. All stages and outcomes are fictional.</p>
-   </div>
-  </article>
-  <article class="dashboard-board ai-board" id="banking-ai-preview">
-   <h2 class="board-heading"><span class="board-number">2</span> AI &amp; LLM Specialists <small>EXPLAIN &amp; EVALUATE</small></h2>
-   <div class="board-body">
-    <h3>Banking AI Lab — Guardrail Playground</h3>
-    <p class="board-lede">Test whether a hypothetical AI claim is supported by fictional payment evidence.</p>
-    <div class="board-tabs"><span class="active">Example Claims</span><a href="ai-lab/">Rule Explorer</a><a href="ai-lab/#evaluation">Evaluation Results</a></div>
-    <label class="board-label" for="dashboard-ai-case">Select AI claim example</label>
-    <select id="dashboard-ai-case" class="board-select"></select>
-    <p id="dashboard-ai-context" class="lab-explanation"></p>
-    <div class="mock-llm">
-     <span class="llm-avatar" aria-hidden="true">✳</span>
-     <div><strong>Hypothetical AI claim</strong><p id="dashboard-ai-claim"></p><small>Authored test fixture · NOT actual recorded model output</small></div>
-    </div>
-    <div class="mock-evidence"><h4><span aria-hidden="true">◆</span> Evidence Check <small>DETERMINISTIC VALIDATION</small></h4>
-     <strong id="dashboard-ai-verdict">Reviewing fictional claim…</strong>
-     <p id="dashboard-ai-reason"></p><div id="dashboard-ai-rules"></div>
-    </div>
-    <div class="ai-board-footer"><span id="dashboard-ai-summary"></span><a class="board-button purple-button" href="ai-lab/">Open Full AI Lab →</a></div>
-   </div>
-  </article>
-  <article class="dashboard-board learning-board" id="academy">
-   <h2 class="board-heading"><span class="board-number">3</span> Beginners <small>LEARN STEP BY STEP</small></h2>
-   <div class="board-body">
-    <h3>Start Here — 5 Step Learning Path</h3>
-    <p class="board-lede">From a bank instruction to settlement evidence and instant-payment exceptions.</p>
-    <div class="lesson-progress-dots" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
-    <div class="lesson-layout">
-     <div id="dashboard-lesson-list" class="lesson-nav" role="group" aria-label="Select a beginner lesson"></div>
-     <div class="lesson-preview">
-      <span class="lesson-kicker" id="dashboard-lesson-number">LESSON 1 / 5</span>
-      <h4 id="dashboard-lesson-title">Banking foundations</h4>
-      <p id="dashboard-lesson-summary"></p>
-      <div class="life-diagram" aria-label="Conceptual payment journey">
-       <span>Customer</span><b>→</b><span>Sending<br>Bank</span><b>→</b><span>Payment<br>System</span><b>→</b><span>Receiving<br>Bank</span>
-      </div>
-      <strong>Key concepts</strong><ul id="dashboard-lesson-points"></ul>
-      <a class="board-button green-button" id="dashboard-lesson-open" href="start/">Open Lesson &amp; Quiz →</a>
-     </div>
-    </div>
-    <p class="lab-footnote">Structured lessons, glossary and tab-private self-reported progress. No accreditation.</p>
-   </div>
-  </article>
- </section>
- <section id="products" class="feature-zone">
-  <div class="feature-heading"><div><span class="overline">MORE TO EXPLORE</span><h2>Purpose-built banking labs</h2></div><a href="payment-intelligence/">Browse all 43 contexts →</a></div>
-  <div class="feature-grid">
-   <article class="feature-tile"><span class="feature-icon" aria-hidden="true">⚡</span><h3>SCT Inst Lab</h3><p>Compare RT1 and TIPS alternatives. Investigate timeouts and rejection.</p><a href="sct-inst/?scenario=timeout">Try Instant Lab →</a></article>
-   <article class="feature-tile"><span class="feature-icon" aria-hidden="true">◈</span><h3>SDD Core / B2B</h3><p>Explore mandate and direct-debit concepts. A full dedicated lab is planned.</p><a href="payment-intelligence/?rail=sdd-core">Explore SDD Concepts →</a></article>
-   <article class="feature-tile"><span class="feature-icon" aria-hidden="true">▣</span><h3>Case Management</h3><p>Create and review fictional investigation cases in your browser tab.</p><a href="open-demo/">Open Guest Cases →</a></article>
-   <article class="feature-tile"><span class="feature-icon" aria-hidden="true">▤</span><h3>Presenter Scripts</h3><p>Four timed talking points for each of six detailed payment journeys.</p><a href="journeys/?mode=professional&rail=chaps&scenario=liquidity-hold">View CHAPS Script →</a></article>
-   <article class="feature-tile"><span class="feature-icon" aria-hidden="true">⌘</span><h3>Banking Glossary</h3><p>Plain-English definitions of common payment systems and messages.</p><a href="start/#glossary">Open Glossary →</a></article>
-   <article class="feature-tile"><span class="feature-icon" aria-hidden="true">↗</span><h3>Future of Banking AI</h3><p>Explore practical AI today and possible future banking workflows.</p><a href="start/#ai-future">Future Concepts →</a></article>
-  </div>
- </section>
- <section class="mini-explain" id="agent-lab">
-  <div><span class="overline">UNDER THE HOOD</span><h2>Rules first. AI explanations second. Humans decide.</h2>
-   <p>Explore deterministic checks, evidence correlation, cautious AI advice and independent human review. Our public AI examples are authored fixtures, not live LLM answers.</p>
-   <a href="ai-lab/">Try evidence-grounded AI guardrails →</a> · <a href="../#ai">Original Address Intelligence AI ↗</a>
-  </div>
-  <div><button type="button" id="trace-demo" class="board-button">Replay a synthetic agent trace →</button><div id="agent-trace" class="agent-replay trace" aria-live="polite"></div></div>
- </section>
- <section id="resources" class="resource-line">
-  <p><strong>Still available:</strong> <a href="../">MT103 and pacs.008 address validation</a> · <a href="chaps/">CHAPS message explorer</a> · <a href="sepa-sct/">SEPA SCT builder</a> · <a href="journeys/">Evidence-based payment journeys</a> · <a href="https://github.com/DhanapalKulanthaivel23/addressrail-ai" rel="noopener noreferrer" target="_blank">GitHub source ↗</a></p>
- </section>
- <footer class="dashboard-footer"><span>◎ Synthetic Data Only &nbsp; | &nbsp; Educational Purposes &nbsp; | &nbsp; No Official Certification</span><span>AddressRail AI · <strong id="release-id">v3 · 2026-10-15</strong> · <a href="../">Address Intelligence</a></span></footer>
-</main>
-<script src="studio.js?v=20261015-v3" defer></script>
-<script type="module" src="dashboard.js?v=20261015-v3"></script>
-</body></html>
+<link rel="stylesheet" href="studio.css?v=20261015-v2"></head><body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="app"><aside><a class="brand" href="../">AddressRail <span>AI</span><small>PAYMENT INTELLIGENCE PLATFORM</small></a>
+<div class="navlabel">PLATFORM</div><a href="../">Address Intelligence ↗</a><a href="#products">Products</a><a href="#simulator">Payment Studio</a><a href="#agent-lab">AI Engineering Lab</a><a href="#academy">Academy & Interviews</a>
+<div class="navlabel">CHOOSE YOUR EXPERIENCE</div><a href="start/">Beginner: Start Here →</a><a href="journeys/?mode=professional">Banking Expert: Present →</a><a href="ai-lab/">AI Expert: Guardrail Lab →</a><div class="navlabel">PAYMENT INTELLIGENCE</div><a href="journeys/">Learn · Present · AI Journeys →</a><a href="payment-intelligence/">43 UK, EU &amp; SWIFT contexts →</a>
+<div class="navlabel">PAYMENT MODULES</div><nav id="module-nav" aria-label="Scheme module navigation"></nav>
+<p class="side-note">Independent synthetic education and product exploration. No accounts, payment transmission or official scheme conformance.</p></aside>
+<div class="body"><header><span>Workspace / Banking Payments & AI Studio · <strong id="release-id">v2 · 2026-10-15</strong></span><a href="https://github.com/DhanapalKulanthaivel23/addressrail-ai" target="_blank" rel="noopener noreferrer">Source ↗</a></header><main id="main">
+<section class="hero"><div class="kicker">ADDRESSRAIL AI / BANKING + FINTECH</div><h1>Explore payments.<br><em>Understand the flow.</em><br>Build with AI.</h1>
+<p>Discover payment-intelligence opportunities for banks and fintechs. Learn, simulate and explain payment processes and responsible AI engineering through synthetic exercises.</p>
+<div class="buttons"><a class="button" href="start/">Start learning payments →</a><a class="button outline" href="journeys/?mode=professional">Present a payment flow →</a><a class="button outline" href="ai-lab/">Explore AI guardrails →</a><a class="button outline" href="journeys/">Choose your learning or presentation mode →</a><a class="button outline" href="payment-intelligence/">Explore Cross-Rail Intelligence →</a><a class="button outline" href="open-demo/">Guest Cases — no login →</a><a class="button outline" href="#simulator">Launch Payment Studio ↓</a><a class="button outline" href="../#home">Try Address Intelligence ↗</a></div>
+<div class="steps">PRODUCTS &nbsp; / &nbsp; PAYMENT SIMULATIONS &nbsp; / &nbsp; AI ENGINEERING &nbsp; / &nbsp; INTERVIEW LAB</div></section>
+<div class="notice"><strong>NEW v2 — Dedicated browser labs:</strong> <a href="sct-inst/?scenario=timeout">SCT Inst RT1/TIPS timeout and unknown outcome ↗</a> · <a href="chaps/?scenario=liquidity-hold#case-lab">CHAPS / BoE RTGS liquidity queue ↗</a> · <a href="ai-lab/">Evidence-first AI guardrails ↗</a> · <a href="start/">Five-step beginner course ↗</a>.</div>
+<div class="notice"><strong>NEW — Learn, Present &amp; Explore AI:</strong> Choose Banking Professional, AI/LLM Specialist or New to Banking mode. Explore curated relationships across 43 payment contexts, run six detailed UK/EU/cross-border journeys with 24 synthetic outcomes, inspect message exchanges and fictional evidence, test a bounded rule set, replay a scripted AI explanation, take quizzes and create browser-private cases. <a href="journeys/">Open Interactive Payment Journeys →</a> The replay does not execute a real LLM.</div>
+<div class="notice"><strong>Available today:</strong> browser-based MT103/pacs.008 address checks, optional protected Gemini address advisory on the main page, interactive synthetic payment teaching flows below, and a separate locally runnable Payment Investigation Agent. <strong>Not yet available:</strong> live bank connections, official scheme certification, public Gemini investigations or commercial multi-tenant SaaS.</div>
+<section class="section" id="products"><div class="kicker">01 / BANKING PRODUCTS</div><h2>Professional product discovery.<br>Practical demonstrations.</h2><p>Explore problems these products are intended to solve. Availability labels distinguish working demos from the roadmap.</p>
+<div class="cards">
+<article class="card"><small class="badge active">BROWSER DEMO</small><h3>Address Intelligence</h3><p>Inspect synthetic MT103 and pacs.008 postal addresses, proposed corrections and optional AI explanations.</p><p><b>Bank value:</b> Explore data quality, exception reduction and controlled address repair.</p><a href="../#home">Open address validator ↗</a></article>
+<article class="card"><small class="badge active">LOCAL DEMO</small><h3>Payment Investigation AI</h3><p>Read-only LangGraph investigation with Java Quarkus, Python FastAPI, evidence validation and optional Gemini.</p><p><b>Bank value:</b> Investigate rejected payments with traceable evidence and human control.</p><a href="#agent-lab">Explore architecture ↓</a></article>
+<article class="card"><small class="badge active">BROWSER SIMULATOR</small><h3>Payment Rail Studio</h3><p>Explore annotated SEPA, instant, UK, cross-border and FX settlement concepts. Inject synthetic exceptions.</p><p><b>Bank value:</b> Training, testing workshops and operational scenario discovery.</p><a href="journeys/">Test guided payment journeys →</a></article>
+<article class="card"><small class="badge">ROADMAP</small><h3>Validation & Repair Automation</h3><p>Rule-version libraries, validation profiles, approval queues, audit evidence and controlled repair proposals.</p><p><b>Bank value:</b> Reduce manual investigations when policy and integrations are proven.</p><span class="inactive">Not production-ready</span></article>
+<article class="card"><small class="badge active">BROWSER DEMO</small><h3>AI Guardrail Playground</h3><p>Test eight authored synthetic payment claims against deterministic evidence rules. This is NOT a real model benchmark.</p><p><b>Value:</b> Demonstrate unsupported settlement claims, retry risk and human controls.</p><a href="ai-lab/">Run AI guardrail tests →</a></article>
+<article class="card"><small class="badge">ROADMAP</small><h3>Payments Operational Intelligence</h3><p>Event lineage, cross-system searches, observability, exception and anomaly detection.</p><p><b>Fintech value:</b> Visibility into payment failure patterns and processing health.</p><span class="inactive">In design</span></article>
+<article class="card"><small class="badge">ROADMAP</small><h3>Forward Deployed AI Toolkit</h3><p>Workflow discovery, control maps, evaluation harnesses, synthetic pilots and adoption tracking.</p><p><b>Fintech value:</b> Demonstrate AI opportunity assessment before production integration.</p><a href="#academy">Explore learning track ↓</a></article>
+</div></section>
+<p class="notice"><strong>NEW — Public, no-login Case Management Demo:</strong> Anyone with the link can create synthetic SEPA and CHAPS cases, review evidence, assign a fictional owner, add notes and record training decisions directly in their browser. No server, Keycloak, API key, password or real funds. <a href="open-demo/">Open free guest workspace →</a></p>
+<p class="notice"><strong>NEW — Cross-Rail Payment Intelligence Lab:</strong> Explore 43 UK, European and SWIFT payment schemes, services and infrastructures (CBPR+, gpi, g4C, CHAPS, Faster Payments, Bacs, SEPA, T2, RTGS and more). Try EUR, GBP, SEK, PLN and DKK teaching examples, synthetic exceptions, UETR correlation, review-only address repair, message sketches, evidence exports and private guest-case handoff. <a href="payment-intelligence/">Try the free multi-rail investigation lab →</a> No login or backend.</p>
+<section class="section" id="simulator"><div class="kicker">02 / PAYMENTS STUDIO</div><h2>Select a payment module.<br>Test its flow.</h2><p>Each module offers a stage-by-stage synthetic teaching flow, an illustrative failure scenario, reference material and an interview check. It does not operate a bank gateway.</p>
+<p class="notice"><strong>NEW — SEPA SCT Message Builder:</strong> Generate synthetic pain.001, pacs.008, pain.002 and pacs.002 teaching messages, inject failures and inspect lifecycle evidence. <a href="sepa-sct/">Open interactive SCT laboratory →</a></p>
+<p class="notice"><strong>SEPA Instant RT1 / TIPS local investigation lab:</strong> simulate separate infrastructure routes, timeout/unknown outcomes and persistent evidence using Quarkus. The API is local only; no public connection. <a href="https://github.com/DhanapalKulanthaivel23/addressrail-ai/tree/main/payments-core" target="_blank" rel="noopener noreferrer">Local setup instructions ↗</a></p>
+<p class="notice"><strong>CHAPS + Bank of England RTGS:</strong> <a href="chaps/">Open the browser-based pacs.008 / pacs.009 CORE message explorer →</a> and explore local liquidity holds, bank rejection, unknown outcomes and persisted investigation evidence. <a href="https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/payments-core/README.md" target="_blank" rel="noopener noreferrer">Launch instructions for the local CHAPS dashboard ↗</a></p>
+<div class="workbench"><div class="card inputs"><label for="rail">Payment system</label><select id="rail"></select><p id="rail-meta" class="meta"></p><label for="scenario">Scenario</label><select id="scenario"></select><button class="button" id="simulate" type="button">Run teaching simulation →</button>
+<p class="fine">Simulation only: no funds, real messages, settlement or third-party API calls.</p><div class="refs"><h3>Official reference links</h3><div id="references"></div></div></div>
+<div class="card"><div class="kicker">SYNTHETIC FLOW TRACE</div><h3 id="flow-title">Choose a payment system</h3><p id="flow-description"></p><div id="trace" class="trace" aria-live="polite"></div><p class="result" id="scenario-result"></p><div class="quiz"><h3>Check your understanding</h3><p id="question"></p><div id="answers" class="answers"></div><p id="quiz-feedback" role="status"></p></div></div></div></section>
+<section class="section" id="agent-lab"><div class="kicker">03 / HOW OUR AI WORKS</div><h2>Deterministic controls first.<br>LLM advice second.</h2><p>The existing Address AI panel and our locally verified Payment Investigation Agent teach two different evidence-grounded AI patterns.</p>
+<div class="twin">
+<article class="card"><small class="badge active">EXISTING WEBSITE</small><h3>Address Intelligence AI</h3><ol><li>Parse synthetic MT103 or pacs.008 in the browser.</li><li>Run deterministic address-quality checks.</li><li>Propose only repairs supported by existing address text.</li><li>Ask Gemini for optional explanation via the existing protected backend.</li><li>Show before/after; no change is automatically applied.</li></ol><p>Not an official CBPR+ validation engine. Human review remains required.</p><a href="../#ai">Open existing Address AI ↗</a></article>
+<article class="card"><small class="badge active">LOCAL AGENT / VERIFIED</small><h3>Payment Investigation AI</h3><ol><li>Retrieve synthetic status and event history using read-only Quarkus APIs.</li><li>Verify payment ID, provenance and final-event consistency.</li><li>Ask Gemini for a constrained JSON explanation when enabled.</li><li>Reject unsupported claims and use deterministic fallback.</li><li>Return human-review-required result and evidence reference.</li></ol><p>Local PAY-10001 Gemini advisory has worked; no public investigation API is deployed.</p><a href="https://github.com/DhanapalKulanthaivel23/addressrail-ai/tree/main/ai-agents/investigation" target="_blank" rel="noopener noreferrer">Run the agent locally ↗</a></article></div>
+<div class="card demo"><div class="kicker">EDUCATIONAL / BROWSER REPLAY</div><h3>Follow agent reasoning stages</h3><p>Replay the known synthetic PAY-10001 example. This is an explanation of the workflow—not a live Gemini request.</p><button type="button" class="button" id="trace-demo">Replay evidence trace →</button><div id="agent-trace" class="trace" aria-live="polite"></div></div>
+</section>
+<section class="section" id="academy"><div class="kicker">04 / LEARN & PREPARE</div><h2>Banking Academy + AI Interview Lab</h2><p>Learn payment concepts by trying a synthetic flow, deliberately causing an exception and explaining what happened.</p>
+<div class="cards">
+<article class="card"><h3>Payments foundations</h3><p>SWIFT messaging versus schemes, CSMs and settlement; MT versus ISO 20022 message families.</p><a href="#simulator">Study a scheme ↓</a></article>
+<article class="card"><h3>Payments engineer interviews</h3><p>Investigate a failed payment, identify the responsible participant and justify each conclusion with evidence.</p><a href="#simulator">Try an exception ↓</a></article>
+<article class="card"><h3>Agentic AI engineering</h3><p>Learn tools, LangGraph, Gemini JSON output, Pydantic checks, evidence guardrails and automated evaluations.</p><a href="https://github.com/DhanapalKulanthaivel23/addressrail-ai/tree/main/ai-agents/investigation/tests" target="_blank" rel="noopener noreferrer">Study agent tests ↗</a></article>
+<article class="card"><h3>Forward Deployed AI</h3><p>Simulate a bank discovery workshop: map exception handling, define approval boundaries and propose measurable pilot outcomes.</p><span class="inactive">Structured pilot workspace planned</span></article>
+</div></section>
+<p class="disclaimer">Independent educational platform using synthetic data. Not affiliated with, approved or certified by Swift, EPC, EBA CLEARING, Bank of England, Pay.UK, Eurosystem or CLS. Scheme and infrastructure details must be checked against current official rulebooks. No actual payment is transmitted, accepted or settled.</p>
+<footer>AddressRail AI · Independent payment-intelligence demo · <a href="../">Return to address analyzer</a></footer></main></div></div>
+<script src="studio.js" defer></script></body></html>
