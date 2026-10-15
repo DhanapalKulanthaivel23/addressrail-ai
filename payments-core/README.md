@@ -55,3 +55,22 @@ curl -sS -X POST http://127.0.0.1:8093/investigate \
 The agent retrieves the same Quarkus payment and event history. Use a real generated synthetic ID. The AI explanation is optional; payment statuses and evidence remain deterministic. `ACTC` is used as a teaching example of **technical acceptance only** and does not establish settlement or beneficiary credit. The CSM rejection scenario is hypothetical and not an actual STEP2 response.
 
 These locally persisted records have no tenant isolation, idempotency, authenticated write access, source attestation or immutable audit. Production remains disabled and does not expose a payment simulation service.
+
+## SEPA Instant RT1 and TIPS lab — synthetic, local-only
+
+The new simulator reuses the Quarkus H2 payment/event store and read-only investigation endpoints, but models **RT1 and TIPS as separate route selections**, not sequential processing hops.
+
+Run from `payments-core/` with `mvn quarkus:dev`, then open:
+
+**http://127.0.0.1:8081/labs/sepa-instant/**
+
+Choose **RT1** or **TIPS** and a case:
+
+- `confirmed`: a fictional positive `ACSC` outcome, **not** evidence of real settlement or beneficiary credit.
+- `unreachable`: a hypothetical negative outcome, stored as `RJCT`.
+- `timeout`: missing final outcome stored as `UNKNOWN`; requires reconciliation and must not be assumed failed or settled.
+- `local-reject`: bank-side rejection before an interbank message, stored as `RJCT`.
+
+Each simulation generates an `INST-...` payment ID, persistent synthetic events, and evidence references accessible through existing read-only payment endpoints. Optional local Python/Gemini investigation uses that ID as for SCT. The write endpoint is `POST /api/v1/labs/sepa-instant/simulations` with `{"synthetic":true,"rail":"RT1","scenario":"timeout"}`. The API runs **only in local dev/test profiles**; it is explicitly disabled under `%prod`. There is no CORS access, authentication, bank access or actual RT1/TIPS settlement.
+
+Current limitation: the simulator uses fixed synthetic example parties and amounts. A full SCT Inst ISO 20022 message builder, scheme-version conformance validation, retries, authoritative settlement confirmation, asynchronous callback processing, authentication and tenant isolation are not implemented. The local investigation agent can explain evidence but cannot independently resolve an `UNKNOWN` outcome; that requires an authoritative system.
