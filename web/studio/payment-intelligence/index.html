@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Free synthetic cross-rail payment intelligence lab: SWIFT CBPR+, gpi, g4C, RTGS, SEPA, CHAPS, Bacs, Faster Payments, T2 and major UK/EU schemes. No login.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/payment-intelligence/">
+<link rel="stylesheet" href="../studio.css"><link rel="stylesheet" href="./intel.css">
+<title>SWIFT CBPR+, SEPA & UK/EU Payment Intelligence Lab | AddressRail AI</title></head>
+<body><a class="skip" href="#main">Skip to lab</a>
+<div class="app"><aside>
+<a class="brand" href="../../">AddressRail <span>AI</span><small>PAYMENT INTELLIGENCE PLATFORM</small></a>
+<div class="navlabel">CROSS-RAIL WORKSPACE</div>
+<a href="../">← Banking Studio</a><a href="#catalog">Payment systems</a>
+<a href="#investigate">Synthetic investigation</a><a href="#messages">Message explorer</a>
+<a href="#report">Evidence and export</a>
+<div class="navlabel">OTHER LEARNING LABS</div>
+<a href="../open-demo/">Guest case management ↗</a><a href="../sepa-sct/">SEPA SCT message builder ↗</a>
+<a href="../chaps/">CHAPS XML explorer ↗</a>
+<p class="side-note">Browser-private, no login, zero credentials, no bank interfaces. Teaching examples only; not certified validation.</p>
+</aside>
+<div class="body">
+<header><span>Workspace / Cross-Rail Payment Intelligence</span><a href="../">Banking Studio ↗</a></header>
+<main id="main">
+<section class="hero intel-hero"><div class="kicker">ADDRESSRAIL AI / MULTI-RAIL PAYMENT OPERATIONS</div>
+<h1>Understand every layer.<br><em>Investigate with evidence.</em></h1>
+<p>Explore CBPR+, SWIFT gpi and g4C alongside major UK and EU payment schemes, settlement infrastructures and overlays. Simulate an exception, inspect deterministic rules, propose a review-only repair and create a browser-private training case.</p>
+<div class="steps">35 PAYMENT SYSTEMS & SERVICES / 9 SYNTHETIC SCENARIOS / 12+ MESSAGE FAMILIES / 0 LOGIN</div>
+</section>
+<p class="notice"><strong>Educational scope:</strong> The rail catalogue is broad, but validations are intentionally a <strong>small shared rule subset</strong>—not official XSD, CBPR+ usage-guideline, EPC, UK scheme, Bank of England or Eurosystem conformance. Tracking, clearing, payment schemes and settlement systems are not interchangeable. Every example is synthetic and processed inside your browser; do not paste real payment or customer data.</p>
+
+<section class="section" id="catalog">
+<div class="kicker">01 / UK, EUROPE & CROSS-BORDER</div><h2>Choose your payment context.</h2>
+<p>Find a rail, service or infrastructure; classifications show what each does. National processing entries are introductory contexts, not claims of complete country-by-country coverage.</p>
+<div class="filterbar card">
+<div><label for="region">Region</label><select id="region">
+<option value="ALL">All regions</option><option value="UK">United Kingdom</option>
+<option value="EU/SEPA">Europe / SEPA</option><option value="EU national">European national</option>
+<option value="Global">Global SWIFT</option><option value="Cross-border">FX settlement</option>
+</select></div>
+<div><label for="search-rails">Search</label><input id="search-rails" type="search" maxlength="100" placeholder="CBPR, g4C, T2, Bacs, VoP, RT1 …"></div>
+<div><label for="rail">Selected service</label><select id="rail" aria-label="Select payment system or service"></select></div>
+</div>
+<div class="rail-grid">
+<div class="rail-facts card">
+<div class="kicker">SELECTED SERVICE / REFERENCE</div>
+<h3 id="rail-name">Select a payment system</h3>
+<p id="rail-description" class="rail-description"></p>
+<div id="rail-tags" class="rail-tags"></div>
+<p class="tiny"><strong>Illustrative message families:</strong> <span id="rail-messages">—</span></p>
+<a id="rail-reference" href="#" target="_blank" rel="noopener noreferrer">Official or provider background ↗</a>
+</div>
+<div class="rail-categories card"><div class="section-heading"><h3>Explore coverage</h3><span id="rail-count" class="tiny">35 entries</span></div>
+<div id="rail-list" class="rail-list" aria-label="Matching UK and EU payment systems"></div>
+</div>
+</div>
+</section>
+
+<section class="section" id="investigate">
+<div class="kicker">02 / SYNTHETIC PAYMENT QUALITY</div><h2>Inject a payment exception.</h2>
+<p>Start with a generated synthetic record or inspect and edit its JSON fields. Checks run only in your browser; original fields are never repaired without clicking the explicit review action.</p>
+<div class="editor-grid">
+<div class="card editor-controls">
+<label for="scenario">Educational scenario</label><select id="scenario"></select>
+<button id="load-fixture" class="button wide" type="button">Load synthetic scenario →</button>
+<p class="tiny">No real payment is transmitted; outcomes are fictional.</p>
+<label for="json-editor">Synthetic payment model (editable JSON)</label>
+<textarea id="json-editor" spellcheck="false" rows="17" aria-label="Editable synthetic JSON payment example"></textarea>
+<div class="inline-actions"><button id="validate" class="button" type="button">Run deterministic checks</button><button id="reset-editor" class="text-action" type="button">Reset example</button></div>
+<p id="run-status" class="tiny" role="status" aria-live="polite">Choose a scenario to begin.</p>
+</div>
+<div class="card results-card">
+<div class="section-heading"><div class="kicker">GUARDED PAYMENT ASSESSMENT</div><span id="assessment-label" class="status-pill">NOT RUN</span></div>
+<h3 id="result-title">Inspect a synthetic record</h3><p class="tiny" id="result-scope">Demonstration checks only; not scheme-validity or settlement evidence.</p>
+<div class="assessment-stats"><div><strong id="errors-count">0</strong><span>Example errors</span></div>
+<div><strong id="warnings-count">0</strong><span>Warnings</span></div>
+<div><strong id="repair-count">0</strong><span>Grounded proposals</span></div></div>
+<div id="issues" class="finding-list" aria-live="polite"></div>
+<div id="repair-panel" class="repair-panel" hidden>
+<h4>Repair proposal — explicit human review</h4>
+<div id="proposal-body"></div>
+<button id="apply-repair" type="button" class="button">Apply evidenced town proposal to this draft</button>
+<p class="tiny">Only the town visibly present in the original synthetic address may be copied. No guesswork.</p>
+</div>
+<div class="decision-box"><strong>Recommended investigation</strong><p id="next-action">Run a scenario to see a cautious next step.</p></div>
+</div>
+</div>
+</section>
+
+<section class="section" id="messages">
+<div class="kicker">03 / ISO 20022 & SWIFT LEARNING</div><h2>Explore the message shape.</h2>
+<p>Switch between major ISO 20022 payment/status/cancellation families or view a conceptual UK retail/tracking record. The generated XML is <strong>deliberately incomplete and not submission-ready</strong>.</p>
+<div class="message-grid">
+<div class="card">
+<label for="message-family">Teaching message family</label><select id="message-family"></select>
+<button id="build-message" type="button" class="button wide">Generate educational message →</button>
+<div class="trace-header"><h3>Trace by UETR</h3><p class="tiny">Correlate fictional events using a UUID-formatted reference. No live gpi tracker access.</p></div>
+<label for="trace-uetr">Example UETR</label><input id="trace-uetr" autocomplete="off" maxlength="36" placeholder="e.g. b2901e72-...">
+<button id="run-trace" type="button" class="text-action">Find matching synthetic events →</button>
+<div id="trace-result" class="timeline"></div>
+</div>
+<div class="card">
+<div class="section-heading"><h3 id="message-title">Message preview</h3><button id="download-message" type="button" class="text-action" disabled>Download sample ↓</button></div>
+<pre id="message-preview" class="source-output">Select a rail and generate a teaching message.</pre>
+<p class="tiny">No official ISO 20022 message validation or release-specific usage-guideline claim.</p>
+</div>
+</div>
+</section>
+
+<section class="section" id="report">
+<div class="kicker">04 / INVESTIGATION REPORT AND HANDOFF</div><h2>Evidence to a reviewable case.</h2>
+<div class="report-grid">
+<div class="card">
+<h3>Fictional processing timeline</h3>
+<div id="evidence-timeline" class="timeline"></div>
+<p class="tiny">Event references are generated examples, not participant or payment scheme confirmations.</p>
+</div>
+<div class="card report-actions">
+<h3>Share an educational outcome</h3>
+<p>Export a synthetic JSON investigation report or hand the current finding to the free Guest Case Management workspace for assignment and training review.</p>
+<button id="download-report" type="button" class="button wide" disabled>Download synthetic report (.json) ↓</button>
+<button id="send-case" type="button" class="button wide" disabled>Open this report as a private guest case →</button>
+<p id="handoff-status" role="status" class="tiny"></p>
+<p class="tiny"><b>Privacy:</b> Handoff uses one-time browser session storage in this tab. No shared database, login, external Gemini or API keys. The guest case is not an authenticated audit record.</p>
+</div>
+</div>
+</section>
+
+<p class="disclaimer">Independent teaching demonstration; not affiliated with or certified by Swift, EPC, EBA CLEARING, Bank of England, Pay.UK, ECB/Eurosystem, CLS or any national payment operator. References are provided to verify current service descriptions and release rules. Synthetic examples may intentionally omit required message elements. Never use generated data for settlement, payment initiation, automated sanctions decisions or production validation.</p>
+<footer>AddressRail AI · Open cross-rail payment intelligence demo · <a href="../open-demo/">Guest case management</a> · <a href="../">Banking Studio</a></footer>
+</main>
+</div></div>
+<script type="module" src="./lab.mjs"></script>
+</body></html>
