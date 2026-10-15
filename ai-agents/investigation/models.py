@@ -28,7 +28,7 @@ class Event(StrictModel):
     description: str
 
 class Finding(StrictModel):
-    status: Literal["RJCT", "OTHER", "UNKNOWN", "CONFLICT", "UNAVAILABLE"]
+    status: Literal["RJCT", "PENDING", "UNKNOWN", "ACTC", "ACSC", "SIMULATED", "OTHER", "CONFLICT", "UNAVAILABLE"]
     explanation: str
     recommended_action: str
     evidence_refs: list[str] = Field(default_factory=list)
@@ -43,4 +43,4 @@ class InvestigationResult(StrictModel):
     ai_explanation: str | None = None
     ai_used: bool = False
     synthetic: bool = True
-    prompt_version: str = "investigation-v1"
+    prompt_version: str = "investigation-v2"
