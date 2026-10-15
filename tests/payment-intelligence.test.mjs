@@ -208,3 +208,19 @@ test("non-euro EU country infrastructure keeps PLN SEK DKK separate from EUR SEP
  assert.equal(generateFixture("fps").currency,"GBP");
  assert.equal(getRail("de-sepa-clearer").region,"EU national");
 });
+
+test("unrelated fault injections are labelled not applicable instead of a false scheme validation",()=>{
+ const cases=[
+   ["fps","invalid-iban"],
+   ["bacs-credit","invalid-bic"],
+   ["link","missing-uetr"],
+   ["cop","missing-town"],
+   ["t2","mandate"]
+ ];
+ for(const [rail,scenario] of cases){
+  const report=validateFixture(generateFixture(rail,scenario));
+  assert.ok(report.issues.some(i=>i.code==="DEMO_SCENARIO_NOT_APPLICABLE"),rail+"/"+scenario);
+ }
+ const applicable=validateFixture(generateFixture("cbpr","invalid-iban"));
+ assert.equal(applicable.issues.some(i=>i.code==="DEMO_SCENARIO_NOT_APPLICABLE"),false);
+});
