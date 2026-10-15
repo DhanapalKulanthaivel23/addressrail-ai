@@ -3,12 +3,13 @@ on:
   push:
     branches: [main]
     paths:
-      - 'web/studio/**'
+      - 'web/**'
       - 'web/comments.js'
       - 'web/comments.css'
       - 'web/config.js'
       - 'analytics/worker.js'
       - 'tests/browser-smoke.mjs'
+      - 'tests/site-acceptance.mjs'
       - '.github/workflows/browser-smoke.yml'
   pull_request:
     paths:
@@ -36,3 +37,4 @@ jobs:
           echo "Starting local static site"
           sleep 2
       - run: node tests/browser-smoke.mjs
+      - run: node tests/site-acceptance.mjs
