@@ -30,7 +30,7 @@ jobs:
         run: |
           set -euo pipefail
           BASE="https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/"
-          EXPECT='id="release-id">v2'
+          EXPECT='id="release-id">v3'
           for attempt in $(seq 1 12); do
             PLAIN="$(curl -fsSL --max-time 20 "$BASE" || true)"
             BUST="$(curl -fsSL --max-time 20 "${BASE}?v=${GITHUB_SHA}" || true)"
