@@ -82,3 +82,23 @@ Optional Gemini structured commentary now accepts all these evidence-grounded fi
 **Gemini availability:** HTTP 503 triggers **one** extra attempt after a short 250 ms wait; a second 503 falls back immediately. HTTP 429 is **not retried**. No retries occur after a success. This does not ensure availability, and a real successful CHAPS/SCT Inst Gemini response remains unverified until tested with a legitimate synthetic local case. HTTP reason codes are logged without response content or credentials. The extra request can consume an additional quota unit; Gemini is opt-in only.
 
 Run the offline test suite with `PYTHONPATH=ai-agents python -m pytest -q ai-agents/investigation/tests`. For integration, start Quarkus dev mode, create a synthetic SCT, SCT Inst, or CHAPS record in its local lab and pass the generated ID to `/investigate`. A result with `ai_used: false` still retains evidence-grounded deterministic findings. The lab has no real-world state authority or autonomous payment-repair actions.
+
+## Unified Investigation Dashboard v1 (local)
+
+With **Quarkus Payments Core** running locally on port 8081 and the Python investigation service on port 8093, open:
+
+**http://127.0.0.1:8093/dashboard**
+
+Launch from the repository root:
+
+```bash
+cd payments-core && mvn quarkus:dev
+# In a second terminal, from repository root:
+PYTHONPATH=ai-agents .venv-investigation/bin/python -m uvicorn investigation.app:app --host 127.0.0.1 --port 8093
+```
+
+Use the dashboard to browse up to 40 local synthetic cases at a time, filter by recorded status or search an exact ID; view chronological event evidence; and explicitly choose **Investigate selected payment**. Only that button invokes the LangGraph workflow and optional Gemini advisory. No Gemini call occurs while listing or opening cases. A clear badge reports whether the output was model-generated or deterministic; both require human review.
+
+The dashboard uses **same-origin requests to FastAPI** and read-only server-side calls to Quarkus. It does not require browser CORS access to either API. The Quarkus `GET /api/v1/labs/cases` endpoint is enabled **only in local dev/test profiles**, returns synthetic records only, and caps results at 100; it has no mutation method. The existing public GitHub Pages website and Render/Cloudflare integrations are unchanged. **Never bind either local server to a public interface**: there is no authentication, tenancy isolation or CSRF defence suitable for production.
+
+Technical limitations: the catalogue is not a paginated enterprise search, filters currently operate on a bounded local list, case-event history is synthetic and mutable in H2, and the dashboard provides no human approval persistence. These require authentication, audit, tenant isolation, data retention controls and verified integrations before banks can use a hosted SaaS.
