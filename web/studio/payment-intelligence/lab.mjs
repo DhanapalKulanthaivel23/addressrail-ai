@@ -1,4 +1,4 @@
-import {RAILS,FORMATS,getRail,listRails} from "./catalog.mjs";
+import {RAILS,FORMATS,getRail,listRails,currencyOptionsForRail,defaultCurrencyForRail} from "./catalog.mjs";
 import {
  SCENARIOS,generateFixture,validateFixture,applyEvidenceRepair,isUetr
 } from "./engine.mjs";
@@ -40,11 +40,23 @@ function replaceRailList(){
   $("rail-description").textContent="Try a different term or region.";
   $("rail-messages").textContent="—";
   $("rail-reference").hidden=true;
+  $("rail-tags").replaceChildren();
+  $("load-fixture").disabled=true;$("validate").disabled=true;
+  $("build-message").disabled=true;
+  $("currency").replaceChildren();
+  $("currency-context").textContent="No matching payment context.";
+  $("json-editor").value="";
+  $("issues").replaceChildren();
+  $("message-preview").textContent="Choose a matching service to generate a synthetic example.";
+  $("trace-result").replaceChildren();
   disableExports();
-  return;
+  feedback("No matching service. Change your search or region.");
+  return false;
  }
  if(!matching.some(r=>r.id===currentRail)) currentRail=matching[0].id;
  selected.value=currentRail;
+  $("load-fixture").disabled=false;$("validate").disabled=false;
+  $("build-message").disabled=false;
  for(const rail of matching){
   const b=button(rail.name,()=>chooseRail(rail.id));
   b.setAttribute("aria-current",String(rail.id===currentRail));
@@ -52,6 +64,7 @@ function replaceRailList(){
   list.append(b);
  }
  renderRailFacts();
+ return true;
 }
 function renderRailFacts(){
  const rail=getRail(currentRail);
@@ -89,8 +102,21 @@ function readModel(){
   throw error;
  }
 }
+function refreshCurrencyControl(value){
+ const options=currencyOptionsForRail(currentRail);
+ const selector=$("currency");selector.replaceChildren();
+ for(const currency of options){
+  const option=text("option",currency);option.value=currency;selector.append(option);
+ }
+ selector.value=options.includes(value)?value:defaultCurrencyForRail(currentRail);
+ $("currency-context").textContent=options.length===1?
+  "Illustrative domestic currency: "+options[0]+" only. No FX conversion.":
+  "Choose EUR, GBP, SEK, PLN or DKK for this global teaching context; this does not model FX, eligibility or settlement.";
+}
 function loadSynthetic(){
+ if(!$("rail").options.length)return;
  currentMessage=generateFixture(currentRail,$("scenario").value);
+ refreshCurrencyControl(currentMessage.currency);
  $("json-editor").value=JSON.stringify(currentMessage,null,2);
  $("trace-uetr").value=currentMessage.uetr||"";
  disableExports();
@@ -219,14 +245,31 @@ for(const message of MESSAGE_FAMILIES){
  $("message-family").append(option);
 }
 $("scenario").value="missing-town";
-$("region").addEventListener("change",()=>{replaceRailList();loadSynthetic()});
-$("search-rails").addEventListener("input",()=>{replaceRailList();loadSynthetic()});
+$("region").addEventListener("change",()=>{if(replaceRailList())loadSynthetic()});
+$("search-rails").addEventListener("input",()=>{if(replaceRailList())loadSynthetic()});
 $("rail").addEventListener("change",()=>chooseRail($("rail").value));
+$("currency").addEventListener("change",()=>{
+ try{
+  const draft=readModel();
+  if(!currencyOptionsForRail(currentRail).includes($("currency").value))
+   throw Error("Currency unavailable for this educational payment context.");
+  draft.currency=$("currency").value;
+  $("json-editor").value=JSON.stringify(draft,null,2);
+  disableExports();
+  $("trace-result").replaceChildren();
+  feedback("Sample currency changed to "+draft.currency+". Run checks again to refresh reports and case handoff.");
+ }catch(error){feedback(error.message);}
+});
 $("scenario").addEventListener("change",loadSynthetic);
 $("load-fixture").addEventListener("click",loadSynthetic);
 $("reset-editor").addEventListener("click",loadSynthetic);
 $("json-editor").addEventListener("input",()=>{
  disableExports();
+ $("trace-result").replaceChildren();
+ try{
+  const draft=JSON.parse($("json-editor").value);
+  if(currencyOptionsForRail(currentRail).includes(draft.currency))$("currency").value=draft.currency;
+ }catch{/* Incomplete JSON is checked when submitted. */}
  feedback("Draft modified. Run checks again before exporting or opening a case.");
 });
 $("validate").addEventListener("click",validate);
