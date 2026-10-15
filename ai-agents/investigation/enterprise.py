@@ -18,6 +18,7 @@ from pathlib import Path
 
 from cryptography.fernet import Fernet, InvalidToken
 from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 ROLES = {"ADMIN", "INVESTIGATOR", "REVIEWER", "VIEWER"}
@@ -96,6 +97,29 @@ def create_app(path: str, evidence_key: bytes, audit_key: bytes) -> FastAPI:
     setup(path)
     app = FastAPI(title="AddressRail isolated tenant-security training lab",
                   docs_url=None, redoc_url=None, openapi_url=None)
+
+    # Strict same-origin script loading; no public auth service or static token storage.
+    ui_headers = {
+        "Cache-Control": "no-store",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "Referrer-Policy": "no-referrer",
+        "Content-Security-Policy": (
+            "default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; "
+            "connect-src 'self'; img-src 'self'; form-action 'self'; "
+            "frame-ancestors 'none'; base-uri 'none'"
+        ),
+    }
+
+    @app.get("/enterprise/dashboard", include_in_schema=False)
+    def enterprise_dashboard():
+        return FileResponse(Path(__file__).parent / "enterprise_dashboard.html",
+                            media_type="text/html", headers=ui_headers)
+
+    @app.get("/enterprise/dashboard.js", include_in_schema=False)
+    def enterprise_dashboard_script():
+        return FileResponse(Path(__file__).parent / "enterprise_dashboard.js",
+                            media_type="text/javascript", headers=ui_headers)
 
     @contextmanager
     def database():
