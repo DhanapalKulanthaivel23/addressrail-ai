@@ -178,4 +178,10 @@ $("handoff-journey").addEventListener("click",()=>{
   window.location.assign("../open-demo/#import-intelligence");
  }catch(error){set("journey-feedback","No browser tab storage available; export JSON instead. "+error.message);}
 });
+window.addEventListener("addressrail:mode",event=>{
+  const target=event.detail?.mode;
+  if(target&&target!==mode)selectMode(target);
+ });
+for(const button of document.querySelectorAll("[data-mode]"))
+ button.addEventListener("click",()=>window.dispatchEvent(new CustomEvent("addressrail:select-mode",{detail:{mode:button.dataset.mode}})));
 renderMap(journeyId);selectMode(mode);loadJourney(journeyId);
