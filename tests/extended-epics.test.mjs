@@ -10,7 +10,7 @@ const names=["sdd","fps","bacs","t2","cbpr","cls"];
 test("AR-107 AR-305 AR-306: six distinct rail pages have unique canonical, title and described exceptions",()=>{
  assert.deepEqual(Object.keys(OVERVIEWS),names);
  for(const id of names){
-  const p="web/studio/"+id+"/index.html",html=readFileSync(p,"utf8");
+  const p="web/studio/"+(id==="sct"?"sepa-sct":id)+"/index.html",html=readFileSync(p,"utf8");
   const rail=getOverview(id);
   assert.match(html,new RegExp('<link rel="canonical" href="[^"]*/studio/'+id+'/'));
   assert.equal((html.match(/<h1[^>]*>/g)||[]).length,1);
@@ -45,7 +45,7 @@ test("AR-501 AR-502 AR-503: SCT, instant and CHAPS rail cards cover required sec
    assert.equal(gradeCard(id,i,card.quizzes[i].correct).correct,true);
    assert.ok(gradeCard(id,i,(card.quizzes[i].correct+1)%3).explanation);
   }
-  const html=readFileSync("web/studio/"+id+"/index.html","utf8");
+  const html=readFileSync("web/studio/"+(id==="sct"?"sepa-sct":id)+"/index.html","utf8");
   assert.match(html,/data-rail-card=/);
   assert.match(html,/ar-card-success/);
   assert.match(html,/ar-card-failure/);
@@ -83,7 +83,7 @@ test("AR-301/302: safe browser-only XML subset validation guards against non-syn
   const result=validateSyntheticXML(xml,id,undefined);
   assert.ok(Array.isArray(result));
   assert.ok(result.some(x=>x.id==="XML-ENV"),"Node should not claim browser XML XSD support");
-  const html=readFileSync("web/studio/"+id+"/index.html","utf8");
+  const html=readFileSync("web/studio/"+(id==="sct"?"sepa-sct":id)+"/index.html","utf8");
   assert.match(html,/data-xml-review=/);
   assert.match(html,/No ISO XSD validation/);
  }
