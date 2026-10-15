@@ -128,6 +128,16 @@ try{
  assert.equal(await dashboard.locator("#rail").inputValue(),"chaps");
  assert.match(await dashboard.locator("#release-id").textContent(),/v3/);
  await dashboard.close();
+ const rootPage=await journeys.newPage();
+ rootPage.on("pageerror",error=>exceptions.push("homepage: "+error.message));
+ await rootPage.goto(base+"/");
+ assert.equal(await rootPage.locator(".root-topbar").count(),1);
+ assert.equal(await rootPage.locator(".root-audience-card").count(),3);
+ assert.match(await rootPage.locator(".root-welcome h1").textContent(),/Future of Payments with AI/);
+ assert.equal(await rootPage.locator("#sample option").count(),3);
+ await rootPage.locator("#run").click();
+ assert.doesNotMatch(await rootPage.locator("#state").textContent(),/Run checks to see your address findings/);
+ await rootPage.close();
  const startPage=await journeys.newPage();
  startPage.on("pageerror",error=>exceptions.push("start: "+error.message));
  await startPage.goto(base+"/studio/start/");
@@ -211,6 +221,10 @@ try{
  assert.equal(await small.locator("#dashboard-rail-list button").count(),43);
  await small.locator('[data-filter="beginner"]').click();
  assert.equal(await small.locator("#dashboard-rail-list button").count(),8);
+ await small.goto(base+"/");
+ const rootWidth=await small.evaluate(()=>({actual:document.documentElement.scrollWidth,expected:innerWidth}));
+ assert.ok(rootWidth.actual<=rootWidth.expected+2,"Homepage mobile overflow: "+JSON.stringify(rootWidth));
+ assert.equal(await small.locator(".root-audience-card").count(),3);
  await mobile.close();
  assert.deepEqual(exceptions,[]);
  console.log("BROWSER PASS: six-journey modes, mapping, failure-stage evidence, AI replay, quiz, JSON and guest import; desktop five-currency validation, JSON/message export, same-tab handoff, isolated visitor, mobile controls, no runtime errors");

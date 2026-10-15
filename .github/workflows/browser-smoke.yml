@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'web/studio/**'
+      - 'web/index.html'
       - 'tests/browser-smoke.mjs'
       - '.github/workflows/browser-smoke.yml'
   pull_request:
