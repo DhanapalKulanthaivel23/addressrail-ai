@@ -62,7 +62,7 @@ test("v2 site links and lab controls exist without new browser-side network or c
  ];
  for(const file of files)assert.match(readFileSync(file,"utf8"),/AddressRail/i,file);
  const index=readFileSync("web/studio/index.html","utf8");
- assert.match(index,/id="release-id">v2/);
+ assert.match(index,/id="release-id">v3/);
  assert.match(index,/href="start\//);
  assert.match(index,/href="ai-lab\//);
  const cross=readFileSync("web/studio/payment-intelligence/index.html","utf8");
