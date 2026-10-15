@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Open Payments Case Demo — No Login | AddressRail AI</title>
+<meta name="description" content="Try AddressRail AI's synthetic payments investigation and case management demo for free, with no login, API key or installation.">
+<link rel="canonical" href="https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/open-demo/">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="AddressRail AI | Free Guest Payment Investigation Demo">
+<meta property="og:description" content="Open synthetic SEPA, instant and CHAPS cases, assign reviewers and try training decisions without a login.">
+<link rel="stylesheet" href="../studio.css">
+<link rel="stylesheet" href="demo.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to case management</a>
+<div class="app">
+<aside>
+<a class="brand" href="../../">AddressRail <span>AI</span><small>PAYMENT INTELLIGENCE PLATFORM</small></a>
+<div class="navlabel">OPEN DEMONSTRATION</div>
+<a href="../">← Banking Studio</a>
+<a href="#main">Guest workspace</a>
+<a href="#how-it-works">What you can try</a>
+<a href="../sepa-sct/">SEPA SCT message builder</a>
+<a href="../chaps/">CHAPS message explorer</a>
+<p class="side-note">Public educational sandbox. No accounts, authentication, shared databases, payment initiation, settlement or live Gemini calls.</p>
+</aside>
+<div class="body">
+<header><span>Workspace / Public Guest Case Management</span><a href="https://github.com/DhanapalKulanthaivel23/addressrail-ai" target="_blank" rel="noopener noreferrer">Open source ↗</a></header>
+<main id="main">
+<section class="hero guest-hero">
+<div class="kicker">ADDRESSRAIL AI / OPEN DEMO</div>
+<h1>Payments operations.<br><em>Try it as a guest.</em></h1>
+<p>Explore payments investigation and case management using fictional SEPA SCT, SCT Inst and CHAPS examples. No sign-up, password, MFA, Keycloak server, API key or installation needed.</p>
+<div class="steps">SIMULATE → INVESTIGATE → ASSIGN → REVIEW → RECORD</div>
+</section>
+<div class="notice guest-notice"><strong>Public demonstration, not a hosted bank service.</strong> All cases, notes and activity stay inside your current browser tab; other visitors cannot see them. Organisations and roles shown here are <strong>illustrative UI concepts, not access controls</strong>. Do not enter customer information, real payments or confidential data.</div>
+
+<section class="section entry-section" id="guest-entry">
+<div class="kicker">01 / START YOUR DEMONSTRATION</div>
+<h2>No login required.</h2>
+<p>Enter with an optional fictional display name. Everything else is ready to try.</p>
+<form id="entry-form" class="card enter-card">
+<div class="enter-row">
+<div><label for="start-alias">Guest display name (optional)</label>
+<input id="start-alias" type="text" maxlength="36" value="Demo Guest" autocomplete="off" placeholder="Demo Guest">
+<p class="micro">This is only a display label—not an account or verified identity.</p></div>
+<button type="submit" class="button">Enter guest workspace →</button>
+</div>
+</form>
+</section>
+
+<div id="workspace" hidden>
+<section class="section workspace-section">
+<div class="workspace-heading">
+<div><div class="kicker">02 / PAYMENT INVESTIGATION WORKSPACE</div><h2>Cases, evidence and decisions.</h2>
+<p class="micro">Choose an illustrative organisation to view its separate browser records. You can switch freely; this is not server-side tenant isolation.</p></div>
+<button id="exit-demo" type="button" class="secondary">Exit guest view</button>
+</div>
+<div class="workspace-controls card">
+<div><label for="tenant">Demo organisation</label><select id="tenant"></select></div>
+<div><label for="actor">Current fictional actor</label><input id="actor" maxlength="36" value="Demo Guest" autocomplete="off"></div>
+<div><label for="status-filter">Case filter</label>
+<select id="status-filter"><option value="ALL">All cases</option>
+<option value="OPEN">Open workflow</option><option value="IN_REVIEW">In review</option>
+<option value="ESCALATED">Escalated</option><option value="CLOSED">Closed workflow</option>
+<option value="RJCT">Payment: rejected</option><option value="PENDING">Payment: pending</option>
+<option value="UNKNOWN">Payment: unknown</option><option value="ACTC">Payment: technical ack</option>
+<option value="ACSC">Payment: fictional completion</option></select></div>
+</div>
+<div class="stat-grid" aria-label="Current demo case counts">
+<div><strong id="count-total">0</strong><span>Cases in demo organisation</span></div>
+<div><strong id="count-open">0</strong><span>Open or in progress</span></div>
+<div><strong id="count-closed">0</strong><span>Closed training cases</span></div>
+</div>
+
+<div class="case-layout">
+<div class="case-sidebar">
+<section class="card case-card">
+<div class="section-heading"><h3>Payment case queue</h3><button id="reset-demo" class="text-button" type="button">Reset demo data</button></div>
+<p class="micro">Each visitor gets their own fictional queue, preloaded with sample exceptions.</p>
+<div id="case-list" class="case-list" aria-label="Cases in selected demonstration organisation"></div>
+<p id="queue-status" class="micro" role="status"></p>
+</section>
+<section class="card case-card">
+<div class="kicker">CREATE A SYNTHETIC CASE</div>
+<h3>Inject another payment scenario</h3>
+<label for="scenario">Choose a fictional payment event</label><select id="scenario"></select>
+<button id="create-case" class="button full" type="button">Create synthetic case →</button>
+<p class="micro">Creates a fictional payment and case in this browser tab. No bank API or scheme system is contacted.</p>
+</section>
+</div>
+<div class="case-detail">
+<section class="card detail-card">
+<div class="section-heading"><div><div class="kicker">CASE INVESTIGATION</div><h3 id="detail-title">Choose a case to inspect</h3></div>
+<span id="payment-status" class="status-pill">SYNTHETIC</span></div>
+<div id="payment-meta" class="payment-meta">Select a case on the left.</div>
+<div class="finding-grid">
+<div><h4>Deterministic finding</h4><p id="finding">Evidence will appear here.</p></div>
+<div><h4>Suggested next step</h4><p id="recommendation">Human review is always required.</p></div>
+</div>
+<h4>Recorded fictional payment events</h4>
+<div id="event-list" class="timeline" aria-live="polite"></div>
+<p class="micro">Technical acknowledgment or a fictional positive status is not verified real settlement.</p>
+</section>
+<section class="card detail-card" id="actions-panel">
+<div class="kicker">03 / TRY CASE MANAGEMENT</div><h3>Assign, escalate and review</h3>
+<div class="action-grid">
+<div><label for="assignee">Fictional assigned owner</label>
+<input id="assignee" maxlength="36" value="Demo Reviewer" autocomplete="off">
+<button id="assign" class="secondary" type="button" disabled>Assign case</button></div>
+<div><label for="workflow-state">Training workflow state</label>
+<select id="workflow-state"><option value="OPEN">OPEN</option>
+<option value="IN_REVIEW">IN_REVIEW</option><option value="ESCALATED">ESCALATED</option>
+<option value="CLOSED">CLOSED</option></select>
+<button id="change-state" class="secondary" type="button" disabled>Update state</button></div>
+</div>
+<label for="note">Synthetic investigation note (no real customer information)</label>
+<textarea id="note" maxlength="260" rows="3" placeholder="Example: Fictional liquidity queue remains pending; verify the simulated evidence reference."></textarea>
+<button id="add-note" class="secondary" type="button" disabled>Add training note</button>
+<div class="review-box">
+<h4>Training decision — not a payment approval</h4>
+<label for="decision">Example reviewer outcome</label>
+<select id="decision">
+<option value="APPROVED_FOR_TRAINING">Approved for training</option>
+<option value="REJECTED_FOR_TRAINING">Rejected for training</option>
+</select>
+<button id="decide" class="button" type="button" disabled>Submit fictional review decision</button>
+</div>
+<p id="action-status" role="status" class="action-status micro" aria-live="polite"></p>
+</section>
+<section class="card detail-card">
+<div class="section-heading"><h3>Case activity history</h3><button id="export-case" type="button" class="text-button" disabled>Export example JSON ↓</button></div>
+<div id="activity-list" class="timeline" aria-live="polite"></div>
+<p class="micro">This activity is editable browser demo data—not an authenticated, immutable or externally verified audit log.</p>
+</section>
+</div>
+</div>
+</section>
+</div>
+
+<section class="section" id="how-it-works"><div class="kicker">HOW IT WORKS</div><h2>One link, no setup.</h2>
+<div class="cards">
+<article class="card"><h3>Explore payment exceptions</h3><p>Investigate synthetic SEPA invalid beneficiary data, instant response timeouts and CHAPS liquidity holds with realistic terminology.</p></article>
+<article class="card"><h3>Simulate operational decisions</h3><p>Assign a fictional case, enter a training note, change its workflow state and record an example reviewer outcome.</p></article>
+<article class="card"><h3>Prototype enterprise workflows</h3><p>Demonstrate the user experience to prospective clients without collecting credentials or providing access to a banking backend.</p></article>
+</div>
+<p class="disclaimer">The public guest version does not run Quarkus, LangGraph, Gemini or Keycloak. For real authenticated, tenant-separated local experimentation, use the separate Enterprise Security Lab. Never use a shared demo key or publish API credentials in a public GitHub repository.</p>
+</section>
+<footer>AddressRail AI · Free synthetic payment operations demo · <a href="../">Banking Studio</a> · <a href="../../">Address Intelligence</a></footer>
+</main>
+</div>
+</div>
+<script type="module" src="./lab.mjs"></script>
+</body></html>
