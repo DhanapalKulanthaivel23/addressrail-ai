@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Banking Payments & AI — Learn, Present and Simulate | AddressRail AI</title>
+<meta name="description" content="Interactive UK and European payment journeys for banking professionals, AI specialists and beginners: six detailed flows, 24 synthetic scenarios, 43 related payment contexts, no login.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/journeys/">
+<link rel="stylesheet" href="../studio.css"><link rel="stylesheet" href="./journeys.css"></head>
+<body><a class="skip" href="#main">Skip to journeys</a>
+<div class="app"><aside>
+<a class="brand" href="../../">AddressRail <span>AI</span><small>PAYMENTS & AI STUDIO</small></a>
+<div class="navlabel">LEARN · SHOW · TEST</div>
+<a href="../">← Banking Studio</a><a href="#audience">Choose experience</a><a href="#connections">Connections explorer</a>
+<a href="#journey">Six detailed journeys</a><a href="#ai-workflow">AI investigation replay</a><a href="#learn-check">Test your knowledge</a>
+<div class="navlabel">RELATED LABS</div>
+<a href="../payment-intelligence/">43-context catalogue ↗</a><a href="../open-demo/">Private guest cases ↗</a>
+<a href="../sepa-sct/">SEPA message builder ↗</a><a href="../chaps/">CHAPS message explorer ↗</a>
+<p class="side-note">Synthetic educational simulations only. No bank connectivity, payment execution, official conformance or live LLM.</p>
+</aside><div class="body"><header><span>Workspace / Interactive Payment Journeys</span><a href="../">Banking Studio ↗</a></header>
+<main id="main">
+<section class="hero journeys-hero"><div class="kicker">ADDRESSRAIL AI / INTERACTIVE BANKING + AI</div>
+<h1>Explain the flow.<br><em>Test the outcome.</em></h1>
+<p>From the customer's instruction to interbank messaging, settlement boundaries, investigation and AI assistance. One evidence-based synthetic learning engine for professionals, AI practitioners and newcomers.</p>
+<div class="steps">3 EXPERIENCES · 43 REFERENCE CONTEXTS · 6 DEEP JOURNEYS · 24 FICTIONAL OUTCOMES · NO LOGIN</div>
+</section>
+<p class="notice" role="note"><strong>Scope:</strong> This is a teaching simulator, not a real payment system, certified scheme validator, Swift tracker or LLM. Six journeys have deeper simulations; the other catalogue entries have introductory reference coverage. Never enter genuine payment or customer data. Processing details can depend on current rules, bank arrangements and participant eligibility.</p>
+<section class="section" id="audience">
+<div class="kicker">01 / HOW WILL YOU USE THIS?</div><h2>Choose your experience.</h2>
+<div class="mode-grid" role="group" aria-label="Choose audience mode">
+<button type="button" class="mode-card" data-mode="professional" aria-pressed="false"><strong>Banking professional</strong><span>Present architecture, flows, messages and operational exceptions.</span><small>EXPLAIN & PRESENT</small></button>
+<button type="button" class="mode-card" data-mode="ai" aria-pressed="false"><strong>AI / LLM specialist</strong><span>Compare deterministic validation with guarded AI explanations.</span><small>EXPERIMENT & EVALUATE</small></button>
+<button type="button" class="mode-card" data-mode="learner" aria-pressed="false"><strong>New to banking</strong><span>Learn each concept, step through payments and answer questions.</span><small>LEARN & TEST</small></button>
+</div>
+<p id="mode-description" class="mode-description" aria-live="polite"></p>
+<div class="mode-tools"><button id="presentation" type="button" class="text-action" aria-pressed="false">Toggle full-screen presentation layout</button>
+<a href="#journey">Start interactive journey ↓</a></div>
+</section>
+<section class="section" id="connections"><div class="kicker">02 / PAYMENT SYSTEMS & CONNECTIONS</div>
+<h2>What's connected to what?</h2>
+<p>Explore <strong>43 distinct contexts</strong>—payment schemes, central-bank services, networks, clearing infrastructures and overlays. Relationship cards describe educational associations, not verified participant connectivity or actual payment routes.</p>
+<div class="card map-workspace">
+<div class="map-top"><div><label for="map-rail">Explore a payment system or service</label><select id="map-rail" aria-label="Select a payment system for the connections map"></select></div>
+<div class="map-head"><small>SELECTED CONTEXT</small><h3 id="map-name">Select a context</h3><p id="map-kind"></p></div></div>
+<p id="map-about"></p><p><a id="map-reference" target="_blank" rel="noopener noreferrer" href="#">Operator or standards reference ↗</a></p>
+<div class="map-path" aria-label="Selected payment context and connections">
+<div class="map-node selected"><small>FOCUS</small><strong id="map-focus">Payment context</strong></div>
+<div id="map-neighbours" class="map-neighbours" aria-live="polite"></div></div>
+<p class="tiny">Connections are curated conceptual associations, not complete graph coverage or scheme eligibility. Some contexts intentionally have no modelled relationship yet.</p>
+<a href="../payment-intelligence/">Browse all 43 contexts and basic teaching checks →</a>
+</div></section>
+<section class="section" id="journey"><div class="kicker">03 / SIX STEP-BY-STEP SIMULATORS</div>
+<h2>Follow an instruction through the system.</h2><p>Select a payment journey and inject a fictional success, rejection, pending state, return or unknown outcome. The simulator stops the trace where the scenario occurs; it never fabricates downstream completion.</p>
+<div class="card journey-selectors"><div><label for="journey-select">Detailed payment journey</label><select id="journey-select"></select></div>
+<div><label for="scenario-select">Fictional outcome</label><select id="scenario-select"></select></div></div>
+<div class="journey-intro card"><h3 id="journey-title">Select a payment journey</h3><p id="journey-intro"></p>
+<p id="journey-distinction"></p><a id="journey-reference" href="#" target="_blank" rel="noopener noreferrer">Authoritative background ↗</a></div>
+<div class="journey-stage-grid">
+<div class="card stage-navigation"><div class="section-heading"><h3>Processing steps</h3><strong id="step-count" class="tiny">Step 1</strong></div>
+<ol id="stage-list" class="stage-list" aria-label="Synthetic payment processing steps"></ol>
+<div class="step-controls"><button id="step-prev" class="button outline" type="button">← Previous</button><button id="step-next" class="button" type="button">Next step →</button></div></div>
+<div class="card stage-detail"><div class="kicker">SENDER → RECEIVER → MESSAGE</div>
+<h3 id="stage-title">Inspect a step</h3>
+<dl><dt>Who sends?</dt><dd id="stage-sender"></dd><dt>Who receives?</dt><dd id="stage-receiver"></dd><dt>What information is exchanged?</dt><dd id="stage-message"></dd></dl>
+<p id="stage-explanation"></p><div class="scenario-outcome" id="scenario-outcome" role="status" aria-live="polite"></div>
+<div id="learner-help" class="audience-note"><strong>Learning prompt</strong><p id="learner-question"></p></div>
+<div id="presenter-help" class="audience-note" hidden><strong>Presenter question</strong><p id="presenter-question"></p></div>
+</div></div>
+<div class="evidence-grid"><div class="card"><h3>Fictional evidence timeline</h3><div id="journey-evidence" class="event-grid" aria-live="polite"></div>
+<p class="tiny">Evidence references are fictional and provide no external proof.</p></div>
+<div class="card"><h3>Messages and testing</h3>
+<p>Compare the selected stage's concept with a deliberately incomplete teaching message or conceptual retail record.</p>
+<button id="sample-message" class="text-action" type="button">Show synthetic message ↓</button>
+<pre id="journey-message" class="message-preview" hidden></pre>
+<button id="run-journey-checks" class="button" type="button">Test deterministic checks</button>
+<div id="journey-findings" role="status" aria-live="polite"></div>
+<div class="journey-actions">
+<a id="open-deep-validator" href="../payment-intelligence/">Open the existing validation lab ↗</a>
+<button id="download-journey" class="text-action" type="button">Export fictional journey JSON ↓</button>
+<button id="handoff-journey" class="button" type="button">Create private guest case →</button>
+</div><p id="journey-feedback" role="status" class="tiny"></p></div></div>
+</section>
+<section class="section" id="ai-workflow"><div class="kicker">04 / AI FOR BANK OPERATIONS</div>
+<h2>What would AI add—and what must it never claim?</h2>
+<p>Compare the same evidence with a scripted AI-assistant explanation. <strong>No LLM is running here.</strong> This transparent replay demonstrates a possible future workflow rather than showing actual AI performance.</p>
+<div class="ai-grid"><div class="card"><h3>Deterministic controls</h3><p id="ai-rules"></p><h4>Evidence supplied</h4><p id="ai-evidence"></p></div>
+<div class="card"><h3>Hypothetical LLM assistant</h3><p id="ai-replay"></p><h4>Human action</h4><p id="ai-review"></p></div></div>
+<p id="ai-boundary" class="notice"></p>
+<p><a href="https://github.com/DhanapalKulanthaivel23/addressrail-ai/tree/main/ai-agents/investigation" target="_blank" rel="noopener noreferrer">Explore the separate local LangGraph agent, tests and optional Gemini integration ↗</a></p>
+</section>
+<section class="section" id="learn-check"><div class="kicker">05 / PRACTICE & UNDERSTANDING</div>
+<h2>Can you explain the processing boundary?</h2>
+<div class="card"><h3 id="quiz-question"></h3><div id="quiz-options" class="quiz-options" role="group" aria-label="Answer payment concept question"></div>
+<p id="quiz-result" role="status" aria-live="polite"></p><p id="progress" class="tiny"></p></div>
+</section>
+<p class="disclaimer">Independent educational content, not affiliated with or certified by Swift, EPC, Pay.UK, Bank of England, ECB, EBA CLEARING or CLS. No actual bank connections, scheme compliance decisions, external status queries, payments, settlement, sanctions decisions or autonomous LLM actions.</p>
+<footer>AddressRail AI · <a href="../payment-intelligence/">43-context catalogue</a> · <a href="../open-demo/">Private guest cases</a> · <a href="../">Banking Studio</a></footer>
+</main></div></div><script type="module" src="./lab.mjs"></script></body></html>
