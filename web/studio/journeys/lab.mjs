@@ -64,7 +64,7 @@ function runScenario(){
  $("journey-reference").href=getRail(journeyId).reference;
  $("journey-message").hidden=true;$("sample-message").textContent="Show synthetic message ↓";
  renderTeachingRules();renderPresenter();set("journey-feedback","");
- renderStage();renderAI();renderQuiz();
+ renderStage();renderAI();renderQuiz();renderOutcomeComparison();
  const original=String(scenarioId).toLowerCase();
  const faultMap={"address-review":"missing-town","iban-reject":"invalid-iban","timeout":"timeout","tracking-gap":"timeout",
    "unknown":"timeout","response-lost":"timeout","liquidity-hold":"liquidity","mandate":"mandate"};
@@ -83,6 +83,20 @@ function renderPresenter(){
  for(const item of presenterScript(simulation)){
   const li=el("li",item.minute+" — "+item.action+": "+item.say);container.append(li);
  }
+}
+function renderOutcomeComparison(){
+ const success=simulate(journeyId,"success"),failed=simulation;
+ const normal=$("ar-success-trace"),fault=$("ar-failure-trace");
+ normal.replaceChildren();fault.replaceChildren();
+ for(const stage of success.stages.filter(x=>x.reachable)){
+  normal.append(el("li",stage.sender+" → "+stage.receiver+": "+stage.message+". "+stage.meaning));
+ }
+ for(const stage of failed.stages.filter(x=>x.reachable)){
+  fault.append(el("li",stage.sender+" → "+stage.receiver+": "+stage.message));
+ }
+ fault.append(el("li","FICTIONAL "+failed.status+": "+failed.scenario.what));
+ set("ar-failure-heading",scenarioId==="success"?"Illustrative comparison (no injected failure)":
+  "Exception: "+failed.scenario.label);
 }
 function renderStage(){
  const {scenario,journey}=simulation;
@@ -172,6 +186,11 @@ $("sample-message").addEventListener("click",()=>{
 });
 $("run-journey-checks").addEventListener("click",renderTeachingRules);
 $("download-journey").addEventListener("click",downloadJson);
+$("ar-copy-scenario").addEventListener("click",async()=>{
+ try{await navigator.clipboard.writeText(location.href);set("ar-share-message","Deep link copied for this rail, scenario and audience mode.")}
+ catch{set("ar-share-message","Copy this shareable URL: "+location.href)}
+});
+$("ar-print-scenario").addEventListener("click",()=>window.print());
 $("handoff-journey").addEventListener("click",()=>{
  try{const payload=prepareHandoff(simulation.report);
   sessionStorage.setItem(HANDOFF_KEY,JSON.stringify(payload));

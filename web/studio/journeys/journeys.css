@@ -73,3 +73,11 @@ body.presentation-active .journey-stage-grid{grid-template-columns:1fr}}
 @media(max-width:650px){.ar-compare-picks{grid-template-columns:1fr 1fr}}
 @media print{#ar-shared-nav,aside,.step-controls,.ra-comments{display:none!important}
 #compare-rails{break-before:page}#compare-results{font-size:9px}.ar-compare-table-wrap{overflow:visible}main{max-width:none}}
+
+.ar-outcome-compare{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin:13px 0}
+.ar-outcome-compare ol{font-size:11px;line-height:1.7;padding-left:22px}
+.ar-outcome-compare li{padding-bottom:9px;overflow-wrap:anywhere}
+@media(max-width:650px){.ar-outcome-compare{grid-template-columns:1fr}}
+@media print{#ar-shared-nav,aside,.ra-comments,.step-controls,header{display:none!important}
+#compare-outcomes{break-before:page}.ar-outcome-compare{grid-template-columns:1fr 1fr}
+main{padding:10px;max-width:none}.card{box-shadow:none}}
