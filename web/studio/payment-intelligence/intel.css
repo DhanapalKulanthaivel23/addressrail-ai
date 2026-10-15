@@ -80,3 +80,14 @@ button:disabled{opacity:.45;cursor:not-allowed}
  .assessment-stats span{font-size:9px}
  .rail-grid h3{font-size:26px}
  .source-output{max-height:340px;min-height:220px}}
+
+/* Make multi-rail filters and currency controls usable on small screens. */
+#currency-context{margin:3px 0 14px;overflow-wrap:anywhere}
+@media(max-width:980px){.filterbar{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){.filterbar{grid-template-columns:1fr}}
+@media(max-width:480px){.rail-list{grid-template-columns:1fr}
+ .section-heading{flex-wrap:wrap}
+ .assessment-stats strong{font-size:22px}
+ .editor-controls .inline-actions .button{width:100%}
+ .intel-hero{padding:32px 22px}
+}
