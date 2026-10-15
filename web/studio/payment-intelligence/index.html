@@ -57,10 +57,12 @@
 
 <section class="section" id="investigate">
 <div class="kicker">02 / SYNTHETIC PAYMENT QUALITY</div><h2>Inject a payment exception.</h2>
-<p>Start with a generated synthetic record or inspect and edit its JSON fields. Checks run only in your browser; original fields are never repaired without clicking the explicit review action.</p>
+<p>Choose a synthetic scenario and a currency (EUR, GBP, SEK, PLN or DKK, where relevant), or edit the JSON. Domestic examples use one fictional currency; no FX is performed. Checks run only in your browser; original fields are never repaired without clicking the explicit review action.</p>
 <div class="editor-grid">
 <div class="card editor-controls">
 <label for="scenario">Educational scenario</label><select id="scenario"></select>
+<label for="currency">Illustrative payment currency</label><select id="currency" aria-describedby="currency-context"></select>
+<p class="tiny" id="currency-context">Allowed currencies depend on the selected educational context.</p>
 <button id="load-fixture" class="button wide" type="button">Load synthetic scenario →</button>
 <p class="tiny">No real payment is transmitted; outcomes are fictional.</p>
 <label for="json-editor">Synthetic payment model (editable JSON)</label>
