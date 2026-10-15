@@ -36,11 +36,11 @@ jobs:
             BUST="$(curl -fsSL --max-time 20 "${BASE}?v=${GITHUB_SHA}" || true)"
             CHAPS="$(curl -fsSL --max-time 20 "${BASE}?module=chaps" || true)"
             if [[ "$PLAIN" == *"$EXPECT"* && "$BUST" == *"$EXPECT"* && "$CHAPS" == *"$EXPECT"* ]]; then
-              echo "All 3 URLs show v2 release marker."
+              echo "All 3 URLs show v3 release marker."
               echo "PUBLIC STUDIO FRESH: PASS (plain / query / ?module=chaps)" >> "$GITHUB_STEP_SUMMARY"
               exit 0
             fi
-            echo "Attempt $attempt/12: version not consistent across URLs; checking after CDN propagation."
+            echo "Attempt $attempt/12: v3 release marker not consistent across URLs; checking after CDN propagation."
             sleep 10
           done
           echo "::error::Public Studio stale on plain or query URL after deployment. Investigate CDN/browser caching."
