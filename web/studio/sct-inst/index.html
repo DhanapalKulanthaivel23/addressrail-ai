@@ -2,7 +2,7 @@
 <title>SEPA Instant SCT Inst: RT1 / TIPS Timeout & Exception Lab | AddressRail AI</title>
 <meta name="description" content="Free synthetic SCT Inst simulator: compare RT1 and TIPS illustrative routes, lost responses, rejection and duplicate review, message exchange and rules fired.">
 <link rel="canonical" href="https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/sct-inst/">
-<link rel="stylesheet" href="../studio.css"><link rel="stylesheet" href="../journeys/journeys.css"><link rel="stylesheet" href="../../comments.css?v=20261015-a"><link rel="stylesheet" href="../../site-shell.css?v=20261015-1"></head>
+<link rel="stylesheet" href="../studio.css"><link rel="stylesheet" href="../journeys/journeys.css"><link rel="stylesheet" href="../../comments.css?v=20261015-a"><link rel="stylesheet" href="../../site-shell.css?v=20261015-1"><link rel="stylesheet" href="../rail-card.css"></head>
 <body><a class="skip" href="#main">Skip to lab</a><div class="app"><aside>
 <a class="brand" href="../../">AddressRail <span>AI</span><small>PAYMENTS & AI STUDIO</small></a>
 <a href="../">← Banking Studio</a><a href="../start/">Start here ↗</a>
@@ -34,9 +34,26 @@
 <p class="disclaimer">Not EPC/RT1/TIPS approved or certified; no money movements, network calls, participant validation, measured scheme timing or settlement confirmation.</p>
 <footer>AddressRail AI · <a href="../journeys/">Guided journeys</a> · <a href="../ai-lab/">AI guardrails</a></footer>
 
-<section id="comments" class="ra-comments" data-comments-page="" aria-label="Community comments">
+<section class="section ar-rail-learning" id="rail-learning-card" data-rail-card="sct-inst">
+ <div class="kicker">LEARN THIS PAYMENT SYSTEM / INTERACTIVE RAIL CARD</div>
+ <h2 class="ar-card-title">Rail learning card</h2>
+ <p>Who connects, what messages are exchanged, where settlement occurs, how failure differs from success, and how AI can help safely.</p>
+ <div class="card"><h3>Who connects to whom?</h3><div class="ar-card-actors" aria-label="Conceptual payment participants"></div>
+ <div class="ar-card-outcomes">
+  <article><h3>Successful route (fictional)</h3><ol class="ar-card-success"></ol></article>
+  <article><h3>Failure route (fictional)</h3><ol class="ar-card-failure"></ol></article>
+ </div>
+ <p><button type="button" data-outcome="success" aria-pressed="false">Focus success</button>
+ <button type="button" data-outcome="failure" aria-pressed="true">Focus failure</button></p>
+ <h3>Settlement and finality</h3><p class="ar-card-settlement"></p>
+ <h3>Where AI helps</h3><ul class="ar-card-ai"></ul><p class="ar-card-caution"></p>
+ <p><a class="ar-card-lab" href="#">Open this rail's working lab →</a></p>
+ <h3>Five-question concept quiz</h3><p class="ar-card-score" aria-live="polite"></p>
+ <div class="ar-card-quiz" role="group" aria-label="Rail knowledge quiz"></div>
+ <p class="tiny">All timelines are synthetic educational illustrations. Passing the quiz is not a professional qualification.</p>
+ </div></section><section id="comments" class="ra-comments" data-comments-page="" aria-label="Community comments">
  <h2>Comments &amp; discussion</h2>
  <p class="ra-comments-intro">Ask a question, share feedback or suggest improvements to this page. Each page has its own discussion. Comments are visible to everyone after approval; please do not share real payment details.</p>
  <div class="ra-comments-app"><p>Enable JavaScript to view or leave a comment.</p></div>
 </section>
-</main></div></div><script type="module">import {mountRailWorkbench} from "../rail-workbench.mjs";mountRailWorkbench("sct-inst");</script><script src="../../config.js"></script><script src="../../comments.js?v=20261015-a" defer></script><script src="../../site-shell.js?v=20261015-1" defer></script></body></html>
+</main></div></div><script type="module">import {mountRailWorkbench} from "../rail-workbench.mjs";mountRailWorkbench("sct-inst");</script><script src="../../config.js"></script><script src="../../comments.js?v=20261015-a" defer></script><script src="../../site-shell.js?v=20261015-1" defer></script><script type="module" src="../rail-card-ui.mjs"></script></body></html>
