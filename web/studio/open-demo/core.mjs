@@ -1,3 +1,4 @@
+import {IMPORT_SCENARIO_ID,validateHandoff} from "../payment-intelligence/handoff.mjs";
 /**
  * AddressRail AI Open Demo: deterministic, browser-only synthetic case management.
  * NO authentication, server persistence, authorisation, real payment processing,
@@ -128,6 +129,38 @@ export function createCase(state,{tenant,scenarioId,actor}) {
   next.cases.unshift(item);
   return next;
 }
+/**
+ * Import a bounded synthetic finding from the cross-rail browser-only lab.
+ * The importing guest explicitly chooses the illustrative organisation.
+ */
+export function createIntelligenceCase(state,{tenant,actor,handoff}){
+  checkState(state);
+  if(!isDemoTenant(tenant))fail("Select an illustrative guest organisation.");
+  checkActor(actor);
+  if(!validateHandoff(handoff))fail("Only a valid synthetic cross-rail report can be imported.");
+  if(state.cases.length>=60)fail("Browser demo case limit reached.");
+  const next=copyState(state);
+  const id="DEMO-CASE-"+String(next.nextCase).padStart(5,"0");
+  const paymentId="DEMO-PAY-"+String(next.nextCase++).padStart(5,"0");
+  const item={
+    id,paymentId,tenant,scenarioId:IMPORT_SCENARIO_ID,
+    rail:handoff.rail,messageType:handoff.messageType,
+    paymentStatus:handoff.paymentStatus,currency:handoff.currency,amount:handoff.amount,
+    workflowState:"OPEN",assignedTo:"Unassigned",openedBy:actor,
+    decision:null,reviewedBy:null,
+    intelligence:structuredClone(handoff),
+    events:handoff.events.map(event=>({
+      type:event.type,
+      description:event.description,
+      evidenceRef:event.evidenceRef
+    })),
+    activity:[]
+  };
+  record(next,item,actor,"CASE_IMPORTED",
+    "Imported a synthetic cross-rail educational report; no participant was contacted.");
+  next.cases.unshift(item);
+  return next;
+}
 export function casesForTenant(state,tenant,filter="ALL") {
   checkState(state);
   if(!isDemoTenant(tenant))fail("Invalid demonstration organisation.");
@@ -185,7 +218,8 @@ export function validSavedState(value) {
   try {
     checkState(value);
     if(value.cases.some(c=>!isDemoTenant(c.tenant) ||
-      !SCENARIOS.some(s=>s.id===c.scenarioId) ||
+      !(SCENARIOS.some(s=>s.id===c.scenarioId) ||
+        (c.scenarioId===IMPORT_SCENARIO_ID && validateHandoff(c.intelligence))) ||
       !WORKFLOW_STATES.includes(c.workflowState) ||
       typeof c.id!=="string" || !Array.isArray(c.events) ||
       !Array.isArray(c.activity) || c.activity.length>100 ||
