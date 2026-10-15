@@ -21,8 +21,8 @@ export function buildChapsExample(kind,amount="250000.00"){
   <PmtId><InstrId>${id}</InstrId><EndToEndId>${id}</EndToEndId><TxId>${id}</TxId></PmtId>
   <IntrBkSttlmAmt Ccy="GBP">${a}</IntrBkSttlmAmt><IntrBkSttlmDt>2026-10-15</IntrBkSttlmDt>
   <Dbtr><Nm>SYNTHETIC PAYER LTD</Nm></Dbtr>
-  <DbtrAgt><FinInstnId><BICFI>AAAA GB 2L DEMO</BICFI></FinInstnId></DbtrAgt>
-  <CdtrAgt><FinInstnId><BICFI>BBBB GB 2L DEMO</BICFI></FinInstnId></CdtrAgt>
+  <DbtrAgt><FinInstnId><BICFI>AAAAGB2LXXX</BICFI></FinInstnId></DbtrAgt>
+  <CdtrAgt><FinInstnId><BICFI>BBBBGB2LXXX</BICFI></FinInstnId></CdtrAgt>
   <Cdtr><Nm>SYNTHETIC RECEIVER LTD</Nm></Cdtr>
  </CdtTrfTxInf>
 </FIToFICstmrCdtTrf>
