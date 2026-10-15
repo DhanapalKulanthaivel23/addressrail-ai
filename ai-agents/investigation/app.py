@@ -1,7 +1,9 @@
 """Local synthetic investigation lab API. No CORS; do not expose publicly."""
 from contextlib import asynccontextmanager
 from pathlib import Path
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Path
+from pydantic import BaseModel, Field
+from typing import Literal
 from fastapi.responses import FileResponse
 from .agent import investigate
 from .models import InvestigationRequest, InvestigationResult
@@ -62,3 +64,48 @@ async def investigate_payment(request: InvestigationRequest):
         return await investigate(request.payment_id)
     except Exception as exc:
         raise HTTPException(status_code=503, detail="Investigation temporarily unavailable") from exc
+
+# Local training workflow only: these aliases are labels, NOT authenticated identities.
+class OpenTrainingCase(BaseModel):
+    paymentId: str = Field(pattern=r"^[A-Za-z0-9_-]{1,80}$")
+    actorAlias: str = Field(pattern=r"^TRAINING-[A-Za-z0-9_-]{2,48}$")
+
+class TrainingNote(BaseModel):
+    actorAlias: str = Field(pattern=r"^TRAINING-[A-Za-z0-9_-]{2,48}$")
+    note: str = Field(min_length=1, max_length=500)
+
+class TrainingTransition(TrainingNote):
+    state: Literal["OPEN", "IN_REVIEW", "ESCALATED", "CLOSED"]
+    ownerAlias: str = Field(pattern=r"^TRAINING-[A-Za-z0-9_-]{2,48}$")
+    expectedVersion: int = Field(ge=0)
+
+async def _training_call(path: str, payload: dict | None = None):
+    try:
+        result=await PaymentTools().training_case_request(path,payload)
+        if result.get("error") in (400,409):
+            raise HTTPException(status_code=result["error"],detail="Training workflow request rejected")
+        return result
+    except PaymentNotFound as exc:
+        raise HTTPException(status_code=404,detail="Training case not found") from exc
+    except CoreUnavailable as exc:
+        raise HTTPException(status_code=503,detail="Local case management unavailable") from exc
+
+@app.get("/api/dashboard/workflow/{payment_id}")
+async def workflow_for_payment(payment_id: str = Path(pattern=r"^[A-Za-z0-9_-]{1,80}$")):
+    return await _training_call("/api/v1/labs/investigation-cases/by-payment/"+payment_id)
+
+@app.post("/api/dashboard/workflow")
+async def open_training_workflow(request: OpenTrainingCase):
+    return await _training_call("/api/v1/labs/investigation-cases",request.model_dump())
+
+@app.post("/api/dashboard/workflow/{case_id}/notes")
+async def training_note(case_id: str,request: TrainingNote):
+    if not case_id.startswith("CASE-") or len(case_id)>80:
+        raise HTTPException(status_code=422,detail="Invalid training case identifier")
+    return await _training_call("/api/v1/labs/investigation-cases/"+case_id+"/notes",request.model_dump())
+
+@app.post("/api/dashboard/workflow/{case_id}/transition")
+async def training_transition(case_id: str,request: TrainingTransition):
+    if not case_id.startswith("CASE-") or len(case_id)>80:
+        raise HTTPException(status_code=422,detail="Invalid training case identifier")
+    return await _training_call("/api/v1/labs/investigation-cases/"+case_id+"/transition",request.model_dump())
