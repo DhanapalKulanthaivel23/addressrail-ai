@@ -77,6 +77,17 @@ try{
   assert.match(await page.locator("[data-xml-findings]").textContent(),/XML-PRIVACY/);
   assert.equal(await page.locator(".ar-card-quiz button").count(),3);
  }
+ await page.goto(base+"/studio/start/");
+ await page.locator("#ar-glossary-open").waitFor({state:"attached"});
+ assert.match(await page.locator("#ar-glossary-open").textContent(),/72/);
+ await page.locator("#ar-glossary-open").click();
+ assert.equal(await page.locator("#ar-glossary-panel").isVisible(),true);
+ await page.locator("#ar-glossary-search").fill("RTGS");
+ assert.ok((await page.locator(".ar-glossary-list button").count())>=1);
+ await page.locator(".ar-glossary-list button").first().click();
+ assert.equal(await page.locator(".ar-glossary-list article p").first().isVisible(),true);
+ await page.keyboard.press("Escape");
+ assert.equal(await page.locator("#ar-glossary-panel").isHidden(),true);
  await page.goto(base+"/studio/?mode=professional");
  await page.locator("#ar-role").waitFor({state:"attached"});
  assert.equal(await page.locator("#ar-role").inputValue(),"professional");

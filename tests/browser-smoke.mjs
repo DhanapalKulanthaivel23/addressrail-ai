@@ -107,7 +107,7 @@ try{
  await startCheck.goto(base+"/studio/start/");
  assert.match(await startCheck.locator("#progress-message").textContent(),/0 of 8/);
  await startPage.reload();
- assert.match(await startPage.locator("#progress-message").textContent(),/1 of 5/);
+ assert.match(await startPage.locator("#progress-message").textContent(),/1 of 8/);
  await startCheck.close();
  const instant=await journeys.newPage();
  instant.on("pageerror",error=>exceptions.push("instant: "+error.message));
