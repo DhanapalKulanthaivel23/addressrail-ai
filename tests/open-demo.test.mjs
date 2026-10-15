@@ -66,7 +66,7 @@ test("review is explicitly training-only, final and never changes payment status
  const item=state.cases[0];
  assert.equal(item.decision,"APPROVED_FOR_TRAINING");
  assert.equal(item.workflowState,"CLOSED");
- assert.equal(item.paymentStatus,"PENDING");
+ assert.equal(item.paymentStatus,initial.cases[0].paymentStatus);
  assert.match(item.activity.at(-1).description,/No real payment was approved/);
  assert.throws(()=>decideCase(state,{caseId,tenant,actor:"Another Guest",decision:"REJECTED_FOR_TRAINING"}),/already closed/);
  assert.throws(()=>changeCaseState(state,{caseId,tenant,actor:"Guest",newState:"OPEN"}),/cannot be changed/);
