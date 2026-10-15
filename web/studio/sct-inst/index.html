@@ -1,0 +1,36 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SEPA Instant SCT Inst: RT1 / TIPS Timeout & Exception Lab | AddressRail AI</title>
+<meta name="description" content="Free synthetic SCT Inst simulator: compare RT1 and TIPS illustrative routes, lost responses, rejection and duplicate review, message exchange and rules fired.">
+<link rel="canonical" href="https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/sct-inst/">
+<link rel="stylesheet" href="../studio.css"><link rel="stylesheet" href="../journeys/journeys.css"></head>
+<body><a class="skip" href="#main">Skip to lab</a><div class="app"><aside>
+<a class="brand" href="../../">AddressRail <span>AI</span><small>PAYMENTS & AI STUDIO</small></a>
+<a href="../">← Banking Studio</a><a href="../start/">Start here ↗</a>
+<a href="#case-lab">SCT Inst exception lab</a><a href="../journeys/?rail=sct-inst">Detailed instant journey ↗</a>
+<a href="../ai-lab/?case=INSTANT_UNKNOWN">AI hallucination guardrail ↗</a><a href="../payment-intelligence/">43-context catalogue ↗</a>
+<p class="side-note">No live SEPA scheme, RT1 or TIPS connectivity. Fictional exercises and incomplete message sketches only.</p>
+</aside><div class="body"><header><span>Payments Studio / SEPA SCT Inst</span><span>Reviewed 15 October 2026</span></header>
+<main id="main"><section class="hero journeys-hero"><div class="kicker">EURO INSTANT PAYMENTS / FAILURE INVESTIGATION</div>
+<h1>Instant payments.<br><em>Unknown outcomes.</em></h1>
+<p>See what the sending bank, instant infrastructure and receiving bank exchange in one conceptual SCT Inst route. When a response is missing, the result is unknown—not rejected or settled.</p>
+<div class="steps">EPC 2025 SCT INST v1.2 · RT1 OR TIPS · SUCCESS / REJECTION / TIMEOUT / DUPLICATE REVIEW</div></section>
+<p class="notice"><strong>Scope:</strong> RT1 and TIPS are distinct possible infrastructures; choosing one does not model real participant reachability. The XML is deliberately incomplete and not a message you can send to banks. EPC SCT Inst 2025 rulebook v1.2 entered into effect on 30 September 2026 and postponed the previously scheduled unstructured-address deadline.</p>
+<section class="section" id="case-lab"><div class="kicker">INTERACTIVE EXCEPTION LAB / SYNTHETIC EVIDENCE</div>
+<h2>SCT Inst and RT1 / TIPS — test what happens.</h2>
+<p>Choose RT1 or TIPS as two distinct illustrative route options. Neither route calls a real PSP, CSM, or Eurosystem infrastructure.</p>
+<div class="card"><p id="case-review" class="tiny"></p>
+<div class="journey-selectors"><div><label for="case-scenario">Fictional success / exception scenario</label><select id="case-scenario"></select></div>
+<div><label for="case-route">Illustrative instant infrastructure option</label><select id="case-route"><option value="RT1">EBA CLEARING RT1</option><option value="TIPS">Eurosystem TIPS</option></select></div></div>
+<p id="case-outcome" role="status" aria-live="polite"></p>
+<div class="evidence-grid"><div><h3>Sender → receiver → messages</h3><div id="case-events" class="event-grid"></div></div>
+<div><h3>Rules fired / educational IDs</h3><div id="case-rules" class="event-grid"></div></div></div>
+<h3>Message / evidence sketch</h3><pre id="case-message" class="message-preview"></pre>
+<p id="case-guidance"></p><h3>Three-minute presenter walkthrough</h3><div id="case-script" class="event-grid"></div>
+<div class="starter-links"><button type="button" id="case-download" class="button">Download fictional investigation ↓</button>
+<a id="case-full-journey" href="../journeys/">Open this scenario step by step →</a>
+<a id="case-reference" href="#" target="_blank" rel="noopener noreferrer">Official operator / scheme background ↗</a></div>
+<p class="tiny">SIM-* identifiers are invented demo scenario IDs; DEMO_* checks are limited teaching rules. None are official EPC, Swift or CHAPS rule IDs.</p>
+</div></section>
+<p class="disclaimer">Not EPC/RT1/TIPS approved or certified; no money movements, network calls, participant validation, measured scheme timing or settlement confirmation.</p>
+<footer>AddressRail AI · <a href="../journeys/">Guided journeys</a> · <a href="../ai-lab/">AI guardrails</a></footer>
+</main></div></div><script type="module">import {mountRailWorkbench} from "../rail-workbench.mjs";mountRailWorkbench("sct-inst");</script></body></html>
