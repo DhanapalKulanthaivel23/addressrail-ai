@@ -15,7 +15,7 @@ const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefine
 const api=(window.ADDRESSRAIL_COMMENTS_URL||"").trim().replace(/\/$/,"");
 const deployed=location.hostname==="dhanapalkulanthaivel23.github.io";
 const path=decodeURI(location.pathname);
-const page=path.startsWith(ROOT)?"/"+path.slice(ROOT.length):"";
+const page=path.startsWith(ROOT)?"/"+path.slice(ROOT.length):path;
 const key=page.endsWith("/")?page:page+"/";
 function init(){
  const root=document.querySelector(".ra-comments[data-comments-page]");
