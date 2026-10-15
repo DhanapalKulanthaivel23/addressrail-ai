@@ -19,6 +19,14 @@ Developers who want to host their own instance can follow the [deployment guide]
 
 **Not a production system:** This is not an official Swift, ISO 20022, EPC or CBPR+ validator. MT parsing is intentionally heuristic. The demo does not transmit payments, perform sanctions screening or approve repairs.
 
+## Interactive banking journeys — three audiences
+
+**[Open the free Learn / Present / Banking AI Journeys](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/journeys/)**
+
+One no-login browser workspace for **banking professionals** presenting payment products, **AI specialists** explaining deterministic controls versus evidence-bounded hypothetical LLM assistance, and **beginners** studying participants, messages and settlement. It includes a clickable curated connections explorer for the 43 existing catalogue entries; **six deeper payment journeys** (CBPR+/gpi, SEPA SCT, SCT Inst, CHAPS/BoE RTGS, FPS, Bacs Direct Debit); **24 fictional scenarios**; incremental sender/receiver/message timelines; deterministic checks; a *scripted, non-LLM* AI replay; six quizzes; JSON exports and guest-case import.
+
+These are educational examples, not current bank connectivity, formal scheme conformance or a real executed AI model. [See guide](docs/LEARN-PRESENT-AI-JOURNEYS.md).
+
 ## Explore SWIFT CBPR+, gpi, g4C and UK/EU payment systems
 
 **[Open the free Cross-Rail Payment Intelligence Lab](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/payment-intelligence/)**

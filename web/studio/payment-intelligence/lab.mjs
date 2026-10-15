@@ -244,7 +244,11 @@ for(const message of MESSAGE_FAMILIES){
  const option=text("option",message.label);option.value=message.id;
  $("message-family").append(option);
 }
-$("scenario").value="missing-town";
+const incoming=new URLSearchParams(window.location.search);
+const requestedRail=incoming.get("rail");
+if(RAILS.some(r=>r.id===requestedRail))currentRail=requestedRail;
+const requestedScenario=incoming.get("scenario");
+$("scenario").value=SCENARIOS.some(s=>s.id===requestedScenario)?requestedScenario:"missing-town";
 $("region").addEventListener("change",()=>{if(replaceRailList())loadSynthetic()});
 $("search-rails").addEventListener("input",()=>{if(replaceRailList())loadSynthetic()});
 $("rail").addEventListener("change",()=>chooseRail($("rail").value));
