@@ -42,7 +42,7 @@ export function validateHandoff(value){
   if(typeof value.rail!=="string"||value.rail!==getRail(value.railId).name||
      typeof value.caseReference!=="string"||value.caseReference.length>80||
      typeof value.messageType!=="string"||value.messageType.length>40||
-     !["EUR","GBP"].includes(value.currency)||
+     !["EUR","GBP","SEK","PLN","DKK"].includes(value.currency)||
      typeof value.amount!=="string"||value.amount.length>20||
      typeof value.finding!=="string"||value.finding.length>650||
      typeof value.recommendation!=="string"||value.recommendation.length>400 ||
