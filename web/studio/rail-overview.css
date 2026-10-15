@@ -1,0 +1,11 @@
+.ar-overview-stage{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.ar-overview-stage article{padding:11px;border-left:4px solid #58788a;background:#f6f0e7;font-size:12px;line-height:1.6;margin-bottom:8px}
+.ar-overview-stage article p{margin:4px 0;font-size:11px}
+.ar-overview-actors{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ar-overview-actors span{font-size:11px;padding:10px;background:#e7f0f0}
+.ar-overview-actors b{font-weight:900;color:#58888b}
+.ar-overview-controls{display:flex;flex-wrap:wrap;gap:10px;margin:15px 0}
+.ar-overview-controls label{font-size:11px;font-weight:750}
+.ar-overview-controls select{display:block;padding:11px;min-height:44px}
+.ar-overview-outcome{padding:12px;background:#fff3e6;border-left:4px solid #936944}
+@media(max-width:650px){.ar-overview-stage{grid-template-columns:1fr}}
