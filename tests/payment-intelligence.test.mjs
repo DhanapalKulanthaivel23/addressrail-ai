@@ -180,9 +180,31 @@ test("open-demo and intelligence apps are static same-origin browser-only",()=>{
   assert.doesNotMatch(content,/localStorage\./,file);
  }
  const html=readFileSync("web/studio/payment-intelligence/index.html","utf8");
- assert.match(html,/35 PAYMENT SYSTEMS/);
+ assert.match(html,/43 PAYMENT SYSTEMS/);
  assert.match(html,/No login/);
  assert.match(html,/not submission-ready/);
  assert.match(html,/id="send-case"/);
  assert.match(html,/id="rail-list"/);
+});
+
+test("non-euro EU country infrastructure keeps PLN SEK DKK separate from EUR SEPA",()=>{
+ const currencyByRail=[
+  ["se-rix-inst","SEK"],["se-rix-rtgs","SEK"],["se-swish","SEK"],
+  ["pl-elixir","PLN"],["pl-express-elixir","PLN"],
+  ["dk-retail-clearing","DKK"],["dk-tips","DKK"]
+ ];
+ for(const [rail,currency] of currencyByRail){
+  const input=generateFixture(rail);
+  assert.equal(input.currency,currency,rail);
+  const result=validateFixture(input);
+  assert.equal(result.issues.some(i=>i.code==="DEMO_CURRENCY"),false,rail);
+  const handoff=prepareHandoff(result);
+  assert.ok(validateHandoff(handoff),rail);
+  const modified=structuredClone(input);
+  modified.currency="EUR";
+  assert.ok(validateFixture(modified).issues.some(i=>i.code==="DEMO_CURRENCY"),rail);
+ }
+ assert.equal(generateFixture("sct-inst").currency,"EUR");
+ assert.equal(generateFixture("fps").currency,"GBP");
+ assert.equal(getRail("de-sepa-clearer").region,"EU national");
 });
