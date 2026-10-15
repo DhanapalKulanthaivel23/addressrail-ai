@@ -99,7 +99,7 @@ function exampleMt103(message){
  "{4:",
  ":20:"+safeText(message.reference).slice(0,16),
  ":23B:CRED",
- ":32A:261015"+safeText(message.currency)+"125,00",
+ ":32A:261015"+safeText(message.currency)+safeText(message.amount).replace(".",","),
  ":50K:/SYNTHETIC-ACCOUNT",
  "SYNTHETIC PAYER LTD",
  ":57A:"+safeText(message.creditor?.bic),
