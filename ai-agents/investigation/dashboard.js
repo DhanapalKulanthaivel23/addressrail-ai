@@ -2,6 +2,7 @@
 const $=id=>document.getElementById(id);
 const add=(tag,text)=>{const node=document.createElement(tag);node.textContent=String(text??"");return node;};
 let selected="";
+let workflow=null;
 function state(text){$("list-state").textContent=text;}
 async function jsonResponse(response){if(!response.ok)throw Error("Request unavailable (HTTP "+response.status+")");return response.json();}
 async function refresh(){
@@ -21,7 +22,7 @@ async function refresh(){
  }catch(error){state(error.message+". Check local Quarkus at 127.0.0.1:8081.");}
 }
 async function openCase(id){
- selected="";$("investigate").disabled=true;$("detail-title").textContent="Loading synthetic evidence…";
+ selected="";workflow=null;resetWorkflow();$("investigate").disabled=true;$("detail-title").textContent="Loading synthetic evidence…";
  $("timeline").replaceChildren();$("metadata").replaceChildren();
  $("agent-panel").replaceChildren(add("p","No investigation requested."));$("agent-state").textContent="";
  try{
@@ -40,6 +41,7 @@ async function openCase(id){
   }
   if(!detail.events.length)$("timeline").append(add("p","No recorded evidence."));
   $("investigate").disabled=false;
+  await loadWorkflow(id);
   for(const button of $("cases").children)
     button.setAttribute("aria-current",String(button.firstChild?.textContent===id));
  }catch(error){$("detail-title").textContent="Unable to open payment";$("metadata").textContent=error.message;}
@@ -70,4 +72,68 @@ $("filter").addEventListener("change",refresh);
 $("lookup").addEventListener("click",()=>openCase($("search").value.trim()));
 $("search").addEventListener("keydown",event=>{if(event.key==="Enter")openCase($("search").value.trim());});
 $("investigate").addEventListener("click",investigate);
+
+function resetWorkflow(){
+ $("workflow-state").textContent="Select a payment to load a training case.";
+ $("workflow-details").replaceChildren();$("workflow-history").replaceChildren();
+ $("open-workflow").disabled=true;$("add-workflow-note").disabled=true;
+ $("save-workflow").disabled=true;
+}
+function showWorkflow(data){
+ workflow=data;
+ const c=data.trainingCase;
+ $("workflow-state").textContent="Training case "+c.id+" · state "+c.state;
+ $("workflow-details").replaceChildren(add("p","Owner: "+c.ownerAlias+" · Version: "+c.version));
+ $("training-owner").value=c.ownerAlias;
+ $("training-state-select").value=c.state;
+ $("open-workflow").disabled=true;$("add-workflow-note").disabled=false;
+ $("save-workflow").disabled=false;
+ $("workflow-history").replaceChildren();
+ for(const entry of data.history){
+  const card=add("article","");card.className="event";
+  card.append(add("strong",entry.action+" · "+entry.actorAlias),
+              add("p",entry.note),add("small",entry.occurredAt+" · "+entry.evidenceRef));
+  $("workflow-history").append(card);
+ }
+}
+async function loadWorkflow(id){
+ if(!id || id!==selected)return;
+ try{
+  const response=await fetch("/api/dashboard/workflow/"+encodeURIComponent(id),{cache:"no-store"});
+  if(id!==selected)return;
+  if(response.status===404){
+   $("workflow-state").textContent="No case opened for this synthetic payment.";
+   $("open-workflow").disabled=false;return;
+  }
+  showWorkflow(await jsonResponse(response));
+ }catch(error){if(id===selected)$("workflow-state").textContent="Training case unavailable: "+error.message;}
+}
+async function workflowPost(path,payload){
+ const id=selected;if(!id)return;
+ $("workflow-state").textContent="Saving local synthetic training workflow…";
+ try{
+  const result=await jsonResponse(await fetch(path,{method:"POST",
+   headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}));
+  if(id===selected){showWorkflow(result);$("training-note").value="";}
+ }catch(error){
+  if(id===selected)$("workflow-state").textContent=error.message+"; refresh case state before retrying.";
+ }
+}
+$("open-workflow").addEventListener("click",()=>workflowPost("/api/dashboard/workflow",{
+ paymentId:selected,actorAlias:$("training-actor").value.trim()
+}));
+$("add-workflow-note").addEventListener("click",()=>{
+ if(!workflow)return;
+ workflowPost("/api/dashboard/workflow/"+encodeURIComponent(workflow.trainingCase.id)+"/notes",{
+  actorAlias:$("training-actor").value.trim(),note:$("training-note").value.trim()
+ });
+});
+$("save-workflow").addEventListener("click",()=>{
+ if(!workflow)return;
+ workflowPost("/api/dashboard/workflow/"+encodeURIComponent(workflow.trainingCase.id)+"/transition",{
+  actorAlias:$("training-actor").value.trim(),ownerAlias:$("training-owner").value.trim(),
+  state:$("training-state-select").value,note:$("training-note").value.trim(),
+  expectedVersion:workflow.trainingCase.version
+ });
+});
 refresh();
