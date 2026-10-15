@@ -23,6 +23,11 @@ async def dashboard():
     return FileResponse(Path(__file__).parent / "dashboard.html",
                         media_type="text/html", headers={"Cache-Control":"no-store"})
 
+@app.get("/dashboard.js", include_in_schema=False)
+async def dashboard_script():
+    return FileResponse(Path(__file__).parent / "dashboard.js",
+                        media_type="text/javascript", headers={"Cache-Control":"no-store"})
+
 @app.get("/api/dashboard/cases")
 async def cases(status: str | None = Query(default=None, pattern=r"^[A-Z_]{2,40}$"),
                 limit: int = Query(default=40, ge=1, le=100)):
