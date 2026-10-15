@@ -73,11 +73,11 @@ function coreBody(message,family){
     "<RtrdIntrBkSttlmAmt Ccy=\""+id(message.currency)+"\">"+id(message.amount)+
     "</RtrdIntrBkSttlmAmt></TxInf>";
   case "pain.001":return basic+"<PmtInf>"+row("PmtInfId",original)+row("PmtMtd","TRF")+
-    "<CdtTrfTxInf>"+pmt(message)+parties+"</CdtTrfTxInf></PmtInf>";
+    "<CdtTrfTxInf>"+pmt(message)+parties+row("Amt",message.amount)+"<InstdAmt Ccy=\""+id(message.currency)+"\">"+id(message.amount)+"</InstdAmt></CdtTrfTxInf></PmtInf>";
   case "pain.008":return basic+"<PmtInf>"+row("PmtInfId",original)+row("PmtMtd","DD")+
-    "<DrctDbtTxInf>"+pmt(message)+row("MndtId",message.mandateReference||"MISSING-SYNTHETIC-MANDATE")+
+    "<DrctDbtTxInf>"+pmt(message)+"<InstdAmt Ccy=\""+id(message.currency)+"\">"+id(message.amount)+"</InstdAmt>"+row("MndtId",message.mandateReference||"MISSING-SYNTHETIC-MANDATE")+
     "</DrctDbtTxInf></PmtInf>";
-  case "pacs.003":return basic+"<DrctDbtTxInf>"+pmt(message)+
+  case "pacs.003":return basic+"<DrctDbtTxInf>"+pmt(message)+sttl+
     row("MndtId",message.mandateReference||"MISSING-SYNTHETIC-MANDATE")+
     "</DrctDbtTxInf>";
   case "camt.056":return "<Assgnmt>"+row("Id",original+"-CXL")+"</Assgnmt>"+
@@ -86,9 +86,9 @@ function coreBody(message,family){
     "<Sts>"+row("Conf","PDCR")+"</Sts>";
   case "camt.053":return "<GrpHdr>"+row("MsgId",original+"-STMT")+"</GrpHdr>"+
     "<Stmt>"+row("Id",original+"-STMT")+"<Ntry>"+
-    row("Amt",message.amount)+"</Ntry></Stmt>";
+    '<Amt Ccy="'+id(message.currency)+'">'+id(message.amount)+"</Amt></Ntry></Stmt>";
   case "camt.054":return "<GrpHdr>"+row("MsgId",original+"-NOTIFY")+"</GrpHdr>"+
-    "<Ntfctn>"+row("Id",original+"-NOTIFY")+"</Ntfctn>";
+    "<Ntfctn>"+row("Id",original+"-NOTIFY")+sttl+"</Ntfctn>";
   default:throw Error("Unsupported teaching message type");
  }
 }
