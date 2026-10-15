@@ -173,3 +173,6 @@ body.dashboard-body{margin:0;color:var(--d-ink);background:linear-gradient(180de
  .welcome-categories span{font-size:10px;padding:5px 7px}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* Explicit visual identity for the dedicated banking simulator panel. */
+.banking-board{border-color:#c8def9}
