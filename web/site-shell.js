@@ -1,5 +1,5 @@
 /** Shared navigation, audience preference, version, and trust/status metadata.
- * Rendered uniformly on all fourteen AddressRail AI content pages.
+ * Rendered uniformly on all twenty AddressRail AI content pages.
  * No network calls; browser storage is optional and safe to disable.
  */
 (()=>{
@@ -37,7 +37,7 @@ const pageUrl=()=>{
  if(!relative.endsWith("/"))relative+="/";
  return ROUTES.some(x=>x[0]===relative)?relative:"/";
 };
-const urlFor=relative=>BASE+relative.replace(/^\//,"");
+const urlFor=relative=>(location.pathname.startsWith(BASE)?BASE:"/")+relative.replace(/^\//,"");
 function getSaved(){
  try{return localStorage.getItem(MODE_KEY)}catch{return null}
 }
