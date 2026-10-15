@@ -74,3 +74,30 @@ Choose **RT1** or **TIPS** and a case:
 Each simulation generates an `INST-...` payment ID, persistent synthetic events, and evidence references accessible through existing read-only payment endpoints. Optional local Python/Gemini investigation uses that ID as for SCT. The write endpoint is `POST /api/v1/labs/sepa-instant/simulations` with `{"synthetic":true,"rail":"RT1","scenario":"timeout"}`. The API runs **only in local dev/test profiles**; it is explicitly disabled under `%prod`. There is no CORS access, authentication, bank access or actual RT1/TIPS settlement.
 
 Current limitation: the simulator uses fixed synthetic example parties and amounts. A full SCT Inst ISO 20022 message builder, scheme-version conformance validation, retries, authoritative settlement confirmation, asynchronous callback processing, authentication and tenant isolation are not implemented. The local investigation agent can explain evidence but cannot independently resolve an `UNKNOWN` outcome; that requires an authoritative system.
+
+## CHAPS + Bank of England RTGS — synthetic v1
+
+The public, no-install [CHAPS message explorer](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/chaps/) shows separate educational `pacs.008` and `pacs.009 CORE` XML **sketches** in GBP. They are incomplete and not CHAPS/XSD-conformant. Real messages require current [Bank of England usage guidance](https://www.bankofengland.co.uk/payment-and-settlement/rtgs-renewal-programme/iso-20022-handbook), participants' rules, enhanced data and validation.
+
+Run the Java service from `payments-core/` using `mvn quarkus:dev`; then open:
+
+**http://127.0.0.1:8081/labs/chaps/**
+
+Choose a synthetic message family and one of these local teaching cases:
+
+- `settlement-demo`: a fictional completed *teaching trace*, stored with status `SIMULATED` and settlement `SIMULATED_ONLY`; no confirmed actual money movement.
+- `liquidity-hold`: hypothetical insufficient liquidity, with `PENDING` status and no claimed settlement.
+- `local-reject`: bank-side rejection without a CHAPS/RTGS submission, with `RJCT` status.
+- `outcome-unknown`: no authoritative status, recorded as `UNKNOWN`; must be reconciled rather than guessed.
+
+The **dev/test-only** API is `POST /api/v1/labs/chaps/simulations`:
+
+```bash
+curl -sS http://127.0.0.1:8081/api/v1/labs/chaps/simulations \
+  -H 'Content-Type: application/json' \
+  -d '{"synthetic":true,"messageType":"pacs.008","scenario":"liquidity-hold"}'
+```
+
+The API returns a new `CHAPS-...` synthetic ID. That ID can be used with `GET /api/v1/payments/{id}`, `GET /api/v1/payments/{id}/events`, the read-only investigation endpoint, and the existing separate local LangGraph/Gemini service.
+
+The simulator does not model the Bank of England RTGS queue or actual settlement, does not validate CHAPS usage-guideline schemas or liquidity, and never issues genuine settlement evidence. Production writes are disabled by the `%prod` profile. The API remains local and unauthenticated; do not expose it to the public network.
