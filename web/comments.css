@@ -1,0 +1,29 @@
+/* Shared page comments — intentionally scoped so existing 14 page designs remain untouched. */
+.ra-comments{max-width:1040px;margin:32px auto 18px;padding:24px;background:#fffefa;border:1px solid #ddd3c9;border-radius:10px;color:#292521;box-shadow:0 5px 18px #3725100b;scroll-margin-top:25px}
+.ra-comments,.ra-comments *{box-sizing:border-box}
+.ra-comments h2{font:normal clamp(22px,2.7vw,32px)/1.2 Georgia,serif;color:#252321;margin:4px 0 9px}
+.ra-comments h3{font:normal 21px/1.3 Georgia,serif;color:#252321;margin:12px 0}
+.ra-comments .ra-comments-intro{font:13px/1.65 Arial,sans-serif;color:#62574e;margin:0 0 14px}
+.ra-comments-app{font:13px/1.7 Arial,sans-serif}
+.ra-comment-status{padding:10px 13px;background:#f2eee8;color:#594c40;border-left:3px solid #85634a;margin:11px 0 12px;font-size:12px}
+.ra-comment-actions{display:flex;justify-content:flex-end}
+.ra-comment-refresh{background:none;border:1px solid #c6b7a5;border-radius:5px;color:#805134;cursor:pointer;padding:7px 11px;font:700 11px Arial,sans-serif}
+.ra-comment-list{display:grid;gap:9px;max-height:490px;overflow:auto}
+.ra-comment-item{padding:13px 16px;background:#fbf8f3;border:1px solid #e7e0d7;border-radius:6px}
+.ra-comment-byline{display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:12px}
+.ra-comment-byline time{color:#74675c;font-size:11px}
+.ra-comment-item p{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65;margin:8px 0 0;color:#35302b;font-size:12px}
+.ra-comment-form{margin-top:18px;padding-top:15px;border-top:1px solid #e8ded3;display:grid;gap:8px}
+.ra-comment-form label{display:block;font-size:12px;font-weight:800;color:#4b3d31}
+.ra-comment-form input[type=text],.ra-comment-form textarea{width:100%;font:13px/1.55 Arial,sans-serif;color:#252321;background:#fffcf7;border:1px solid #cdbfad;border-radius:5px;padding:10px 12px;max-width:100%}
+.ra-comment-form textarea{min-height:92px;resize:vertical}
+.ra-comment-hint,.ra-comment-feedback{font-size:11px;color:#625950;line-height:1.65;margin:0 0 5px}
+.ra-comment-consent{display:flex!important;align-items:start;gap:8px;font-weight:normal!important;margin:8px 0}
+.ra-comment-consent input{margin-top:3px}
+.ra-comment-submit{background:#27617d;color:white;border:0;border-radius:5px;cursor:pointer;min-height:41px;padding:11px 20px;font:800 12px Arial,sans-serif;justify-self:start}
+.ra-comment-submit:disabled{cursor:not-allowed;opacity:.5}
+.ra-comment-captcha{min-height:0}
+.ra-comments-honeypot{position:absolute!important;left:-10000px!important;width:1px;height:1px;overflow:hidden}
+.ra-comments :is(button,input,textarea):focus-visible{outline:3px solid #9b714d;outline-offset:2px}
+@media(max-width:650px){.ra-comments{padding:17px;margin:23px 0 14px}.ra-comment-byline{align-items:start;flex-wrap:wrap}.ra-comment-submit{width:100%}}
+@media(prefers-reduced-motion:reduce){.ra-comments *{scroll-behavior:auto}}
