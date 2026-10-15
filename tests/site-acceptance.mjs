@@ -60,9 +60,16 @@ try{
  assert.equal(await page.locator("#compare-results tbody tr").count(),7);
  assert.equal(await page.locator("#compare-pick input:checked").count(),2);
  await page.goto(base+"/studio/ai-lab/");
+ assert.equal(await page.locator("#adversarial-list article").count(),4);
+ assert.ok((await page.locator("#ar-rule-evaluation tr").count())>=8);
+ assert.match(await page.locator("#ar-rule-summary").textContent(),/4 adversarial cases/);
  assert.equal(await page.locator("#ar-usecase-body tr").count(),12);
  await page.selectOption("#ar-usecase-risk","High");
  assert.ok((await page.locator("#ar-usecase-body tr").count())>=3);
+ await page.goto(base+"/studio/sct-inst/?scenario=late-reply");
+ assert.equal(await page.locator("#case-scenario").inputValue(),"late-reply");
+ assert.match(await page.locator("#case-outcome").textContent(),/UNKNOWN at timeout/);
+ assert.match(await page.locator("#case-events").textContent(),/Late reply: fictional pacs.002 RJCT/);
  await page.goto(base+"/studio/sdd/?scheme=b2b&scenario=refund");
  assert.equal(await page.locator("#overview-scheme").inputValue(),"b2b");
  assert.equal(await page.locator("#overview-scenario").inputValue(),"refund");
