@@ -34,3 +34,14 @@ body[data-ar-mode="learner"] .ar-shared-context{border-left:5px solid #327b67}
 .ar-ai-helps{margin:10px 0;background:#f0f6f5;border:1px solid #bed2ce;padding:10px 14px}
 .ar-ai-helps strong{color:#235d52;font-size:12px}.ar-ai-helps ul{margin:6px 0;padding-left:22px}.ar-ai-helps li{font-size:11px;line-height:1.5}
 .ar-ai-helps p{color:#3e6057;font-size:11px!important}.ar-ai-helps a{color:#14634e!important}
+#ar-glossary-open{background:#544536;color:#fff;border:1px solid #ac9681;border-radius:5px;min-height:44px;padding:9px;cursor:pointer;font:11px Arial,sans-serif}
+#ar-glossary-panel[hidden]{display:none}
+#ar-glossary-panel{position:fixed;top:4vh;left:50%;transform:translateX(-50%);z-index:1000;background:#fffefa;color:#302821;border:2px solid #b29c87;padding:18px;max-height:92vh;overflow:auto;width:min(96vw,780px);border-radius:8px;box-shadow:0 20px 50px #0008;font:13px/1.5 Arial,sans-serif}
+.ar-glossary-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.ar-glossary-heading button{min-height:44px;padding:9px;cursor:pointer}
+#ar-glossary-panel label{display:block;margin:11px 0 4px}#ar-glossary-search{width:100%;padding:12px;border:1px solid #b9a38d}
+.ar-glossary-list{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.ar-glossary-list article{padding:8px;background:#f8f1e8;border:1px solid #e2d4c6}
+.ar-glossary-list article button{padding:8px;border:0;background:none;cursor:pointer;text-align:left;width:100%;font-weight:800;color:#5c422b}
+.ar-glossary-list article p{padding:0 8px;font-size:11px;line-height:1.6;margin:5px 0;color:#514539}
+#ar-glossary-open:focus-visible,.ar-glossary-list button:focus-visible{outline:3px solid #f6bd65;outline-offset:2px}
+@media(max-width:600px){.ar-glossary-list{grid-template-columns:1fr}}

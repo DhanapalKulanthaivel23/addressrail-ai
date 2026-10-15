@@ -166,6 +166,9 @@ function init(){
   if(!main.id)main.id="ar-page-top";
   nav.before(skip);
  }
+ const glossaryScript=document.createElement("script");
+ glossaryScript.src=urlFor("/glossary.js");glossaryScript.defer=true;
+ document.head.append(glossaryScript);
  showState(nav,select,hint,modeBox);
  select.addEventListener("change",()=>{
   if(!ROLES.has(select.value))return;
