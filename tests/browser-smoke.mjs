@@ -99,13 +99,13 @@ try{
  const startPage=await journeys.newPage();
  startPage.on("pageerror",error=>exceptions.push("start: "+error.message));
  await startPage.goto(base+"/studio/start/");
- assert.equal(await startPage.locator("#lesson-grid article").count(),5);
+ assert.equal(await startPage.locator("#lesson-grid article").count(),8);
  assert.equal(await startPage.locator("#glossary-cards article").count(),12);
  await startPage.locator("#lesson-grid input[type=checkbox]").first().check();
- assert.match(await startPage.locator("#progress-message").textContent(),/1 of 5/);
+ assert.match(await startPage.locator("#progress-message").textContent(),/1 of 8/);
  const startCheck=await journeys.newPage();
  await startCheck.goto(base+"/studio/start/");
- assert.match(await startCheck.locator("#progress-message").textContent(),/0 of 5/);
+ assert.match(await startCheck.locator("#progress-message").textContent(),/0 of 8/);
  await startPage.reload();
  assert.match(await startPage.locator("#progress-message").textContent(),/1 of 5/);
  await startCheck.close();
