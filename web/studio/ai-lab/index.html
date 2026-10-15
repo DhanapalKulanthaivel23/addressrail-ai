@@ -7,7 +7,7 @@
 .ai-eval-output{background:#f7f2ea;padding:15px;line-height:1.8}.ai-eval-output article{padding:10px;border-left:4px solid #aa624e;margin:8px 0;background:#fff}
 .stats-row{display:flex;flex-wrap:wrap;gap:14px;margin:20px 0}.stats-row div{padding:15px 22px;background:#edf3f1}.stats-row strong{display:block;font:27px Georgia,serif}
 .rail-fault-ref{font-size:12px}.fixture-list{display:grid;gap:9px;grid-template-columns:1fr 1fr}.fixture-list button{padding:12px;text-align:left;background:#f7f0e7;border:1px solid #ddcab5;color:#302821;cursor:pointer}
-@media(max-width:800px){.ai-guard-grid,.fixture-list{grid-template-columns:1fr}}</style><link rel="stylesheet" href="../../comments.css?v=20261015-a"><link rel="stylesheet" href="../../site-shell.css?v=20261015-1"></head>
+@media(max-width:800px){.ai-guard-grid,.fixture-list{grid-template-columns:1fr}}.ar-usecase-table{border-collapse:collapse;min-width:1000px;width:100%;font:11px/1.4 Arial,sans-serif}.ar-usecase-table th,.ar-usecase-table td{text-align:left;padding:8px;border:1px solid #e0d4c5;vertical-align:top}.ar-usecase-table th{background:#e8f0f0}#ar-usecase-risk{max-width:200px}</style><link rel="stylesheet" href="../../comments.css?v=20261015-a"><link rel="stylesheet" href="../../site-shell.css?v=20261015-1"></head>
 <body><a class="skip" href="#main">Skip to banking AI</a><div class="app"><aside>
 <a class="brand" href="../../">AddressRail <span>AI</span><small>PAYMENTS & AI STUDIO</small></a>
 <div class="navlabel">WORKSPACES</div><a href="../">← Banking Studio</a>
@@ -35,6 +35,48 @@
 <p><a href="../journeys/?mode=ai">Replay the complete synthetic journey →</a></p>
 </div></div>
 </section>
+<section class="section" id="ai-usecases"><div class="kicker">AI APPLICATIONS / UK, EU AND CROSS-BORDER</div>
+<h2>AI use cases mapped to controls and measurable results.</h2>
+<p>Filter by risk. These are conceptual capabilities or browser teaching demos; none is automatically authorised to release payments, accept sanctions alerts or settle funds.</p>
+<div class="card">
+<label for="ar-usecase-risk">Risk level</label><select id="ar-usecase-risk">
+<option>All</option><option>Low</option><option>Medium</option><option>High</option></select>
+<p id="ar-usecase-count"></p>
+<div style="overflow-x:auto"><table class="ar-usecase-table"><thead><tr>
+<th>ID</th><th>Rail</th><th>Task</th><th>Data needed</th><th>Risk</th>
+<th>Human control</th><th>Metric</th><th>Status</th><th>Demo</th></tr></thead>
+<tbody id="ar-usecase-body"></tbody></table></div></div></section>
+<section class="section" id="agent-architecture"><div class="kicker">LOCAL-ONLY REFERENCE ARCHITECTURE</div>
+<h2>What an evidence-grounded payment agent would need.</h2>
+<svg role="img" aria-label="Local-only architecture: synthetic payment case goes through read-only tools, optional source retrieval, deterministic validator, human review; model output cannot release payments" viewBox="0 0 870 200" style="max-width:100%;width:100%;height:auto;background:#fcf8ef;border:1px solid #d9cbb9;border-radius:6px">
+<defs><marker id="ar-arrow" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto"><path d="M0 0 L9 4 L0 9" fill="#526775"/></marker></defs>
+<g fill="#e7eef0" stroke="#618089" stroke-width="1.5">
+<rect x="20" y="56" width="140" height="67" rx="9"/><rect x="192" y="56" width="140" height="67" rx="9"/>
+<rect x="365" y="18" width="140" height="67" rx="9"/><rect x="365" y="108" width="140" height="67" rx="9"/>
+<rect x="536" y="56" width="140" height="67" rx="9"/><rect x="708" y="56" width="140" height="67" rx="9"/>
+</g><g fill="#1b3a4b" font-family="Arial,sans-serif" font-size="14" font-weight="bold" text-anchor="middle">
+<text x="90" y="82">Synthetic case</text><text x="90" y="99">intake</text>
+<text x="262" y="82">Read-only</text><text x="262" y="99">tools</text>
+<text x="435" y="45">Versioned</text><text x="435" y="62">retrieval</text>
+<text x="435" y="135">Optional</text><text x="435" y="152">LLM advice</text>
+<text x="606" y="82">Deterministic</text><text x="606" y="99">validator</text>
+<text x="778" y="82">Human review</text><text x="778" y="99">and fallback</text></g>
+<g fill="none" stroke="#526775" stroke-width="2" marker-end="url(#ar-arrow)">
+<path d="M160 90 H190"/><path d="M332 90 L364 52"/><path d="M332 90 L364 141"/>
+<path d="M505 52 L535 90"/><path d="M505 141 L535 90"/><path d="M676 90 H707"/>
+</g></svg>
+<p class="notice"><strong>Local-only design:</strong> an LLM can explain evidence or propose a next review, but cannot execute production payment actions. A validation failure or absent evidence routes to human investigation—not settlement.</p></section>
+<section class="section" id="ai-governance"><div class="kicker">REGULATORY CONTEXT / CHECK CURRENT TEXT</div>
+<h2>Governance responsibilities before real deployment.</h2>
+<div class="card"><p><strong>Human review:</strong> keep authorised banking controls outside an LLM; log reviewer identity, supplied evidence, decisions and model version if an actual implementation is deployed.</p>
+<p><strong>Data minimisation:</strong> avoid raw customer/payment details in public AI trials. Define retention, access controls and bank legal basis before processing regulated or personal information.</p>
+<p><strong>UK:</strong> consider UK GDPR and Data Protection Act 2018 plus applicable FCA/PRA operational resilience and outsourcing requirements. Their applicability depends on the legal entity and activity.</p>
+<p><strong>EU:</strong> consider GDPR, the EU AI Act (phased obligations) and DORA for financial entities within scope. This is not a claim that every payment-explanation model is a high-risk AI system.</p>
+<p><a href="https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai" target="_blank" rel="noopener noreferrer">European Commission AI Act status ↗</a> ·
+<a href="https://eba.europa.eu/activities/direct-supervision-and-oversight/digital-operational-resilience-act/preparation-dora-application" target="_blank" rel="noopener noreferrer">EBA DORA ↗</a> ·
+<a href="https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/" target="_blank" rel="noopener noreferrer">ICO UK GDPR ↗</a></p>
+<p class="tiny">Reviewed 15 October 2026. Always check current legislation, regulatory guidance, use-case classification and jurisdiction with qualified advisers.</p></div>
+</section>
 <section class="section" id="evaluation"><div class="kicker">02 / TRANSPARENT TEST RESULTS</div><h2>Test cases, expected outcomes and limitations.</h2>
 <p>These counts are computed by the same deterministic evaluator running in this page. They are not model quality scores or externally verified payment outcomes.</p>
 <div class="stats-row"><div><strong id="case-count">—</strong>authored examples</div>
@@ -53,4 +95,4 @@
  <div class="ra-comments-app"><p>Enable JavaScript to view or leave a comment.</p></div>
 </section>
 </main></div></div>
-<script type="module" src="./lab.mjs"></script><script src="../../config.js"></script><script src="../../comments.js?v=20261015-a" defer></script><script src="../../site-shell.js?v=20261015-1" defer></script></body></html>
+<script type="module" src="./lab.mjs"></script><script type="module" src="./usecases-ui.mjs"></script><script src="../../config.js"></script><script src="../../comments.js?v=20261015-a" defer></script><script src="../../site-shell.js?v=20261015-1" defer></script></body></html>
