@@ -55,7 +55,7 @@ export const FORMATS=Object.freeze({ISO:"ISO 20022 educational sketch",TRACKING:
  UK_RETAIL:"UK retail conceptual record",OVERLAY:"Overlay/check (not a payment)",FILE:"File transfer concept",NATIONAL:"National infrastructure context"});
 export const IS_REAL_SCHEME=id=>["sct","sct-inst","sdd-core","sdd-b2b","oct-inst"].includes(id);
 export function getRail(id){
- const rail=RAIL_MAP[id]; if(!rail)throw Error("Unsupported educational rail or service");
+ const rail=Object.hasOwn(RAIL_MAP,id)?RAIL_MAP[id]:null; if(!rail)throw Error("Unsupported educational rail or service");
  return rail;
 }
 export function listRails({region="ALL",query=""}={}){
@@ -63,3 +63,18 @@ export function listRails({region="ALL",query=""}={}){
  return RAILS.filter(r=>(region==="ALL"||r.region===region)&&
  (!q||[r.name,r.description,r.messages,r.kind,r.region].some(v=>v.toLowerCase().includes(q))));
 }
+
+/** Five educational currencies; not a live scheme eligibility or FX directory. */
+export const TEACHING_CURRENCIES=Object.freeze(["EUR","GBP","SEK","PLN","DKK"]);
+const NATIONAL_CURRENCY=Object.freeze({
+ "se-rix-inst":"SEK","se-rix-rtgs":"SEK","se-swish":"SEK",
+ "pl-elixir":"PLN","pl-express-elixir":"PLN",
+ "dk-retail-clearing":"DKK","dk-tips":"DKK"
+});
+export function currencyOptionsForRail(railId){
+ const rail=getRail(railId);
+ if(rail.region==="Global"||rail.region==="Cross-border")return [...TEACHING_CURRENCIES];
+ if(rail.region==="UK")return ["GBP"];
+ return [NATIONAL_CURRENCY[rail.id]||"EUR"];
+}
+export const defaultCurrencyForRail=railId=>currencyOptionsForRail(railId)[0];
