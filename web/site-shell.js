@@ -124,7 +124,7 @@ function init(){
   alert.append(heading);
   const list=e("ul");
   const events=[
-   ["Swift","27 August 2026: deferred the SR2026 payment standards release and structured-address migration timetable. Follow its current FAQ; do not assume a November 2026 mandate.","https://www.swift.com/standards/standards-releases"],
+   ["Swift","27 August 2026: deferred the SR2026 payments changes and extended structured-address transition. Swift promised an update by December 2026 at the latest; no replacement mandate date was announced.","https://www.swift.com/fr/node/310752"],
    ["EPC","Decision on 9 September 2026, published 10 September: postponed the end of unstructured addresses. 2025 SCT/SCT Inst v1.2 took effect 30 September; replacement date not yet announced.","https://www.europeanpaymentscouncil.eu/news-insights/news/epc-delays-address-format-migration-timeline"],
    ["Bank of England","27 August 2026: deferred the whole November 2026 RTGS standards release, including CHAPS messaging. No revised release date is asserted here.","https://www.bankofengland.co.uk/news/2026/august/delay-to-the-november-2026-rtgs-standards-release"]
   ];

@@ -60,12 +60,14 @@ try{
  assert.equal(await page.locator("#ar-role").inputValue(),"professional");
  await page.selectOption("#ar-role","ai");
  assert.match(new URL(page.url()).search,/mode=ai/);
+ await page.goBack();
+ assert.equal(await page.locator("#ar-role").inputValue(),"professional");
+ await page.goForward();
+ assert.equal(await page.locator("#ar-role").inputValue(),"ai");
  await page.goto(base+"/studio/chaps/");
  assert.equal(await page.locator("#ar-role").inputValue(),"ai");
  await page.goto(base+"/studio/journeys/?mode=learner");
  assert.equal(await page.locator("#ar-role").inputValue(),"learner");
- await page.goBack();
- assert.equal(await page.locator("#ar-role").inputValue(),"ai");
  for(const path of ["/studio/chaps/","/studio/sct-inst/","/iso20022-structured-address/","/cbpr-address-guide/"]){
   await page.goto(base+path);
   assert.match(await page.locator(".ar-address-status").textContent(),/EPC/);
