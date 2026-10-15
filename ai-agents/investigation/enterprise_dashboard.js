@@ -35,7 +35,7 @@ async function login(event){
   $("admin-panel").hidden=identity.role!=="ADMIN";
   say("Signed in to synthetic tenant "+identity.tenant+".");
   await refresh();
- }catch(error){clearSession();$("login-panel").append(node("p",error.message));}
+ }catch(error){clearSession();$("login-error").textContent=error.message;}
 }
 async function refresh(){
  if(!token)return;
@@ -124,3 +124,4 @@ $("user-form").addEventListener("submit",createUser);
 $("review-form").addEventListener("submit",review);
 $("verify").addEventListener("click",verify);
 window.addEventListener("pagehide",()=>{token=null;});
+window.addEventListener("pageshow",event=>{if(event.persisted)clearSession();});
