@@ -1,7 +1,8 @@
+import {HANDOFF_KEY,validateHandoff} from "../payment-intelligence/handoff.mjs";
 import {
   STORE_KEY,TENANTS,SCENARIOS,WORKFLOW_STATES,createInitialState,validSavedState,
   scenarioById,casesForTenant,createCase,assignCase,addCaseNote,
-  changeCaseState,decideCase
+  changeCaseState,decideCase,createIntelligenceCase
 } from "./core.mjs";
 
 const $=id=>document.getElementById(id);
@@ -57,7 +58,8 @@ function renderQueue(){
   if(selected && !filtered.some(c=>c.id===selected))selected=null;
   if(!selected && filtered.length)selected=filtered[0].id;
   for(const item of filtered){
-    const scenario=scenarioById(item.scenarioId);
+    const scenario=item.intelligence?{label:"Cross-rail: "+item.intelligence.rail+
+      " / "+item.intelligence.assessment}:scenarioById(item.scenarioId);
     const button=makeButton("",
       ()=>{selected=item.id;render();message("Opened synthetic case "+item.id+".");},
       "case-item");
@@ -100,7 +102,10 @@ function renderDetail(){
     $("activity-list").replaceChildren();
     return;
   }
-  const scenario=scenarioById(item.scenarioId);
+  const scenario=item.intelligence?
+   {finding:item.intelligence.finding,
+    recommendation:item.intelligence.recommendation}:
+   scenarioById(item.scenarioId);
   $("detail-title").textContent=item.id;
   $("payment-status").textContent=item.paymentStatus+" / TRAINING";
   $("payment-meta").replaceChildren();
@@ -123,7 +128,23 @@ function renderDetail(){
   $("change-state").disabled=Boolean(item.decision);
   $("decide").disabled=item.workflowState==="CLOSED";
 }
+function pendingIntelligence(){
+  try{
+    const raw=sessionStorage.getItem(HANDOFF_KEY);
+    if(!raw||raw.length>9000)return null;
+    const value=JSON.parse(raw);
+    return validateHandoff(value)?value:null;
+  }catch{return null;}
+}
+function renderPendingImport(){
+  const pending=pendingIntelligence();
+  $("import-intelligence").disabled=!pending;
+  $("import-status").textContent=pending ?
+    "Ready to import "+pending.rail+" · "+pending.paymentStatus+" as a synthetic case.":
+    "No valid pending synthetic report in this browser tab.";
+}
 function render(){
+  renderPendingImport();
   updateCounters();
   renderQueue();
   renderDetail();
@@ -208,6 +229,25 @@ $("decide").addEventListener("click",()=>{
   perform(()=>decideCase(state,{tenant:currentTenant,caseId:selected,
     actor:currentActor(),decision:$("decision").value}),
     "Recorded training-only decision. No real payment was approved or settled.");
+});
+$("import-intelligence").addEventListener("click",()=>{
+  const handoff=pendingIntelligence();
+  if(!handoff){
+    message("No verified synthetic report is pending for this tab.");
+    return;
+  }
+  try{
+    state=createIntelligenceCase(state,{
+      tenant:currentTenant,actor:currentActor(),handoff
+    });
+    sessionStorage.removeItem(HANDOFF_KEY);
+    persist();
+    selected=state.cases[0].id;
+    $("status-filter").value="ALL";
+    render();
+    message("Cross-rail educational finding imported as "+selected+
+      ". Training actions remain browser-private.");
+  }catch(error){message(error.message||"Unable to import this synthetic report.");}
 });
 $("export-case").addEventListener("click",exportExample);
 $("reset-demo").addEventListener("click",()=>{
