@@ -15,7 +15,7 @@ try{
  const page=await context.newPage();
  page.on("pageerror",error=>exceptions.push("desktop: "+error.message));
  await page.goto(base+"/studio/payment-intelligence/",{waitUntil:"load"});
- await page.locator("#rail option").first().waitFor();
+ await page.locator("#rail option").first().waitFor({state:"attached"});
  assert.equal(await page.locator("#rail option").count(),43);
  assert.deepEqual(await page.locator("#currency option").allTextContents(),["EUR","GBP","SEK","PLN","DKK"]);
  await page.selectOption("#currency","SEK");
@@ -63,7 +63,7 @@ try{
  const small=await mobile.newPage();
  small.on("pageerror",error=>exceptions.push("mobile: "+error.message));
  await small.goto(base+"/studio/payment-intelligence/");
- await small.locator("#rail option").first().waitFor();
+ await small.locator("#rail option").first().waitFor({state:"attached"});
  const overflow=await small.evaluate(()=>({
   documentWidth:document.documentElement.scrollWidth,screenWidth:window.innerWidth
  }));
