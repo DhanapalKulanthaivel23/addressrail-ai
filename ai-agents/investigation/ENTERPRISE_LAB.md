@@ -53,3 +53,28 @@ Offline tests cover unauthenticated access, wrong passwords, forged roles, cross
 This is **not** a deployable bank-grade IAM or case engine. The local training service still lacks independent identity provider/OIDC with MFA, resilient token revocation and rotation, rate limiting and credential lockout, real authorisation policy governance, user provisioning/deprovisioning, key management via a proper KMS/HSM, external/WORM tamper-resistant audit anchoring, backups and migrations, production PostgreSQL, evidence source attestation, document data-classification/DLP, formal regulatory controls, transport TLS behind a protected gateway, monitoring, vulnerability review, penetration tests and enterprise tenant lifecycle management. It is **not integrated** with existing Quarkus case-management records, and the current training evidence flag cannot prove that arbitrary submitted text is free of personal information.
 
 No modifications to public hosting, visitor analytics, SEO registrations, or billing.
+
+## Enterprise Security Foundation v2 — authenticated local dashboard
+
+After completing the v1 local setup and starting the isolated enterprise server on port 8094, open:
+
+**http://127.0.0.1:8094/enterprise/dashboard**
+
+Sign in with your manually bootstrapped synthetic tenant and user aliases. The browser uses **only the same-origin isolated enterprise service**; it does not contact Quarkus, public GitHub Pages, Cloudflare, Render or Gemini. Its bearer token is stored only in tab memory (not cookies, localStorage or sessionStorage); closing/reloading the page discards that browser-side token. The server-side token still lives until it expires or is explicitly revoked by logout. Use **Log out** to revoke it.
+
+The UI displays only operations allowed by the authenticated role, and the server independently checks role and tenant for every request:
+
+| Role | Available UI controls |
+| --- | --- |
+| ADMIN | Tenant case list, create synthetic case, add tenant users, read evidence, verify keyed audit chain |
+| INVESTIGATOR | Tenant case list, create synthetic case, read evidence |
+| REVIEWER | Tenant case list, read evidence, independently decide an open synthetic case |
+| VIEWER | Tenant case list, limited metadata only; no evidence plaintext |
+
+No role in this service can release, settle, repair or modify a payment. Decisions explicitly say `APPROVED_FOR_TRAINING` or `REJECTED_FOR_TRAINING`. The reviewer cannot decide a case they themselves opened, and a decided case cannot be decided twice.
+
+The HTML and JavaScript files are served from the local enterprise FastAPI instance with `Cache-Control: no-store`, no iframe embedding, same-origin-only scripts/connections and a restrictive Content Security Policy. Text data is rendered with `textContent`, never `innerHTML`. The dashboard requires no new NPM packages, separate frontend server, third-party fonts or paid hosting. **Do not expose this unauthenticated-by-network, password-only development server to the public internet.**
+
+The existing public Banking Studio and local ports 8081/8093 are unchanged. Enterprise dashboard v2 is a **separate local isolated prototype**, not a migration or integration of the earlier Quarkus training cases; this avoids accidentally weakening the older demo workflows.
+
+The new test suite additionally covers the dashboard route, browser security headers, login and logout, role forgery, no unauthenticated case access, and browser handling of bearer tokens. End-to-end interactive tests in a real browser, OIDC/MFA, KMS, external immutable audit storage, tenant data migrations, access review, vulnerability scanning and independent penetration tests remain outstanding.
