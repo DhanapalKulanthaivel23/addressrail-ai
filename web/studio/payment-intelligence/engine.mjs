@@ -146,6 +146,19 @@ export function validateFixture(message){
  const requiresIdentity=REQUIRES_ISO_DETAILS.has(rail.id)||rail.id==="swift-fin";
  const requiresUetr=REQUIRES_UETR.has(rail.id);
  const requiresIban=REQUIRES_ISO_DETAILS.has(rail.id);
+ const selectedFault=String(message.scenario||"baseline");
+ const applicability={
+  "invalid-iban":requiresIban,
+  "invalid-bic":requiresIdentity,
+  "missing-uetr":requiresUetr,
+  "missing-town":requiresIdentity,
+  "mandate":DIRECT_DEBIT.has(rail.id)
+ };
+ if(Object.hasOwn(applicability,selectedFault)&&!applicability[selectedFault]){
+  addIssue(issues,"DEMO_SCENARIO_NOT_APPLICABLE","NOTICE","scenario",
+   "This injected fault is not a modeled validation rule for the selected service.",
+   "Choose an applicable payment context or a different teaching exception.");
+ }
  if(!isNonEmpty(message.messageType)||!isNonEmpty(message.reference))
   addIssue(issues,"DEMO_MISSING_REFERENCE","ERROR","reference",
     "Illustrative message metadata is incomplete.","Add a synthetic teaching reference.");
