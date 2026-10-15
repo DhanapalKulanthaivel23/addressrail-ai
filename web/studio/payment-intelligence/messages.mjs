@@ -123,14 +123,41 @@ export function teachingMessage(message,family="auto"){
   }else selected="concept";
  }
  if(selected==="mt103")return exampleMt103(message);
- if(selected==="concept")return JSON.stringify({
-  warning:"CONCEPTUAL TRAINING RECORD ONLY. Not an official UK, SWIFT or clearing message.",
-  rail:rail.name,kind:rail.kind,format:rail.format,
-  reference:safeText(message.reference),status:safeText(message.status),
-  currency:message.currency,amount:message.amount,
-  uetr:isUetr(message.uetr)?message.uetr:null,
-  limitation:"No real participant, scheme network, settlement, payee verification or API call."
- },null,2);
+ if(selected==="concept"){
+  const tracking=["gpi","g4c","swift-go"].includes(rail.id);
+  const record={
+   warning:"CONCEPTUAL TRAINING RECORD ONLY. Not an official UK, SWIFT or clearing message.",
+   rail:rail.name,kind:rail.kind,format:rail.format,
+   reference:safeText(message.reference),status:safeText(message.status),
+   currency:message.currency,amount:message.amount,
+   uetr:isUetr(message.uetr)?message.uetr:null,
+   limitation:"No real participant, scheme network, settlement, payee verification or API call."
+  };
+  if(tracking){
+   record.tracker={service:rail.id==="g4c"?"gpi for Corporates":"SWIFT gpi learning",
+    scenario:"fictional outbound payment trace; no real Swift API response",
+    instruction_reference:safeText(message.reference),
+    illustrative_transaction_status:"ACSP",
+    illustrative_reason:"G000",
+    label:"Tracker-style teaching data only. ACSP is not attested settlement.",
+    evidence:["EDU-TRACK-E1","EDU-TRACK-E2"]};
+   if(rail.id==="g4c")record.corporateVisibility={
+     payAndTrace:true,inboundTrackingExample:true,
+     scope:"Illustrative multi-bank treasury visibility, not a real g4C subscription or event feed."};
+  }
+  if(["cop","vop"].includes(rail.id))record.payeeCheck={
+   result:"REVIEW_REQUIRED_IN_DEMO",verified:false,
+   note:"Not a live name-match or beneficiary verification result."};
+  if(rail.id==="swift-fileact")record.fileTransfer={
+   acknowledgement:"EDUCATIONAL_ONLY",fileContents:"NOT_TRANSMITTED"};
+  if(["bacs-credit","bacs-debit"].includes(rail.id))record.retailContext={
+   processing:"Illustrative multi-day batch processing; not an official Standard 18 file."};
+  if(rail.id==="fps")record.retailContext={
+   processing:"Fictional near-real-time payment event; interbank net settlement not verified."};
+  if(rail.id==="t2s")record.securitiesContext={
+   type:"DELIVERY_VS_PAYMENT_TEACHING",cashSettlement:"NOT_VERIFIED"};
+  return JSON.stringify(record,null,2);
+ }
  const [namespace,root]=definitions[selected];
  const body=coreBody(message,selected);
  return [
