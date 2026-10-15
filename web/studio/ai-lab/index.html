@@ -77,7 +77,16 @@
 <a href="https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/" target="_blank" rel="noopener noreferrer">ICO UK GDPR ↗</a></p>
 <p class="tiny">Reviewed 15 October 2026. Always check current legislation, regulatory guidance, use-case classification and jurisdiction with qualified advisers.</p></div>
 </section>
-<section class="section" id="evaluation"><div class="kicker">02 / TRANSPARENT TEST RESULTS</div><h2>Test cases, expected outcomes and limitations.</h2>
+<section class="section" id="adversarial"><div class="kicker">03 / ADVERSARIAL INSTRUCTIONS</div>
+<h2>Can your guardrails reject an injected instruction?</h2>
+<p>Four extra author-written cases place suspicious instructions inside fictional payment narrative text. This does not test any live LLM or guarantee resistance to adversarial paraphrases.</p>
+<div id="adversarial-list" class="fixture-list"></div>
+<h3>Evaluation outcomes by rule</h3>
+<p id="ar-rule-summary"></p>
+<div style="max-width:100%;overflow-x:auto"><table class="ar-usecase-table"><thead><tr><th>Rule ID</th><th>What it detects</th><th>Cases matched</th><th>Cases with expected outcome</th></tr></thead>
+<tbody id="ar-rule-evaluation"></tbody></table></div>
+<p class="tiny">All tests are authored fixtures. Counts are regression-test results for these strings, not model precision/recall or financial scheme validation.</p>
+</section><section class="section" id="evaluation"><div class="kicker">02 / TRANSPARENT TEST RESULTS</div><h2>Test cases, expected outcomes and limitations.</h2>
 <p>These counts are computed by the same deterministic evaluator running in this page. They are not model quality scores or externally verified payment outcomes.</p>
 <div class="stats-row"><div><strong id="case-count">—</strong>authored examples</div>
 <div><strong id="pass-count">—</strong>expected rule outcomes</div>
@@ -95,4 +104,4 @@
  <div class="ra-comments-app"><p>Enable JavaScript to view or leave a comment.</p></div>
 </section>
 </main></div></div>
-<script type="module" src="./lab.mjs"></script><script type="module" src="./usecases-ui.mjs"></script><script src="../../config.js"></script><script src="../../comments.js?v=20261015-a" defer></script><script src="../../site-shell.js?v=20261015-1" defer></script></body></html>
+<script type="module" src="./lab.mjs"></script><script type="module" src="./usecases-ui.mjs"></script><script type="module" src="./adversarial-ui.mjs"></script><script src="../../config.js"></script><script src="../../comments.js?v=20261015-a" defer></script><script src="../../site-shell.js?v=20261015-1" defer></script></body></html>
