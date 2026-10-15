@@ -124,3 +124,74 @@ def test_invalid_evidence_still_fails_even_if_json_valid(monkeypatch):
     outcome, _ = _mock_gemini_response(monkeypatch, {
         "finishReason": "STOP", "content": {"parts": [{"text": json.dumps({**GOOD, "payment_status": "ACSP"})}]}})
     assert outcome is None
+
+def test_pending_and_unknown_advisories_supported_without_change_to_evidence(monkeypatch):
+    for status in ("PENDING", "UNKNOWN", "ACTC", "ACSC", "SIMULATED"):
+        case = BASE.model_copy(update={
+            "payment_status": status,
+            "last_event_type": status,
+            "finding": Finding(status=status, explanation="Synthetic lab evidence",
+                               recommended_action="Human review required",
+                               evidence_refs=["DEMO-EVT-004"])
+        })
+        valid = {**GOOD, "payment_status": status,
+                 "explanation": "The synthetic record has status "+status+"; seek authoritative evidence before taking action."}
+        assert validate_advisory(valid, case) == valid["explanation"]
+        assert validate_advisory({**valid, "payment_status": "RJCT"}, case) is None
+
+def test_http_503_once_then_valid_response(monkeypatch):
+    monkeypatch.setenv("INVESTIGATION_ENABLE_GEMINI", "true")
+    monkeypatch.setenv("GEMINI_API_KEY", "dummy-test-key")
+    original = httpx.AsyncClient
+    calls = []
+    def client(*args, **kwargs):
+        def handle(request):
+            calls.append(request)
+            if len(calls) == 1:
+                return httpx.Response(503, text="unavailable")
+            return httpx.Response(200, json={"candidates":[{"finishReason":"STOP",
+                "content":{"parts":[{"text":json.dumps(GOOD)}]}}]})
+        return original(*args, transport=httpx.MockTransport(handle), **kwargs)
+    with patch("investigation.llm.httpx.AsyncClient", side_effect=client):
+        with patch("investigation.llm.asyncio.sleep", return_value=None):
+            answer = asyncio.run(gemini_explanation(BASE))
+    assert answer == GOOD["explanation"]
+    assert len(calls) == 2
+
+def test_two_503s_fall_back_without_excess_requests(monkeypatch, caplog):
+    monkeypatch.setenv("INVESTIGATION_ENABLE_GEMINI", "true")
+    monkeypatch.setenv("GEMINI_API_KEY", "dummy-test-key")
+    original = httpx.AsyncClient
+    attempts = []
+    def client(*args, **kwargs):
+        def handle(request):
+            attempts.append(request)
+            return httpx.Response(503, text="unavailable")
+        return original(*args, transport=httpx.MockTransport(handle), **kwargs)
+    with patch("investigation.llm.httpx.AsyncClient", side_effect=client):
+        with patch("investigation.llm.asyncio.sleep", return_value=None):
+            assert asyncio.run(gemini_explanation(BASE)) is None
+    assert len(attempts) == 2
+    assert "http_status_503" in caplog.text
+    assert "unavailable" not in caplog.text
+
+def test_http_429_never_retried(monkeypatch):
+    monkeypatch.setenv("INVESTIGATION_ENABLE_GEMINI", "true")
+    monkeypatch.setenv("GEMINI_API_KEY", "dummy-test-key")
+    original = httpx.AsyncClient
+    calls = []
+    def client(*args, **kwargs):
+        def handle(request):
+            calls.append(1)
+            return httpx.Response(429, text="quota")
+        return original(*args, transport=httpx.MockTransport(handle), **kwargs)
+    with patch("investigation.llm.httpx.AsyncClient", side_effect=client):
+        assert asyncio.run(gemini_explanation(BASE)) is None
+    assert len(calls) == 1
+
+def test_unknown_ai_must_not_claim_settlement():
+    case = BASE.model_copy(update={"payment_status":"UNKNOWN", "last_event_type":"UNKNOWN",
+        "finding":Finding(status="UNKNOWN", evidence_refs=["DEMO-EVT-004"],
+            explanation="Missing response", recommended_action="Reconcile")})
+    assert validate_advisory({**GOOD,"payment_status":"UNKNOWN",
+        "explanation":"The payment was settled and credited to the beneficiary."},case) is None
