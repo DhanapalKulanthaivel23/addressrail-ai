@@ -100,12 +100,12 @@ async def open_training_workflow(request: OpenTrainingCase):
 
 @app.post("/api/dashboard/workflow/{case_id}/notes")
 async def training_note(case_id: str,request: TrainingNote):
-    if not case_id.startswith("CASE-") or len(case_id)>80:
+    if not (case_id.startswith("CASE-") and len(case_id)<=80 and all(c.isascii() and (c.isalnum() or c in "_-") for c in case_id)):
         raise HTTPException(status_code=422,detail="Invalid training case identifier")
     return await _training_call("/api/v1/labs/investigation-cases/"+case_id+"/notes",request.model_dump())
 
 @app.post("/api/dashboard/workflow/{case_id}/transition")
 async def training_transition(case_id: str,request: TrainingTransition):
-    if not case_id.startswith("CASE-") or len(case_id)>80:
+    if not (case_id.startswith("CASE-") and len(case_id)<=80 and all(c.isascii() and (c.isalnum() or c in "_-") for c in case_id)):
         raise HTTPException(status_code=422,detail="Invalid training case identifier")
     return await _training_call("/api/v1/labs/investigation-cases/"+case_id+"/transition",request.model_dump())
