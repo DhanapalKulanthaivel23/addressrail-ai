@@ -107,6 +107,9 @@ function init(){
   current.includes("cbpr")?"CBPR+ SR2026: deferred; no universal new cutover date":
   "Illustrative educational ruleset; check current operator standards";
  title.append(e("strong","Reviewed "+REVIEWED+" · "+rail));
+ const level=current==="/"||current==="/studio/start/"?"Beginner":
+ current.includes("/ai-lab/")||current.includes("/payment-intelligence/")?"Advanced":"Intermediate";
+ const levelTag=e("span",level+" level","ar-level-tag");levelTag.setAttribute("aria-label","Learning level "+level);title.append(levelTag);
  const issue=refAnchor("Report an error ↗","https://github.com/DhanapalKulanthaivel23/addressrail-ai/issues/new?template=content-error.yml&title="+
   encodeURIComponent("Content issue: "+current)+"&page_url="+encodeURIComponent(location.origin+location.pathname));
  issue.target="_blank";issue.rel="noopener noreferrer";issue.className="ar-error-link";
@@ -118,6 +121,23 @@ function init(){
   e("p","RULE SUBSET: Demonstration checks cover selected teaching rules only, not full ISO XSD or scheme implementation guidelines."),
   e("p","SIMULATED: Payment traces, case evidence, outcomes and example model claims are fictional; no payment is sent or settled."));
  app.append(trust);
+ const helps={
+  "/studio/sepa-sct/":["Explain rejection evidence","Summarise return and recall distinctions","Highlight unsupported settlement claims"],
+  "/studio/sct-inst/":["Summarise an unknown or timed-out outcome","Identify duplicate-risk evidence before retry","Recommend human-controlled reconciliation"],
+  "/studio/chaps/":["Summarise liquidity-hold evidence","Explain RTGS queue and settlement distinctions","Highlight missing settlement confirmation"],
+  "/studio/journeys/":["Correlate fictional stage evidence","Draft explanations grounded in supplied events","Flag missing authoritative status"],
+  "/studio/payment-intelligence/":["Group issues by evidence","Explain limited validation findings","Suggest human-reviewed corrections"],
+  "/studio/open-demo/":["Summarise fictional investigation notes","Highlight unresolved evidence","Suggest next review actions"],
+  "/studio/ai-lab/":["Compare rule IDs and claims","Expose unsupported assertions","Report evaluation blind spots"]
+ };
+ if(helps[current]){
+  const panel=e("section",undefined,"ar-ai-helps");
+  panel.append(e("strong","Where AI helps — and where it must stop"));
+  const ul=e("ul");for(const item of helps[current])ul.append(e("li",item));panel.append(ul);
+  panel.append(e("p","AI must not assert real payment settlement, release sanctions holds or authorise transfers without approved evidence and human controls."));
+  panel.append(refAnchor("Test AI guardrails →",urlFor("/studio/ai-lab/")));
+  app.append(panel);
+ }
  if(["/cbpr-address-guide/","/iso20022-structured-address/","/studio/chaps/","/studio/sct-inst/"].includes(current)){
   const alert=e("section",undefined,"ar-address-status");alert.setAttribute("aria-label","Current address format standards status");
   const heading=e("h2","Address format status · "+REVIEWED);
