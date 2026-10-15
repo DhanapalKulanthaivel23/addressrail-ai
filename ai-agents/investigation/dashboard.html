@@ -1,0 +1,36 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unified Payment Investigation | AddressRail AI</title><style>
+:root{font-family:Arial,sans-serif;color:#292521;background:#f5f0e8}*{box-sizing:border-box}body{margin:0}
+header{background:#252321;color:#fff;padding:27px 4%}h1,h2,h3{font-family:Georgia,serif;font-weight:400}h1{font-size:clamp(30px,4vw,52px);margin:12px 0}header p{font-size:13px;max-width:850px;line-height:1.7;color:#e4d7c8}
+main{max-width:1440px;margin:auto;padding:22px 3%}.layout{display:grid;grid-template-columns:minmax(270px,.7fr) minmax(0,1.3fr);gap:16px}
+.card{background:#fffefa;border:1px solid #ded2c4;padding:22px;min-width:0;margin-bottom:17px}label{font-size:12px;font-weight:800;display:block;margin:10px 0 7px}
+select,input,button{font:inherit}select,input{padding:11px;width:100%;border:1px solid #cbb8a7;background:#fff}
+button{border:1px solid #a4cadc;background:#b5ddf1;color:#18272e;padding:12px;cursor:pointer;font-weight:700}
+button:hover{background:#99cfe7}button:disabled{opacity:.55}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #986443;outline-offset:2px}
+.row{display:flex;gap:9px;margin:10px 0}.row button{white-space:nowrap}
+#cases{display:grid;gap:8px;max-height:480px;overflow:auto;margin-top:14px}
+.case{border:1px solid #d9c9ba;text-align:left;background:#faf6ef;display:block;padding:13px}
+.case small{display:block;font-size:11px;line-height:1.6;color:#725e4b}
+.case[aria-current=true]{border-left:5px solid #8c603d;background:#ebdfd2}
+.badge{display:inline-block;font-size:11px;font-weight:800;color:#73462a;background:#f2e2d2;padding:6px 8px;margin:8px 6px 8px 0}
+.muted{font-size:12px;line-height:1.7;color:#685d52}.notice{font-size:12px;line-height:1.7;background:#f0e4d6;border-left:4px solid #93613d;padding:13px 16px}
+.event{background:#f8f2e9;border-left:3px solid #946440;padding:13px;margin:9px 0}.event strong{font-size:12px}.event p{font-size:12px;line-height:1.6;margin:7px 0}.event small{font-size:10px;color:#786452;overflow-wrap:anywhere}
+pre{white-space:pre-wrap;word-break:break-word;background:#f6eee4;padding:13px;font:12px/1.6 ui-monospace,monospace;max-height:300px;overflow:auto}
+#agent-panel{padding:16px;background:#f4eee6;line-height:1.6;font-size:13px}#agent-panel h3{font-size:20px}
+#agent-panel p{margin:8px 0}footer{font-size:11px;color:#76695d;padding:20px 4%;line-height:1.7}
+@media(max-width:850px){.layout{grid-template-columns:1fr}}@media(max-width:500px){.row{flex-direction:column}}
+</style></head><body>
+<header><small>ADDRESSRAIL AI / LOCAL AGENTIC PAYMENT INTELLIGENCE</small><h1>Unified Payment Investigation</h1>
+<p>Explore synthetic SEPA SCT, SCT Inst RT1/TIPS and CHAPS payment records in one place. See read-only evidence first, then optionally run the existing LangGraph + Gemini advisory. No live bank access, settlement or approved repair.</p></header>
+<main><p class="notice"><b>Local-only demonstration:</b> The browser talks to the FastAPI server on this computer. Quarkus provides synthetic evidence. A Gemini request happens only when you click <b>Investigate selected payment</b> and Gemini is enabled in the agent. All conclusions require human review.</p>
+<div class="layout"><section>
+<div class="card"><h2>Payment cases</h2><label for="filter">Recorded status</label><select id="filter"><option value="">All statuses</option><option>RJCT</option><option>PENDING</option><option>UNKNOWN</option><option>ACTC</option><option>ACSC</option><option>SIMULATED</option></select>
+<button id="refresh" type="button">Refresh local cases</button>
+<label for="search">Find payment by ID</label><div class="row"><input id="search" maxlength="80" placeholder="PAY-10001 or CHAPS-..."><button id="lookup" type="button">Open</button></div>
+<p class="muted" id="list-state" role="status">Loading synthetic cases…</p><div id="cases" aria-label="Synthetic case list"></div></div>
+<div class="card"><h3>Supported rails</h3><p class="muted">SEPA SCT · SEPA Instant (RT1 or TIPS) · CHAPS · existing synthetic CBPR+ seed.</p><p class="muted">Create new cases in Quarkus local labs on port 8081, then refresh this dashboard. The catalogue shows up to 40 records per request.</p></div></section>
+<section><div class="card"><h2 id="detail-title">Select a payment</h2><div id="metadata" class="muted">Choose a case to view its event history.</div><h3>Chronological evidence</h3><div id="timeline" aria-live="polite"></div><p class="muted">These events are synthetic records, not authoritative scheme data.</p></div>
+<div class="card"><h2>Agentic investigation</h2><p class="muted">LangGraph retrieves status and events again, validates provenance and returns evidence-grounded findings. Gemini is optional and cannot modify statuses or approve payment actions.</p>
+<button id="investigate" disabled type="button">Investigate selected payment →</button><p id="agent-state" role="status"></p><div id="agent-panel" aria-live="polite"><p>No investigation requested.</p></div></div></section></div>
+</main><footer>AddressRail AI · Local synthetic learning only · Not official SWIFT, EPC, EBA CLEARING, Bank of England or Eurosystem infrastructure. No bank or payment-system connections.</footer>
+<script src="/dashboard.js" defer></script></body></html>
