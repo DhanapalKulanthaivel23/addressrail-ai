@@ -1,5 +1,5 @@
 /** Transient, browser-tab-local handoff from cross-rail teaching checks to guest cases. */
-import {getRail} from "./catalog.mjs";
+import {getRail,currencyOptionsForRail} from "./catalog.mjs";
 import {safeText} from "./engine.mjs";
 
 export const HANDOFF_KEY="addressrail.intelligence.handoff.v1";
@@ -40,13 +40,13 @@ export function validateHandoff(value){
      !ALLOWED_OUTCOMES.includes(value.paymentStatus))return false;
   getRail(value.railId);
   if(typeof value.rail!=="string"||value.rail!==getRail(value.railId).name||
-     typeof value.caseReference!=="string"||value.caseReference.length>80||
+     typeof value.caseReference!=="string"||!value.caseReference||value.caseReference.length>80||
      typeof value.messageType!=="string"||value.messageType.length>40||
-     !["EUR","GBP","SEK","PLN","DKK"].includes(value.currency)||
-     typeof value.amount!=="string"||value.amount.length>20||
+     !currencyOptionsForRail(value.railId).includes(value.currency)||
+     typeof value.amount!=="string"||!/^(?:0|[1-9]\d{0,9})\.\d{2}$/.test(value.amount)||
      typeof value.finding!=="string"||value.finding.length>650||
      typeof value.recommendation!=="string"||value.recommendation.length>400 ||
-     !Array.isArray(value.events)||value.events.length>20||
+     !Array.isArray(value.events)||value.events.length===0||value.events.length>20||
      !Array.isArray(value.issues)||value.issues.length>12)return false;
   if(value.events.some(e=>typeof e.type!=="string"||e.type.length>45||
       typeof e.description!=="string"||e.description.length>240||
