@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
-import {RAILS,getRail,listRails,IS_REAL_SCHEME} from "../web/studio/payment-intelligence/catalog.mjs";
+import {RAILS,getRail,listRails,IS_REAL_SCHEME,TEACHING_CURRENCIES,currencyOptionsForRail,defaultCurrencyForRail} from "../web/studio/payment-intelligence/catalog.mjs";
 import {
  SCENARIOS,UETR,isIban,isBic,isUetr,generateFixture,
  validateFixture,applyEvidenceRepair
@@ -241,4 +241,60 @@ test("SWIFT gpi and g4C provide distinct non-live tracking education",()=>{
  assert.match(bacs.retailContext.processing,/multi-day batch/);
  const vop=JSON.parse(teachingMessage(generateFixture("vop")));
  assert.equal(vop.payeeCheck.verified,false);
+});
+
+test("full catalogue policy covers five teaching currencies through validation and guest-case import",()=>{
+ assert.equal(RAILS.length,43);
+ assert.deepEqual(TEACHING_CURRENCIES,["EUR","GBP","SEK","PLN","DKK"]);
+ for(const rail of RAILS){
+  const allowed=currencyOptionsForRail(rail.id);
+  assert.ok(allowed.length>0,rail.id);
+  assert.equal(defaultCurrencyForRail(rail.id),allowed[0]);
+  for(const currency of allowed){
+   const fixture=generateFixture(rail.id);fixture.currency=currency;
+   const report=validateFixture(fixture);
+   assert.equal(report.issues.some(i=>i.code==="DEMO_CURRENCY"),false,rail.id+"/"+currency);
+   assert.equal(report.currency,currency);
+   assert.equal(JSON.parse(serializeReport(report,fixture)).currency,currency);
+   assert.ok(teachingMessage(fixture).includes(currency),rail.id+"/"+currency);
+   const handoff=prepareHandoff(report);
+   assert.ok(validateHandoff(handoff),rail.id+"/"+currency);
+   const guest=createIntelligenceCase(createInitialState(),{
+    tenant:"demo-bank",actor:"Demo Guest",handoff
+   });
+   assert.equal(guest.cases[0].currency,currency);
+   assert.ok(validSavedState(guest),rail.id+"/"+currency);
+  }
+  for(const invalid of TEACHING_CURRENCIES.filter(x=>!allowed.includes(x))){
+   const fixture=generateFixture(rail.id);fixture.currency=invalid;
+   assert.ok(validateFixture(fixture).issues.some(i=>i.code==="DEMO_CURRENCY"),rail.id+"/"+invalid);
+   const handoff=prepareHandoff(validateFixture(generateFixture(rail.id)));
+   assert.equal(validateHandoff({...handoff,currency:invalid}),false);
+  }
+ }
+ assert.deepEqual(currencyOptionsForRail("cbpr"),TEACHING_CURRENCIES);
+ assert.deepEqual(currencyOptionsForRail("cls"),TEACHING_CURRENCIES);
+ assert.deepEqual(currencyOptionsForRail("chaps"),["GBP"]);
+ assert.deepEqual(currencyOptionsForRail("sct"),["EUR"]);
+ assert.deepEqual(currencyOptionsForRail("se-rix-inst"),["SEK"]);
+ assert.deepEqual(currencyOptionsForRail("pl-elixir"),["PLN"]);
+ assert.deepEqual(currencyOptionsForRail("dk-tips"),["DKK"]);
+ assert.throws(()=>getRail("constructor"),/Unsupported/);
+});
+test("currency and synthetic amount are retained in historical MT103 and debit sketches",()=>{
+ const mt=generateFixture("swift-fin");mt.currency="PLN";mt.amount="9876.54";
+ assert.match(teachingMessage(mt),/:32A:261015PLN9876,54/);
+ const debit=generateFixture("sdd-core");debit.amount="456.70";
+ assert.match(teachingMessage(debit),/Ccy="EUR">456.70/);
+});
+test("cross-rail dashboard wires currency and same-tab import safely",()=>{
+ const html=readFileSync("web/studio/payment-intelligence/index.html","utf8");
+ const js=readFileSync("web/studio/payment-intelligence/lab.mjs","utf8");
+ const guest=readFileSync("web/studio/open-demo/lab.mjs","utf8");
+ assert.match(html,/id="currency"/);
+ assert.match(html,/id="currency-context"/);
+ assert.match(js,/if\(replaceRailList\(\)\)loadSynthetic\(\)/);
+ assert.match(js,/sessionStorage\.setItem\(HANDOFF_KEY/);
+ assert.match(js,/window\.location\.assign\("\.\.\/open-demo\/#import-intelligence"\)/);
+ assert.match(guest,/sessionStorage\.removeItem\(HANDOFF_KEY\)/);
 });
