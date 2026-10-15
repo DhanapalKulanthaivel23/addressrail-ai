@@ -3,7 +3,7 @@
  * No official XSD/MIG validation, API calls, network settlement, sanction checks,
  * or assertion of bank-certified message conformance. All inputs must be synthetic.
  */
-import {getRail} from "./catalog.mjs";
+import {getRail,currencyOptionsForRail,defaultCurrencyForRail,TEACHING_CURRENCIES} from "./catalog.mjs";
 
 export const SCENARIOS=Object.freeze([
  {id:"baseline",label:"Illustrative baseline / no injected fault"},
@@ -23,9 +23,6 @@ const REQUIRES_UETR=new Set(["cbpr","gpi","g4c","swift-fin","swift-go"]);
 const HIGH_VALUE=new Set(["chaps","boe-rtgs","t2","euro1","cls"]);
 const DIRECT_DEBIT=new Set(["sdd-core","sdd-b2b","bacs-debit","step2-sdd"]);
 const NO_PAYMENT=new Set(["vop","srtp","cop","swift-fileact","t2s"]);
-const DOMESTIC_CURRENCY=Object.freeze({"se-rix-inst":"SEK","se-rix-rtgs":"SEK",
- "se-swish":"SEK","pl-elixir":"PLN","pl-express-elixir":"PLN",
- "dk-retail-clearing":"DKK","dk-tips":"DKK"});
 const REQUIRES_ISO_DETAILS = new Set([
  "cbpr","chaps","boe-rtgs","sct","sct-inst","sdd-core","sdd-b2b",
  "oct-inst","step2","step2-sdd","rt1","tips","t2","euro1"
@@ -87,8 +84,8 @@ function syntheticTimeline(rail,scenario,status,uetr){
 export function generateFixture(railId,scenarioId="baseline"){
  const rail=getRail(railId);
  if(!SCENARIOS.some(x=>x.id===scenarioId))throw Error("Unknown fictional scenario");
- const uk=rail.region==="UK", isDebit=DIRECT_DEBIT.has(rail.id), isNoPayment=NO_PAYMENT.has(rail.id);
- const currency=uk?"GBP":DOMESTIC_CURRENCY[rail.id]||"EUR";
+ const isDebit=DIRECT_DEBIT.has(rail.id), isNoPayment=NO_PAYMENT.has(rail.id);
+ const currency=defaultCurrencyForRail(rail.id);
  const amount=isNoPayment?"0.00":HIGH_VALUE.has(rail.id)?"250000.00":"125.00";
  const status=scenarioId==="timeout"||scenarioId==="missing-uetr"?"UNKNOWN":
   scenarioId==="liquidity"?"PENDING":
@@ -162,14 +159,12 @@ export function validateFixture(message){
  if(!isNonEmpty(message.messageType)||!isNonEmpty(message.reference))
   addIssue(issues,"DEMO_MISSING_REFERENCE","ERROR","reference",
     "Illustrative message metadata is incomplete.","Add a synthetic teaching reference.");
- const expectedCurrency=rail.region==="UK"?"GBP":
-   DOMESTIC_CURRENCY[rail.id] ||
-   (rail.region==="EU/SEPA"||rail.region==="EU national"?"EUR":null);
- if(!/^(EUR|GBP|SEK|PLN|DKK)$/.test(String(message.currency??"")) ||
-    (expectedCurrency!==null && message.currency!==expectedCurrency))
+ const allowedCurrencies=currencyOptionsForRail(rail.id);
+ if(!TEACHING_CURRENCIES.includes(message.currency) ||
+    !allowedCurrencies.includes(message.currency))
   addIssue(issues,"DEMO_CURRENCY","ERROR","currency",
     "Currency does not match this teaching example's selected payment context.",
-    "Review the fictional service's domestic settlement currency; the lab does not perform FX conversion.");
+    "Choose an allowed illustrative currency for this service. No FX conversion or settlement is performed.");
  if(!/^(?:0|[1-9]\d{0,9})\.\d{2}$/.test(String(message.amount??"")) ||
     (!NO_PAYMENT.has(rail.id)&&Number(message.amount)<=0))
   addIssue(issues,"DEMO_AMOUNT","ERROR","amount",
