@@ -34,3 +34,18 @@ class PaymentTools:
     async def get_payment_history(self, payment_id: str) -> list[Event]:
         data = await self._get(f"/api/v1/payments/{payment_id}/events")
         return [Event.model_validate(v) for v in data]
+
+    async def list_synthetic_cases(self, status: str | None = None, limit: int = 40) -> list[dict]:
+        """Local Quarkus catalogue is synthetic-only, bounded and read-only."""
+        if not 1 <= limit <= 100:
+            raise ValueError("limit must be between 1 and 100")
+        if status and (not status.isupper() or not status.replace("_", "").isalpha()):
+            raise ValueError("invalid status filter")
+        query = f"?limit={limit}" + (f"&status={status}" if status else "")
+        data = await self._get("/api/v1/labs/cases" + query)
+        if not isinstance(data, list):
+            raise CoreUnavailable()
+        # Do not expose a non-synthetic row even if the backend contract changes.
+        rows = [r for r in data if isinstance(r, dict) and r.get("synthetic") is True
+                and isinstance(r.get("paymentId"), str)]
+        return rows[:limit]
