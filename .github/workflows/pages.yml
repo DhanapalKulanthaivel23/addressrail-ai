@@ -25,3 +25,23 @@ jobs:
           path: web
       - id: deployment
         uses: actions/deploy-pages@v4
+      - name: Check public Studio normal and query URLs for release v2
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/"
+          EXPECT='id="release-id">v2'
+          for attempt in $(seq 1 12); do
+            PLAIN="$(curl -fsSL --max-time 20 "$BASE" || true)"
+            BUST="$(curl -fsSL --max-time 20 "${BASE}?v=${GITHUB_SHA}" || true)"
+            CHAPS="$(curl -fsSL --max-time 20 "${BASE}?module=chaps" || true)"
+            if [[ "$PLAIN" == *"$EXPECT"* && "$BUST" == *"$EXPECT"* && "$CHAPS" == *"$EXPECT"* ]]; then
+              echo "All 3 URLs show v2 release marker."
+              echo "PUBLIC STUDIO FRESH: PASS (plain / query / ?module=chaps)" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            echo "Attempt $attempt/12: version not consistent across URLs; checking after CDN propagation."
+            sleep 10
+          done
+          echo "::error::Public Studio stale on plain or query URL after deployment. Investigate CDN/browser caching."
+          exit 1

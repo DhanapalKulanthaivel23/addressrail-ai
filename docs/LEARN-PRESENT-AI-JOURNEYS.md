@@ -49,3 +49,11 @@ node --test tests/*.test.mjs
 ```
 
 Maintainers: GitHub Actions runs the unit suites and browser journeys after changes to this public workspace.
+
+## v2 guided entry points
+
+The public [Start Here](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/start/) has five beginner lessons and a glossary; [SCT Inst](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/sct-inst/?scenario=timeout) and [CHAPS](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/chaps/?scenario=liquidity-hold#case-lab) have enhanced browser-only exception workbenches.
+
+Professional presenters can share a `/studio/journeys/?mode=professional&rail=chaps&scenario=liquidity-hold` link. Each guided journey shows a timed three-minute presentation script and `SIM-*` (authored scenario) / `DEMO_*` (toy input-check) IDs. These **are not real payment scheme rule identifiers**.
+
+AI specialists can try the [guardrail playground](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/ai-lab/), comparing fictional payment evidence with eight authored candidate claims and deterministically rejected assertions. No live model is called. The local LangGraph optional Gemini agent remains separate.

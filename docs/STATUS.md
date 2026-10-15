@@ -17,3 +17,12 @@ Updated 15 October 2026 (Europe/London).
 - No real payments, account verification, scheme XSD/MIG certification, Swift access, sanctions screening, validated settlement or bank data.
 - Cloudflare D1/Turnstile/Render/analytics configuration and existing optional main-site Gemini setup are preserved, not changed by the journeys launch. Private Gemini key and deployment configuration may still be required for live AI advisory.
 - Historical search index submission claims remain in prior commits; indexing cannot be assumed from a submitted sitemap.
+
+## v2 Learning & Demo Experience (15 October 2026)
+
+- [Start Here](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/start/) has five beginner lessons, life-of-payment overview, glossary, and tab-local progress.
+- [SCT Inst](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/sct-inst/?scenario=timeout) offers educational RT1 **or** TIPS alternatives, unknown outcome, negative status and duplicate-review scenarios.
+- [CHAPS](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/chaps/?scenario=liquidity-hold#case-lab) now includes a liquidity queue / RTGS boundary investigation, presenter script and educational rule IDs.
+- [Banking AI Guardrails](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/ai-lab/) evaluates **eight authored sample claims**, not real model outputs. No LLM invocation, provider keys or bank action.
+- Banking Studio shows the release stamp `v2 · 2026-10-15`. GitHub Pages workflow additionally tests public plain, cache-busted, and `?module=chaps` responses after deployment. Browser-private-window observations still depend on local caches.
+- Four guides updated for correct postal address element ordering, explicit MT103 legacy context, Sept 2026 EPC v1.2 delay of the Nov 2026 unstructured address deadline, and source/version labels. EPC rules are not Swift CBPR+ rules.
