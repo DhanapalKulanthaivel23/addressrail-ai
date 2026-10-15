@@ -46,7 +46,7 @@ test("AR-103 AR-104: homepage has 3 goals and one dated Studio changelog",()=>{
 test("AR-201 AR-202 AR-203 AR-204: source-dated status and legacy guide not blanket migration claims",()=>{
  const status=readFileSync("web/site-shell.js","utf8");
  for(const s of ["27 August 2026","9 September 2026","30 September 2026","No revised release date",
- "bankofengland.co.uk/news/2026","swift.com/standards/standards-releases"])
+ "bankofengland.co.uk/news/2026","swift.com/fr/node/310752"])
   assert.ok(status.includes(s),s);
  const guide=readFileSync("web/mt103-address-correction/index.html","utf8");
  assert.match(guide,/22 November 2025/);
