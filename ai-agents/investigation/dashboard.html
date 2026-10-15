@@ -31,6 +31,23 @@ pre{white-space:pre-wrap;word-break:break-word;background:#f6eee4;padding:13px;f
 <div class="card"><h3>Supported rails</h3><p class="muted">SEPA SCT · SEPA Instant (RT1 or TIPS) · CHAPS · existing synthetic CBPR+ seed.</p><p class="muted">Create new cases in Quarkus local labs on port 8081, then refresh this dashboard. The catalogue shows up to 40 records per request.</p></div></section>
 <section><div class="card"><h2 id="detail-title">Select a payment</h2><div id="metadata" class="muted">Choose a case to view its event history.</div><h3>Chronological evidence</h3><div id="timeline" aria-live="polite"></div><p class="muted">These events are synthetic records, not authoritative scheme data.</p></div>
 <div class="card"><h2>Agentic investigation</h2><p class="muted">LangGraph retrieves status and events again, validates provenance and returns evidence-grounded findings. Gemini is optional and cannot modify statuses or approve payment actions.</p>
-<button id="investigate" disabled type="button">Investigate selected payment →</button><p id="agent-state" role="status"></p><div id="agent-panel" aria-live="polite"><p>No investigation requested.</p></div></div></section></div>
+<button id="investigate" disabled type="button">Investigate selected payment →</button><p id="agent-state" role="status"></p><div id="agent-panel" aria-live="polite"><p>No investigation requested.</p></div></div>
+<div class="card" id="workflow-card">
+<h2>Training case management</h2>
+<p class="muted">Local synthetic workflow only. TRAINING-* names are invented labels, not verified users; these states do not approve or release payments.</p>
+<p id="workflow-state" role="status">Select a payment to load a training case.</p>
+<label for="training-actor">Training reviewer alias</label>
+<input id="training-actor" value="TRAINING-Analyst1" maxlength="57">
+<button id="open-workflow" type="button" disabled>Open training case</button>
+<div id="workflow-details"></div>
+<label for="training-owner">Training owner alias</label>
+<input id="training-owner" value="TRAINING-Analyst1" maxlength="57">
+<label for="training-state-select">Workflow state</label>
+<select id="training-state-select"><option>OPEN</option><option>IN_REVIEW</option><option>ESCALATED</option><option>CLOSED</option></select>
+<label for="training-note">Synthetic reviewer note (no personal data)</label>
+<input id="training-note" maxlength="500" placeholder="What evidence should a reviewer examine?">
+<div class="row"><button id="add-workflow-note" type="button" disabled>Add note</button><button id="save-workflow" type="button" disabled>Save workflow change</button></div>
+<h3>Training activity history</h3><div id="workflow-history"></div>
+</div></section></div>
 </main><footer>AddressRail AI · Local synthetic learning only · Not official SWIFT, EPC, EBA CLEARING, Bank of England or Eurosystem infrastructure. No bank or payment-system connections.</footer>
 <script src="/dashboard.js" defer></script></body></html>
