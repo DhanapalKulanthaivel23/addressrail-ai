@@ -55,6 +55,28 @@ try{
   if(kind==="ai")assert.equal(await page.locator("#fixture").inputValue(),value);
   if(kind==="catalogue")assert.equal(await page.locator("#beginner-mode").inputValue(),value);
  }
+ // P2 domain coverage: compare rails, safe XML, three rail-card quizzes and new SDD schemes.
+ await page.goto(base+"/studio/journeys/?compare=chaps,sct-inst");
+ assert.equal(await page.locator("#compare-results tbody tr").count(),7);
+ assert.equal(await page.locator("#compare-pick input:checked").count(),2);
+ await page.goto(base+"/studio/ai-lab/");
+ assert.equal(await page.locator("#ar-usecase-body tr").count(),12);
+ await page.selectOption("#ar-usecase-risk","High");
+ assert.ok((await page.locator("#ar-usecase-body tr").count())>=3);
+ await page.goto(base+"/studio/sdd/?scheme=b2b&scenario=refund");
+ assert.equal(await page.locator("#overview-scheme").inputValue(),"b2b");
+ assert.equal(await page.locator("#overview-scenario").inputValue(),"refund");
+ assert.match(await page.locator("#overview-outcome").textContent(),/PENDING/);
+ for(const id of ["sct","sct-inst","chaps"]){
+  await page.goto(base+"/studio/"+(id==="sct"?"sepa-sct":id)+"/");
+  await page.locator("[data-xml-sample]").click();
+  await page.locator("[data-xml-run]").click();
+  assert.match(await page.locator("[data-xml-result]").textContent(),/No basic subset|basic rule finding/);
+  await page.locator("[data-xml-review] textarea").fill("<Document>looks genuine</Document>");
+  await page.locator("[data-xml-run]").click();
+  assert.match(await page.locator("[data-xml-findings]").textContent(),/XML-PRIVACY/);
+  assert.equal(await page.locator(".ar-card-quiz button").count(),3);
+ }
  await page.goto(base+"/studio/?mode=professional");
  await page.locator("#ar-role").waitFor({state:"attached"});
  assert.equal(await page.locator("#ar-role").inputValue(),"professional");
