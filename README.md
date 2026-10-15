@@ -19,6 +19,18 @@ Developers who want to host their own instance can follow the [deployment guide]
 
 **Not a production system:** This is not an official Swift, ISO 20022, EPC or CBPR+ validator. MT parsing is intentionally heuristic. The demo does not transmit payments, perform sanctions screening or approve repairs.
 
+## Explore SWIFT CBPR+, gpi, g4C and UK/EU payment systems
+
+**[Open the free Cross-Rail Payment Intelligence Lab](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/payment-intelligence/)**
+
+A browser-only, no-login learning lab with **43 distinct payment scheme, infrastructure, overlay and network contexts**. Covers SWIFT CBPR+, gpi, g4C; CHAPS, BoE RTGS, FPS, Bacs and other UK systems; EPC SEPA SCT, SCT Inst, SDD Core/B2B and OCT Inst; STEP2, RT1, TIPS, T2, EURO1; selected Swedish, Polish, Danish and national euro processing services; and CLS FX settlement concepts.
+
+Choose fictional exception scenarios, run basic educational metadata checks, inspect deliberately incomplete ISO 20022 and MT examples, trace example UETR events, review a narrowly evidenced address-town proposal, download a synthetic report, and import its findings into the **existing private guest case workflow**.
+
+**Not official XSD/MIG or scheme conformance, live tracking, sanctions screening or settlement.** Every case stays in your own browser tab and is not sent to a shared backend.
+
+[Coverage and safety documentation](docs/PAYMENT_INTELLIGENCE.md)
+
 ## Try the public payment case demo — no login
 
 **[Open the free guest case-management workspace](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/open-demo/)**
