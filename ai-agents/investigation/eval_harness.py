@@ -84,6 +84,11 @@ async def record_live(cases:list[dict], output:Path, limit:int)->dict:
             # Cannot attest a specific provider response; no fabricated live sample.
             raise RuntimeError("No verifiable Gemini response ID for "+case["id"]+
                                ". No recorded-live file was written.")
+        try:
+            evaluated=json.loads(outcome.response_text) if outcome.response_text else {}
+        except (ValueError,TypeError):
+            evaluated={}
+        metrics=evaluate_record(case,evaluated if isinstance(evaluated,dict) else {})
         results.append({"case_id":case["id"],"source":"recorded-real-provider-request",
             "model":outcome.model,"provider":outcome.provider,
             "date_utc":datetime.now(timezone.utc).isoformat(),
@@ -92,12 +97,12 @@ async def record_live(cases:list[dict], output:Path, limit:int)->dict:
             "accepted":outcome.accepted,"reason":outcome.reason,
             "token_usage":outcome.usage_tokens,
             # Output is synthetic and limited; retain exact model text for independent evaluation.
-            "model_output":outcome.response_text})
+            "model_output":outcome.response_text, "evaluation":metrics})
     output.parent.mkdir(parents=True,exist_ok=True)
     output.write_text("\n".join(json.dumps(x,sort_keys=True) for x in results)+"\n",encoding="utf8")
     try:os.chmod(output,0o600)
     except OSError:pass
-    return {"recorded":len(results),"path":str(output)}
+    return {"recorded":len(results),"path":str(output),\n            "evaluation":aggregate([entry["evaluation"] for entry in results])}
 
 def main():
     parser=argparse.ArgumentParser()
