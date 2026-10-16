@@ -1,0 +1,42 @@
+name = "ar-gateway"
+main = "./worker.mjs"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+[vars]
+SERVICE_ROLE = "gateway"
+DAILY_LIMIT = "25"
+
+# Before deploying, create Cloudflare D1 database and set its real database_id.
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "addressrail-payment-usage"
+# database_id = "REPLACE_WITH_REAL_DATABASE_ID"
+
+[[services]]
+binding = "CBPR"
+service = "ar-cbpr"
+
+[[services]]
+binding = "GPI"
+service = "ar-gpi"
+
+[[services]]
+binding = "SWIFT"
+service = "ar-swift-network"
+
+[[services]]
+binding = "SEPA"
+service = "ar-sepa"
+
+[[services]]
+binding = "RTGS"
+service = "ar-rtgs"
+
+[[services]]
+binding = "CHAPS"
+service = "ar-chaps"
+
+[[services]]
+binding = "T2"
+service = "ar-t2"
