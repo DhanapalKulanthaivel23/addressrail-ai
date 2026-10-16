@@ -1,3 +1,4 @@
+import {swiftFlow,sepaFlow,rtgsFlow} from "./rail-flows.mjs";
 import {phase1} from "./phase1.mjs";
 import {support,PROFILE_VERSION} from "./registry.mjs";
 // Independently deployable, synthetic-only payment simulators for Cloudflare Workers.
@@ -60,6 +61,9 @@ export default {async fetch(request,env){
    return json({...base,validSubset:recognised,validation:"educational_structure_only_not_xsd_or_cbpr_conformance",
      findings:recognised?[]:[{code:"INCOMPLETE_SAMPLE",message:"No recognisable message structure"}]});
  }
+ if(role==="swift-network" && data.flowMode==="multi-hop"){
+   try{return json({...base,...swiftFlow(data)})}catch(e){return err(String(e.message))}
+ }
  if(role==="swift-network"){
    if(!data.receiverBic||!(/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(data.receiverBic)))return err("receiver_bic_invalid");
    const bank=await forward(env,"BANK","/internal/receive",data);
@@ -73,6 +77,9 @@ export default {async fetch(request,env){
    if(upstream.status!==200)return json({...base,error:"swift_network_unavailable",networkResponse:upstream.result},502);
    return json({...base,uetr:data.uetr,trackingStatus:upstream.result.bankResponse?.bankStatus||"UNKNOWN",networkResponse:upstream.result});
  }
+ if(role==="sepa" && data.flowMode==="scheme-rules"){
+   try{return json({...base,...sepaFlow(data)})}catch(e){return err(String(e.message))}
+ }
  if(role==="sepa"){
    if(!support(data.scheme,typ).workflow && !["RECALL","RETURN","REFUND"].includes(data.scheme))return err("unsupported_scheme_message_combination");
    if(!["SCT","SCT_INST","SDD_CORE","SDD_B2B","RECALL","RETURN","REFUND"].includes(data.scheme))return err("unsupported_sepa_scheme");
@@ -81,6 +88,9 @@ export default {async fetch(request,env){
    return json({...base,scheme:data.scheme,clearing:clear.result});
  }
  if(role==="sepa-clearing")return json({...base,clearingStatus:data.simulateReject?"SIMULATED_REJECTED":"SIMULATED_ACCEPTED",settlementStatus:"NOT_ATTESTED"});
+ if(role==="rtgs" && data.flowMode==="liquidity"){
+   try{return json({...base,...rtgsFlow(data)})}catch(e){return err(String(e.message))}
+ }
  if(role==="rtgs"){
    if(!["GBP","EUR"].includes(data.currency))return err("unsupported_currency");
    return json({...base,settlementStatus:data.simulateReject?"SIMULATED_REJECTED":"SIMULATED_SETTLED",realFundsMoved:false});
