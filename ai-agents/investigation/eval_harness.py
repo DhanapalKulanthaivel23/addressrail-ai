@@ -102,7 +102,8 @@ async def record_live(cases:list[dict], output:Path, limit:int)->dict:
     output.write_text("\n".join(json.dumps(x,sort_keys=True) for x in results)+"\n",encoding="utf8")
     try:os.chmod(output,0o600)
     except OSError:pass
-    return {"recorded":len(results),"path":str(output),\n            "evaluation":aggregate([entry["evaluation"] for entry in results])}
+    return {"recorded":len(results),"path":str(output),
+            "evaluation":aggregate([entry["evaluation"] for entry in results])}
 
 def main():
     parser=argparse.ArgumentParser()
