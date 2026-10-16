@@ -27,6 +27,7 @@ func decode(w http.ResponseWriter,r *http.Request,size int64,v any) bool {
  if media:=strings.ToLower(r.Header.Get("Content-Type"));media!="application/json"&&!strings.HasPrefix(media,"application/json;"){
   errorResponse(w,415,"Content-Type application/json required.");return false
  }
+ if r.ContentLength>size{errorResponse(w,413,"Request body too large.");return false}
  r.Body=http.MaxBytesReader(w,r.Body,size)
  d:=json.NewDecoder(r.Body);d.DisallowUnknownFields()
  if err:=d.Decode(v);err!=nil{
