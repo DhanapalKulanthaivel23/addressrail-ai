@@ -59,6 +59,33 @@ public class GoRailEngineResourceTest {
     }
 
     @Test
+    void goXmlStreamingSubsetReportsFieldOrderAndNoSettlement() {
+        assumeTrue("true".equalsIgnoreCase(System.getenv("GO_ENGINE_INTEGRATION")));
+        String xml = """
+          <Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.08">
+           <FIToFICstmrCdtTrf><GrpHdr><MsgId>AR-DEMO-001</MsgId></GrpHdr>
+           <CdtTrfTxInf><IntrBkSttlmAmt Ccy="EUR">5.00</IntrBkSttlmAmt>
+           <Dbtr><Nm>SYNTHETIC SENDER</Nm><PstlAdr>
+             <AdrLine>10 Fiction Road</AdrLine><Ctry>GB</Ctry>
+           </PstlAdr></Dbtr></CdtTrfTxInf>
+           </FIToFICstmrCdtTrf></Document>
+          """;
+        String request = new com.fasterxml.jackson.databind.ObjectMapper()
+                .createObjectNode()
+                .put("synthetic", true).put("rail", "SCT")
+                .put("message", xml).toString();
+        given().contentType("application/json").body(request)
+                .post("/api/v1/labs/go-engine/xml/inspect")
+                .then().statusCode(200)
+                .body("validator", is("addressrail-go-educational-v1"),
+                      "wellFormed", is(true),
+                      "validSubset", is(false),
+                      "rules.id", hasItem("XML-ADDR-ORDER"),
+                      "settlementAttested", is(false),
+                      "safeToRetry", is(false));
+    }
+
+    @Test
     void nonSyntheticProxyRequestsAlwaysRejected() {
         assumeTrue("true".equalsIgnoreCase(System.getenv("GO_ENGINE_INTEGRATION")));
         given().contentType("application/json").body("""
