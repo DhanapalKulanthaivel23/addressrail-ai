@@ -8,12 +8,14 @@ from fastapi.responses import FileResponse
 from .agent import investigate
 from .models import InvestigationRequest, InvestigationResult
 from .tools import PaymentTools, PaymentNotFound, CoreUnavailable
+from .copilot_api import router as copilot_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     yield
 
 app=FastAPI(title="AddressRail AI Investigation Lab (Synthetic)", version="0.2.0", lifespan=lifespan)
+app.include_router(copilot_router)
 
 @app.get("/health")
 def health():
