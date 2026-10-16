@@ -56,17 +56,20 @@ export default {async fetch(request,env){
  if(role==="swift-network"){
    if(!data.receiverBic||!(/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(data.receiverBic)))return err("receiver_bic_invalid");
    const bank=await forward(env,"BANK","/internal/receive",data);
+   if(bank.status!==200)return json({...base,error:"bank_service_unavailable",bankResponse:bank.result},502);
    return json({...base,networkAck:"SIMULATED_ACCEPTED",bankResponse:bank.result});
  }
  if(role==="bank")return json({...base,bankStatus:data.simulateReject?"RJCT":"ACSP",reason:data.simulateReject?"SIMULATED_BANK_REJECTION":null});
  if(role==="gpi"){
    if(!data.uetr||!/^[0-9a-fA-F-]{36}$/.test(data.uetr))return err("uetr_required");
    const upstream=await forward(env,"SWIFT","/internal/send",data);
+   if(upstream.status!==200)return json({...base,error:"swift_network_unavailable",networkResponse:upstream.result},502);
    return json({...base,uetr:data.uetr,trackingStatus:upstream.result.bankResponse?.bankStatus||"UNKNOWN",networkResponse:upstream.result});
  }
  if(role==="sepa"){
    if(!["SCT","SCT_INST","SDD_CORE","SDD_B2B","RECALL","RETURN","REFUND"].includes(data.scheme))return err("unsupported_sepa_scheme");
    const clear=await forward(env,"CLEARING","/internal/clear",data);
+   if(clear.status!==200)return json({...base,error:"clearing_service_unavailable",clearing:clear.result},502);
    return json({...base,scheme:data.scheme,clearing:clear.result});
  }
  if(role==="sepa-clearing")return json({...base,clearingStatus:data.simulateReject?"SIMULATED_REJECTED":"SIMULATED_ACCEPTED",settlementStatus:"NOT_ATTESTED"});
@@ -78,6 +81,7 @@ export default {async fetch(request,env){
    const required=role==="chaps"?"GBP":"EUR";
    if(data.currency!==required)return err("currency_mismatch");
    const settled=await forward(env,"RTGS","/internal/settle",data);
+   if(settled.status!==200)return json({...base,error:"settlement_service_unavailable",settlement:settled.result},502);
    return json({...base,scheme:role.toUpperCase(),settlement:settled.result});
  }
  return err("not_implemented",501);
