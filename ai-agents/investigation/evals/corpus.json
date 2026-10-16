@@ -1,0 +1,132 @@
+[
+  {
+    "id": "EVAL-001",
+    "payment_id": "PAY-101",
+    "status": "RJCT",
+    "rail": "CBPR",
+    "question": "What does a CBPR+ pacs.008 rejection mean under ISO 20022?",
+    "expected_citations": [
+      "SWIFT-SR2026-DELAY"
+    ],
+    "evidence_ref": "EDU-RJCT-101",
+    "finding": "The fictional interbank rejection needs operator verification.",
+    "go_rules": []
+  },
+  {
+    "id": "EVAL-002",
+    "payment_id": "INST-102",
+    "status": "UNKNOWN",
+    "rail": "SCT_INST",
+    "question": "Explain SCT Inst timeout and missing payment status evidence",
+    "expected_citations": [
+      "EPC-ADDRESS-GUIDE-V22"
+    ],
+    "evidence_ref": "EDU-UNK-102",
+    "finding": "The synthetic timed-out payment has unknown outcome.",
+    "go_rules": []
+  },
+  {
+    "id": "EVAL-003",
+    "payment_id": "CHAPS-103",
+    "status": "PENDING",
+    "rail": "CHAPS",
+    "question": "Explain CHAPS liquidity queue and deferred RTGS standards release",
+    "expected_citations": [
+      "BOE-RTGS-DELAY"
+    ],
+    "evidence_ref": "EDU-PENDING-103",
+    "finding": "Fictional CHAPS event remains pending due to liquidity hold.",
+    "go_rules": []
+  },
+  {
+    "id": "EVAL-004",
+    "payment_id": "SCT-104",
+    "status": "RJCT",
+    "rail": "SCT",
+    "question": "What does the EPC 2025 SCT rulebook say about unstructured addresses?",
+    "expected_citations": [
+      "EPC-SCT-2025-V12"
+    ],
+    "evidence_ref": "EDU-RJCT-104",
+    "finding": "Fictional rejection for incomplete address fields.",
+    "go_rules": []
+  },
+  {
+    "id": "EVAL-005",
+    "payment_id": "PAY-105",
+    "status": "ACTC",
+    "rail": "ISO",
+    "question": "Is ISO 20022 pacs.008 technical validation enough to prove settlement?",
+    "expected_citations": [
+      "ISO-BASE-VS-PROFILE"
+    ],
+    "evidence_ref": "EDU-ACTC-105",
+    "finding": "Synthetic technical acceptance only.",
+    "go_rules": []
+  },
+  {
+    "id": "EVAL-006",
+    "payment_id": "PAY-106",
+    "status": "UNKNOWN",
+    "rail": "CBPR",
+    "question": "How can Swift gpi UETR tracking gap be investigated?",
+    "expected_citations": [
+      "SWIFT-TRACKER-NO-SETTLEMENT"
+    ],
+    "evidence_ref": "EDU-UNK-106",
+    "finding": "Fictional tracker has no final response.",
+    "go_rules": []
+  },
+  {
+    "id": "EVAL-007",
+    "payment_id": "SCT-107",
+    "status": "RJCT",
+    "rail": "SDD",
+    "question": "What does EPC 2025 SDD Core rulebook say about refunds and mandates?",
+    "expected_citations": [
+      "EPC-SDD-CORE-V12"
+    ],
+    "evidence_ref": "EDU-RJCT-107",
+    "finding": "Synthetic direct debit mandate missing.",
+    "go_rules": []
+  },
+  {
+    "id": "EVAL-008",
+    "payment_id": "CHAPS-108",
+    "status": "PENDING",
+    "rail": "CHAPS",
+    "question": "Why was the Bank of England RTGS November 2026 release deferred?",
+    "expected_citations": [
+      "BOE-RTGS-DELAY"
+    ],
+    "evidence_ref": "EDU-PENDING-108",
+    "finding": "Synthetic CHAPS case still queued.",
+    "go_rules": []
+  },
+  {
+    "id": "EVAL-009",
+    "payment_id": "SCT-109",
+    "status": "SIMULATED",
+    "rail": "SCT",
+    "question": "What is the difference between the ISO base schema and EPC SCT guidelines?",
+    "expected_citations": [
+      "ISO-BASE-VS-PROFILE"
+    ],
+    "evidence_ref": "EDU-SIM-109",
+    "finding": "Fictional SEPA payment simulation finished.",
+    "go_rules": []
+  },
+  {
+    "id": "EVAL-010",
+    "payment_id": "PAY-110",
+    "status": "UNKNOWN",
+    "rail": "CBPR",
+    "question": "How does the current Swift SR2026 timeline affect CBPR+ structured address requirements?",
+    "expected_citations": [
+      "SWIFT-SR2026-DELAY"
+    ],
+    "evidence_ref": "EDU-UNK-110",
+    "finding": "Synthetic data issue requires review.",
+    "go_rules": []
+  }
+]
