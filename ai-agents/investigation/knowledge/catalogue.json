@@ -82,6 +82,16 @@
       "reviewed": "2026-10-16",
       "url": "https://www.swift.com/standards/standards-releases",
       "facts": "Cross-border ISO 20022 messaging and Swift gpi correlation are distinct from actual interbank settlement and beneficiary account credit. A tracking gap, a transmitted pacs.008, or a model-generated explanation cannot alone attest that funds settled. This is original educational synthesis rather than a quoted Swift usage guideline."
+    },
+    {
+      "id": "EPC-SCTINST-2025-V12",
+      "rail": "SCT_INST",
+      "topic": "EPC SEPA Instant Credit Transfer SCT Inst 2025 version 1.2 response timeout scheme",
+      "version": "2025 SCT Inst rulebook v1.2",
+      "effective_date": "2026-09-30",
+      "reviewed": "2026-10-16",
+      "url": "https://www.europeanpaymentscouncil.eu/document-library/rulebooks/2025-sepa-instant-credit-transfer-rulebook-version-1-2",
+      "facts": "The EPC 2025 SCT Inst rulebook v1.2 took effect 30 September 2026 and postponed the previous 15 November 2026 unstructured address end date. The scheme concerns instant euro credit transfers, but a missing processing reply or timeout in a synthetic investigation does not prove settlement or rejection; a PSP must reconcile authoritative status before retry. The timeout guidance here is an educational safety distinction, not a quoted scheme paragraph."
     }
   ]
 }

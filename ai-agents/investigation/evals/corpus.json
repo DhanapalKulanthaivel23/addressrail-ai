@@ -19,7 +19,7 @@
     "rail": "SCT_INST",
     "question": "Explain SCT Inst timeout and missing payment status evidence",
     "expected_citations": [
-      "EPC-ADDRESS-GUIDE-V22"
+      "EPC-SCTINST-2025-V12"
     ],
     "evidence_ref": "EDU-UNK-102",
     "finding": "The synthetic timed-out payment has unknown outcome.",
