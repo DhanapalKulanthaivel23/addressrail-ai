@@ -36,8 +36,8 @@ test("all 14 public content pages end with a comments area and shared assets",()
   assert.equal((html.match(/id="comments"/g)||[]).length,1,path);
   assert.match(html,/class="ra-comments"/,path);
   assert.match(html,/class="ra-comments-app"/,path);
-  assert.match(html,/comments\.js\?v=20261015-a/,path);
-  assert.match(html,/comments\.css\?v=20261015-a/,path);
+  assert.match(html,/comments\.js\?v=20261016-simple/,path);
+  assert.match(html,/comments\.css\?v=20261016-simple/,path);
   assert.ok(html.indexOf('id="comments"')<html.lastIndexOf("</main>"),path);
   assert.ok(html.indexOf('id="comments"')>html.indexOf("<main"),path);
   // Relative script and stylesheet references must resolve to the repository's web root.

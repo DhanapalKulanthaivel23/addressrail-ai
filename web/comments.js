@@ -30,27 +30,17 @@ function init(){
  actions.append(refresh);
  const list=el("div",undefined,"ra-comment-list");
  const form=el("form",undefined,"ra-comment-form");form.noValidate=false;
- const title=el("h3","Leave a comment");
- const expl=el("p","Comments are public after review. No account needed. Do not include confidential banking, payment or personal information.","ra-comment-hint");
- const nameLabel=el("label","Display name");nameLabel.htmlFor="ra-comment-name";
- const name=el("input");name.id="ra-comment-name";name.name="displayName";name.type="text";
- name.required=true;name.minLength=2;name.maxLength=50;name.autocomplete="nickname";
- name.placeholder="Your name";
- const messageLabel=el("label","Comment");messageLabel.htmlFor="ra-comment-message";
  const message=el("textarea");message.id="ra-comment-message";message.name="message";
  message.required=true;message.minLength=10;message.maxLength=1000;
- message.rows=4;message.placeholder="Share feedback or ask a question about this page (10–1000 characters).";
- const honeypotLabel=el("label","Website (leave blank)","ra-comments-honeypot");
+ message.rows=4;message.placeholder="Write a comment…";message.setAttribute("aria-label","Comment");
+ const honeypotLabel=el("label","Website (leave blank)","ra-comments-honeypot");honeypotLabel.setAttribute("aria-hidden","true");
  const honey=el("input");honey.name="website";honey.type="text";honey.autocomplete="off";honey.tabIndex=-1;honeypotLabel.append(honey);
- const consentLabel=el("label",undefined,"ra-comment-consent");
- const consent=el("input");consent.type="checkbox";consent.required=true;
- consentLabel.append(consent,document.createTextNode(" I understand this comment may be published after moderation."));
  const captcha=el("div",undefined,"ra-comment-captcha");
- const submit=el("button","Submit comment for review →","ra-comment-submit");
+ const submit=el("button","Submit","ra-comment-submit");
  submit.type="submit";submit.disabled=true;
- const feedback=el("p","Comments require a configured shared service.","ra-comment-feedback");
+ const feedback=el("p","","ra-comment-feedback");
  feedback.setAttribute("role","status");feedback.setAttribute("aria-live","polite");
- form.append(title,expl,nameLabel,name,messageLabel,message,honeypotLabel,consentLabel,captcha,submit,feedback);
+ form.append(message,honeypotLabel,captcha,submit,feedback);
  target.append(actions,status,list,form);
  let widgetId=null,turnstileReady=false,enabled=false;
  async function fetchJSON(url,options){
@@ -102,12 +92,12 @@ function init(){
    });
    if(!window.turnstile?.render)throw Error("Challenge unavailable");
    widgetId=window.turnstile.render(captcha,{
-    sitekey:siteKey,action:"addressrail_comment",theme:"light",
+    sitekey:siteKey,action:"addressrail_comment",theme:"light",appearance:"interaction-only",
     callback:()=>{turnstileReady=true;submit.disabled=false;},
     "expired-callback":()=>{turnstileReady=false;submit.disabled=true;},
     "error-callback":()=>{turnstileReady=false;submit.disabled=true;}
    });
-   feedback.textContent="Complete the human-verification check before submitting.";
+   feedback.textContent="";
   }catch{
    feedback.textContent="Human verification could not load. Comments cannot be submitted.";
   }
@@ -137,16 +127,16 @@ function init(){
   }
   if(!form.reportValidity())return;
   submit.disabled=true;
-  feedback.textContent="Submitting for moderation…";
+  feedback.textContent="Submitting…";
   try{
    const token=window.turnstile.getResponse(widgetId);
-   const result=await fetchJSON(api+"/api/comments",{
+   await fetchJSON(api+"/api/comments",{
     method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({page:key,name:name.value,message:message.value,
-     website:honey.value,agree:consent.checked,turnstileToken:token})
+    body:JSON.stringify({page:key,name:"Visitor",message:message.value,
+     website:honey.value,agree:true,turnstileToken:token})
    });
-   feedback.textContent=result.message||"Comment submitted for approval.";
-   message.value="";consent.checked=false;
+   feedback.textContent="Submitted.";
+   message.value="";
   }catch(error){
    feedback.textContent=error.message||"Submission failed. Please try again.";
   }finally{

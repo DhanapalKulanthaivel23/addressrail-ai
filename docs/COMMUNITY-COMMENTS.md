@@ -85,3 +85,7 @@ node --test tests/comments.test.mjs
 ```
 
 The browser smoke tests exercise the comment-section DOM across all pages. They intentionally do not post real comments or solve a live CAPTCHA.
+
+## Compact comment form
+
+The form contains a comment box and Submit button. Posts use the display label Visitor; there is no separate name field or consent checkbox. Submission expresses the intent to post for moderation. Turnstile runs automatically with interaction-only appearance; a challenge appears only when required. Server-side verification, origin checks, honeypot and moderation remain enforced. Successful submission shows only Submitted.
