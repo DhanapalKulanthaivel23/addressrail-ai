@@ -22,3 +22,5 @@ jobs:
           cache-dependency-path: ai-agents/investigation/requirements.txt
       - run: pip install -r ai-agents/investigation/requirements.txt
       - run: PYTHONPATH=ai-agents python -m pytest -q ai-agents/investigation/tests
+      - name: Evaluate all synthetic RAG retrieval questions offline
+        run: PYTHONPATH=ai-agents python -m investigation.eval_harness
