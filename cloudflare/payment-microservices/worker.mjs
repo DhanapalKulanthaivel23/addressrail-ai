@@ -1,3 +1,4 @@
+import {support,PROFILE_VERSION} from "./registry.mjs";
 // Independently deployable, synthetic-only payment simulators for Cloudflare Workers.
 // Each deployment uses SERVICE_ROLE. There is NO live network connectivity.
 const json=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{"content-type":"application/json","cache-control":"no-store"}});
@@ -45,8 +46,9 @@ export default {async fetch(request,env){
  }
  const typ=String(data.messageType||"");
  if(["cbpr","gpi","sepa","chaps","t2"].includes(role)&&(!family.test(typ)||!allowed(role,typ)))return err("unsupported_message_type");
- const base={simulated:true,network:role,messageType:typ,reference:safeRef(data),settlementAttested:false};
+ const base={simulated:true,network:role,messageType:typ,reference:safeRef(data),settlementAttested:false,profileVersion:PROFILE_VERSION};
  if(role==="cbpr"){
+   if(!support("CBPR",typ).workflow)return err("unsupported_cbpr_workflow");
    const payload=String(data.payload||"");
    if(payload.length>60000)return err("payload_too_large",413);
    const recognised=typ.startsWith("MT")?payload.includes(":20:"):payload.includes("<")&&payload.includes(">");
@@ -67,6 +69,7 @@ export default {async fetch(request,env){
    return json({...base,uetr:data.uetr,trackingStatus:upstream.result.bankResponse?.bankStatus||"UNKNOWN",networkResponse:upstream.result});
  }
  if(role==="sepa"){
+   if(!support(data.scheme,typ).workflow && !["RECALL","RETURN","REFUND"].includes(data.scheme))return err("unsupported_scheme_message_combination");
    if(!["SCT","SCT_INST","SDD_CORE","SDD_B2B","RECALL","RETURN","REFUND"].includes(data.scheme))return err("unsupported_sepa_scheme");
    const clear=await forward(env,"CLEARING","/internal/clear",data);
    if(clear.status!==200)return json({...base,error:"clearing_service_unavailable",clearing:clear.result},502);
