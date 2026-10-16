@@ -125,7 +125,7 @@ func amountValid(raw string) bool {
  return ok&&n.Sign()>0
 }
 func Validate(req ValidationRequest) ValidationResponse {
- response:=ValidationResponse{Validator:Version,Rail:req.Rail,Rules:[]Finding{},Synthetic:true,Disclaimer:Disclaimer}
+ response:=ValidationResponse{Validator:Version,Rail:req.Rail,Rules:[]Finding{},Synthetic:req.Synthetic,Disclaimer:Disclaimer}
  add:=func(id,path,message string){response.Rules=append(response.Rules,Finding{id,path,"ERROR",message})}
  if !req.Synthetic {add("SYN-001","/synthetic","Explicit synthetic:true required.");response.ValidSubset=false;return response}
  if !referencePattern.MatchString(req.Reference){add("SYN-002","/reference","Use an AR-DEMO-, SYNTHETIC- or TEST- fictional reference, never a real account/customer identifier.")}
@@ -151,7 +151,7 @@ func Validate(req ValidationRequest) ValidationResponse {
  return response
 }
 func Reconcile(req ReconcileRequest) ReconcileResponse {
- result:=ReconcileResponse{Validator:Version,Verdict:"REVIEW_REQUIRED",RecordedStatus:req.RecordedStatus,Rules:[]Finding{},EvidenceRefs:[]string{},Synthetic:true,Disclaimer:Disclaimer}
+ result:=ReconcileResponse{Validator:Version,Verdict:"REVIEW_REQUIRED",RecordedStatus:req.RecordedStatus,Rules:[]Finding{},EvidenceRefs:[]string{},Synthetic:req.Synthetic,Disclaimer:Disclaimer}
  add:=func(id,path,message string){result.Rules=append(result.Rules,Finding{id,path,"REVIEW",message})}
  if !req.Synthetic {add("EVT-SYN","/synthetic","Only fictional payment evidence is supported.");return result}
  if !idPattern.MatchString(req.PaymentID){add("EVT-ID","/paymentId","Invalid fictional payment identifier.");return result}
