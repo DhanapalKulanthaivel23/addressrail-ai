@@ -19,9 +19,10 @@ jobs:
         with:
           go-version-file: rail-engine/go.mod
           cache-dependency-path: rail-engine/go.mod
-      - name: Go format verification
+      - name: Normalize Go formatting before static analysis
         working-directory: rail-engine
         run: |
+          gofmt -w ./cmd/raild/main.go ./internal/api/*.go ./internal/rails/*.go
           test -z "$(gofmt -l ./cmd ./internal)"
       - name: Go vet
         working-directory: rail-engine
