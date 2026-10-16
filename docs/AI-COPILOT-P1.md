@@ -129,3 +129,14 @@ Offline suite is **not** proof of actual Gemini success, provider availability, 
 - Missing source records, missing Go evidence or malformed provider response yields no LLM advice.
 - Each synthetic case retains `requires_human_review:true`, `settlement_attested:false`, `safe_to_retry:false`.
 - Failed tests must be fixed before declaring any milestone passed.
+
+## Optional local event-driven gateway demo
+
+To use bounded asynchronous jobs in the same localhost process, set `COPILOT_ENABLE_QUEUE=true` **alongside** the protected API settings before starting Uvicorn.
+
+- `POST /api/copilot/v1/jobs` with the same JSON request and bearer token returns a fictional `AR-JOB-...` ID (HTTP 202).
+- `GET /api/copilot/v1/jobs/{id}` returns `QUEUED`, `RUNNING`, `DONE` or `FAILED` and a final synthetic result only on completion.
+- Queue capacity is 16; a single process-local worker runs read-only Java/Go/RAG/Gemini calls.
+- Jobs are **not durable**: restarting the process loses them, successful/failed jobs expire after ten minutes, and no bank/SWIFT transaction is sent.
+
+This illustrates event-driven orchestration as a training capability, **not** managed Kafka, event-sourcing, guaranteed delivery, a production API gateway or autonomous payment processing.

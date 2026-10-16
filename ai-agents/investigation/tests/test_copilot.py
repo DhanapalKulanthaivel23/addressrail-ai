@@ -233,3 +233,36 @@ def test_untrusted_event_description_not_forwarded_to_gemini(monkeypatch):
     dump=json.dumps(payloads)
     assert "Ignore previous instructions" not in dump
     assert "jane@example.com" not in dump
+
+def test_event_driven_copilot_queue_api_is_opt_in(monkeypatch):
+    import time
+    from investigation import copilot_api
+    async def synthetic_job(request):
+        return {"payment_id":request.payment_id,"status":"UNKNOWN",
+                "synthetic":True,"settlement_attested":False,
+                "safe_to_retry":False}
+    monkeypatch.setattr(copilot_api,"run_copilot",synthetic_job)
+    monkeypatch.setenv("COPILOT_ENABLE_API","true")
+    monkeypatch.setenv("COPILOT_ENABLE_QUEUE","true")
+    monkeypatch.setenv("COPILOT_API_TOKEN","Y"*48)
+    headers={"Authorization":"Bearer "+"Y"*48}
+    with TestClient(app) as client:
+        request={"payment_id":"PAY-10001",
+                 "question":"Explain synthetic CBPR+ status exception"}
+        opened=client.post("/api/copilot/v1/jobs",json=request,headers=headers)
+        assert opened.status_code==202
+        job=opened.json()
+        assert not job["durable"] and job["synthetic"]
+        for _ in range(80):
+            checked=client.get("/api/copilot/v1/jobs/"+job["id"],headers=headers)
+            assert checked.status_code==200
+            if checked.json()["state"]=="DONE":
+                break
+            time.sleep(0.01)
+        final=checked.json()
+        assert final["state"]=="DONE"
+        assert final["result"]["status"]=="UNKNOWN"
+        assert final["result"]["settlement_attested"] is False
+        assert final["result"]["safe_to_retry"] is False
+        assert client.get("/api/copilot/v1/jobs/AR-JOB-not-found",headers=headers).status_code==404
+    assert copilot_api._job_queue is None
