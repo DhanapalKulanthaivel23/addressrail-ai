@@ -1,0 +1,87 @@
+{
+  "catalogue_version": "addressrail-curated-2026-10-16-v1",
+  "kind": "original-paraphrases-not-full-rulebooks",
+  "reviewed": "2026-10-16",
+  "records": [
+    {
+      "id": "ISO-CATALOGUE-2026",
+      "rail": "ISO",
+      "topic": "message catalogue",
+      "version": "2026-03-19 catalogue",
+      "effective_date": "2026-03-19",
+      "reviewed": "2026-10-16",
+      "url": "https://www.iso20022.org/iso-20022-message-definitions?search=pacs.008",
+      "facts": "The ISO 20022 catalogue lists approved message definitions and downloadable XSD schemas. A base message version is different from a payment scheme usage-guideline version. The catalogue shows pacs.008.001.14 in March 2026; a bank implementation may require an earlier profile-specific version. Do not automatically replace an implementation message with the newest ISO base version."
+    },
+    {
+      "id": "ISO-BASE-VS-PROFILE",
+      "rail": "ISO",
+      "topic": "ISO base schema and scheme profile",
+      "version": "2026-03",
+      "effective_date": "2026-03-19",
+      "reviewed": "2026-10-16",
+      "url": "https://www.iso20022.org/catalogue-messages",
+      "facts": "ISO publishes base message schemas, Message Definition Reports and, where applicable, usage guides. Passing a base XSD does not establish compliance with Swift CBPR+, EPC, CHAPS or individual clearing and settlement mechanism business rules."
+    },
+    {
+      "id": "SWIFT-SR2026-DELAY",
+      "rail": "CBPR",
+      "topic": "Swift CBPR+ SR2026 structured address change schedule",
+      "version": "Swift revised SR2026 timeline as at 2026-10-16",
+      "effective_date": "2026-08-27",
+      "reviewed": "2026-10-16",
+      "url": "https://www.swift.com/standards/standards-releases",
+      "facts": "Swift announced a revised standards release timeline on 27 August 2026. The postponed November 2026 payment message changes must not be presented as an active fixed cutover. Refer to current Swift customer FAQs for the revised scope and timetable; bank-specific usage guidelines may require access."
+    },
+    {
+      "id": "EPC-SCT-2025-V12",
+      "rail": "SCT",
+      "topic": "EPC SCT rulebook v1.2 unstructured structured hybrid postal address",
+      "version": "2025 SCT rulebook v1.2",
+      "effective_date": "2026-09-30",
+      "reviewed": "2026-10-16",
+      "url": "https://www.europeanpaymentscouncil.eu/document-library/rulebooks/2025-sepa-credit-transfer-rulebook-version-12",
+      "facts": "The EPC 2025 SCT scheme rulebook version 1.2 became effective 30 September 2026. It removed the previously stated 15 November 2026 end date for unstructured addresses. The EPC has not yet published a new end date. The amendment concerns relevant address elements rather than broader operational changes."
+    },
+    {
+      "id": "EPC-ADDRESS-GUIDE-V22",
+      "rail": "SEPA",
+      "topic": "EPC address provision structured hybrid unstructured migration",
+      "version": "EPC153-22 v2.2",
+      "effective_date": "2026-09-30",
+      "reviewed": "2026-10-16",
+      "url": "https://www.europeanpaymentscouncil.eu/document-library/guidance-documents/epc-guidance-document-provision-addresses-under-epc-payment",
+      "facts": "EPC address guidance v2.2 describes structured, hybrid and unstructured payer/payee addresses under 2025 EPC payment schemes. The former 15 November 2026 mandatory discontinuation date for unstructured addresses was removed in September 2026. A replacement date is yet to be set."
+    },
+    {
+      "id": "EPC-SDD-CORE-V12",
+      "rail": "SDD",
+      "topic": "direct debit core mandate refund address rulebook",
+      "version": "2025 SDD Core rulebook v1.2",
+      "effective_date": "2026-09-30",
+      "reviewed": "2026-10-16",
+      "url": "https://www.europeanpaymentscouncil.eu/document-library/rulebooks/2025-sepa-direct-debit-core-rulebook-version-1-2",
+      "facts": "The EPC 2025 SDD Core rulebook v1.2 took effect on 30 September 2026, revising the address migration timing. Core and B2B direct debit schemes have different mandate and authorised-collection refund arrangements. This overview does not enumerate binding bank-specific mandate rules."
+    },
+    {
+      "id": "BOE-RTGS-DELAY",
+      "rail": "CHAPS",
+      "topic": "Bank England CHAPS RTGS ISO 20022 deferred November 2026 release",
+      "version": "BoE RTGS statement 2026-08-27",
+      "effective_date": "2026-08-27",
+      "reviewed": "2026-10-16",
+      "url": "https://www.bankofengland.co.uk/news/2026/august/delay-to-the-november-2026-rtgs-standards-release",
+      "facts": "On 27 August 2026 the Bank of England announced deferral of the whole previously planned November 2026 RTGS standards release, including CHAPS messaging changes. Do not assert the prior November 2026 change as mandatory; refer to current BoE information for revised release timing."
+    },
+    {
+      "id": "SWIFT-TRACKER-NO-SETTLEMENT",
+      "rail": "CBPR",
+      "topic": "cross border Swift gpi UETR payment status and settlement",
+      "version": "educational synthesis 2026-10-16",
+      "effective_date": "2026-10-16",
+      "reviewed": "2026-10-16",
+      "url": "https://www.swift.com/standards/standards-releases",
+      "facts": "Cross-border ISO 20022 messaging and Swift gpi correlation are distinct from actual interbank settlement and beneficiary account credit. A tracking gap, a transmitted pacs.008, or a model-generated explanation cannot alone attest that funds settled. This is original educational synthesis rather than a quoted Swift usage guideline."
+    }
+  ]
+}
