@@ -1,7 +1,7 @@
 name = "ar-t2"
 main = "./worker.mjs"
 compatibility_date = "2026-10-01"
-workers_dev = true
+workers_dev = false
 
 [vars]
 SERVICE_ROLE = "t2"
