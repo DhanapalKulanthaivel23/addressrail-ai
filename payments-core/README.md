@@ -130,3 +130,15 @@ curl -sS -X POST http://127.0.0.1:8081/api/v1/labs/go-engine/validate \
 Go evidence checks: `POST /api/v1/labs/go-engine/reconcile` with explicit `synthetic:true`, `paymentId`, `recordedStatus` and a bounded JSON event array.
 
 **Safety:** the Java adapter is disabled by default, permits only `http://127.0.0.1:<port>`, rejects non-synthetic requests, limits body size and never follows redirects. Enable only for a local demo, never public production. It deliberately does not modify existing SEPA SCT / SCT Inst / CHAPS local simulation flows; these continue to run if Go is offline. This separation prevents optional services from breaking existing educational labs.
+
+### Streaming XML check delegated to Go
+
+With both local services running and the Java opt-in flag enabled:
+
+```bash
+curl -sS http://127.0.0.1:8081/api/v1/labs/go-engine/xml/inspect \
+ -H 'Content-Type: application/json' -X POST \
+ -d '{"synthetic":true,"rail":"SCT","message":"<Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:pacs.008.001.08\"><FIToFICstmrCdtTrf><GrpHdr><MsgId>AR-DEMO-1</MsgId></GrpHdr><CdtTrfTxInf><IntrBkSttlmAmt Ccy=\"EUR\">1.00</IntrBkSttlmAmt><Dbtr><Nm>SYNTHETIC SENDER</Nm></Dbtr></CdtTrfTxInf></FIToFICstmrCdtTrf></Document>"}'
+```
+
+Go, rather than Java, streams the XML and returns element paths and educational rule IDs. The Java interface remains disabled by default and unavailable in production. Contract tests verify wrong `AdrLine`/`Ctry` order and reject non-synthetic requests.

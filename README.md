@@ -1,3 +1,11 @@
+## Three-language backend architecture: Java · Go · Python
+
+**Java 21/Quarkus** owns local payment records and workflows; **Go 1.23+** owns deterministic cross-rail validation, bounded concurrent batches, event reconciliation and streaming ISO 20022 teaching XML checks; **Python 3.12/LangGraph** owns investigations and optional evidence-guarded Gemini explanation.
+
+These are **real, tested local backend components**, not a claim that GitHub Pages executes server-side code. The public website remains browser-only and works independently. The integrated Java → Go and Python → Go contracts have a dedicated GitHub Actions workflow.
+
+**[Java, Go and Python architecture / how to run it](docs/JAVA-GO-PYTHON-ARCHITECTURE.md)** · **[Go source and benchmarks](rail-engine/README.md)**.
+
 ## Community comments on all pages
 
 Every public content page now contains a **Comments & discussion** section. Visitors can read approved comments and submit a public display-name/comment without accounts **after** the Cloudflare Worker, D1 comments table, Turnstile and moderator secret are activated.

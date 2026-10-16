@@ -67,3 +67,26 @@ The integration CI workflow `.github/workflows/java-go-python-integration.yml` s
 - Licensed ISO base XSD validation, EPC/Swift conformance, customer PII screening, sanctions decisions, real Swift connectivity, real bank settlement, authentication and production reconciliation: **not implemented or claimed**.
 
 **Safety:** Synthetic-only data. Loopback-only servers with opt-in connections; no CORS, unknown outcomes remain unknown, no model releases or resubmits payments. This is software architecture and educational engineering, not certification or a production installation.
+
+## XML message inspection owned by Go
+
+Endpoint contract (explicitly opt-in and localhost):
+
+| Caller | Endpoint |
+|---|---|
+| Direct Go test | `POST http://127.0.0.1:8094/v1/xml/inspect` |
+| Java proxy | `POST http://127.0.0.1:8081/api/v1/labs/go-engine/xml/inspect` |
+| Python | `GoRulesClient.inspect_xml("SCT", fictional_xml)` |
+
+Go returns `validator`, `wellFormed`, `validSubset`, `messageFamily`, `namespace`, `elements`, and `rules` with rule IDs and element paths. The result always denies any actual settlement attestation and retry approval.
+
+**No duplicated parser in Java or Python** is needed for this optional service. Existing browser-side teaching checks remain independent because the free GitHub Pages site cannot run backend code. A future hosted deployment would need a secure backend, authentication, rate limits, data governance, schema licensing and fresh rulebooks before accepting even anonymised customer payloads.
+
+## Contribution guidance
+
+- New deterministic scheme-independent validators, event correlation algorithms and concurrent processing → **Go**, with race tests and benchmarks.
+- New records, state transitions, event persistence, JPA/Quarkus endpoints and transaction boundaries → **Java**.
+- New read-only agent tools, evidence-grounded LLM prompts, structured claim evaluation and model outcome reports → **Python**.
+- New synthetic teaching-only public interactions → **JavaScript**, without secret-bearing direct Go/Java/Python API access.
+
+Do not artificially inflate the GitHub Languages chart by copying trivial files across languages. The meaningful contribution is independently tested behaviour and a stable cross-language contract.

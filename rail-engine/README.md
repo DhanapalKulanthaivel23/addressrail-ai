@@ -47,3 +47,19 @@ The Go service does **not** use an LLM. It deliberately returns `CONSISTENT` or 
 | **JavaScript** | Public static educational frontend, no direct access to Go, no secrets |
 
 See `docs/JAVA-GO-PYTHON-ARCHITECTURE.md` for integration examples and safety limits.
+
+## Streaming ISO 20022 educational XML inspector
+
+Go now also owns the bounded streaming parser at **`POST /v1/xml/inspect`**, so the local Java and Python services do not each need their own ad-hoc XML decoder.
+
+```bash
+curl -fsS -X POST http://127.0.0.1:8094/v1/xml/inspect \
+ -H 'Content-Type: application/json' \
+ -d '{"synthetic":true,"rail":"SCT","message":"<Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:pacs.008.001.08\"><FIToFICstmrCdtTrf><GrpHdr><MsgId>AR-DEMO-1</MsgId></GrpHdr><CdtTrfTxInf><IntrBkSttlmAmt Ccy=\"EUR\">5.00</IntrBkSttlmAmt><Dbtr><Nm>SYNTHETIC PAYER</Nm></Dbtr></CdtTrfTxInf></FIToFICstmrCdtTrf></Document>"}'
+```
+
+The `encoding/xml` tokenizer processes up to **64 KiB**, **5,000 elements** and **48 nesting levels**. It rejects DTD/ENTITY declarations, unsupported namespaces, missing synthetic markers, malformed XML and oversized requests. It reports stable paths and rule IDs for basic IBAN/BIC/amount/currency formatting, missing group headers, and postal-address element ordering (`Ctry` before `AdrLine` where both occur).
+
+**Important:** This checks educational structure only, not the full ISO 20022 base XSD or a Swift/EPC/BoE usage guideline. Passing it does not establish completeness, payment validity, customer identity, safe retry or settlement. The synthetic marker is not reliable PII detection. Never paste actual bank data.
+
+Benchmark with `go test -run '^$' -bench '^Benchmark' ./internal/rails` and use your own measured results; raw benchmark measurements are not throughput guarantees.

@@ -127,3 +127,9 @@ INVESTIGATION_ENABLE_GO_RULES=true GO_RULES_URL=http://127.0.0.1:8094 \
 With `INVESTIGATION_ENABLE_GO_RULES=true`, the agent checks the **same fictional payment and event history** with Go before allowing optional LLM explanation. `UNKNOWN` and `PENDING` remain unknown/pending and require human reconciliation. Mismatched event IDs, timestamps, status or missing Go service lead to an `INSUFFICIENT_EVIDENCE` outcome; Go never authorises a retry or settlement. When disabled (default), the existing Python-only investigation works unchanged.
 
 `GoRulesClient` allows loopback `http://127.0.0.1:<port>` only; requests are bounded, redirect-following is disabled, and unexpected Go contract replies are rejected. This is a local *synthetic educational* integration and not an independent trusted production status source. Never pass real customer or bank data.
+
+### Go streaming XML subset as a Python tool
+
+An optional `GoRulesClient.inspect_xml(rail, fictional_xml)` method calls the same Go `/v1/xml/inspect` service. It validates the response type and refuses unexpected settlement or safe-to-retry claims. This is **not** wired to upload real payment content or authorise an LLM to execute payments.
+
+The default investigation path still needs no Go service; enable `INVESTIGATION_ENABLE_GO_RULES=true` only when running all local components.
