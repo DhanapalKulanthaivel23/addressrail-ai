@@ -101,3 +101,32 @@ curl -sS http://127.0.0.1:8081/api/v1/labs/chaps/simulations \
 The API returns a new `CHAPS-...` synthetic ID. That ID can be used with `GET /api/v1/payments/{id}`, `GET /api/v1/payments/{id}/events`, the read-only investigation endpoint, and the existing separate local LangGraph/Gemini service.
 
 The simulator does not model the Bank of England RTGS queue or actual settlement, does not validate CHAPS usage-guideline schemas or liquidity, and never issues genuine settlement evidence. Production writes are disabled by the `%prod` profile. The API remains local and unauthenticated; do not expose it to the public network.
+
+## Go rules integration — opt-in localhost lab
+
+The Java service remains responsible for **payment records, event persistence, synthetic lab creation and human-reviewed workflows**. The new Go `rail-engine/` owns shared educational **format checks, rule IDs and ordered-event reconciliation**. Java does not use Go to release or settle anything.
+
+Run the Go engine separately:
+
+```bash
+cd ../rail-engine && go run ./cmd/raild
+```
+
+Enable the **local** Quarkus proxy explicitly:
+
+```bash
+cd payments-core
+ADDRESSRAIL_LAB_GO_ENGINE_ENABLED=true mvn quarkus:dev
+```
+
+Then call the Java endpoint, **not a browser-direct Go URL**:
+
+```bash
+curl -sS -X POST http://127.0.0.1:8081/api/v1/labs/go-engine/validate \
+ -H 'Content-Type: application/json' \
+ -d '{"synthetic":true,"rail":"SCT","messageType":"pacs.008","currency":"EUR","amount":"125.00","reference":"AR-DEMO-001","debtorIban":"DE89370400440532013000","creditorIban":"FR1420041010050500013M02606"}'
+```
+
+Go evidence checks: `POST /api/v1/labs/go-engine/reconcile` with explicit `synthetic:true`, `paymentId`, `recordedStatus` and a bounded JSON event array.
+
+**Safety:** the Java adapter is disabled by default, permits only `http://127.0.0.1:<port>`, rejects non-synthetic requests, limits body size and never follows redirects. Enable only for a local demo, never public production. It deliberately does not modify existing SEPA SCT / SCT Inst / CHAPS local simulation flows; these continue to run if Go is offline. This separation prevents optional services from breaking existing educational labs.
