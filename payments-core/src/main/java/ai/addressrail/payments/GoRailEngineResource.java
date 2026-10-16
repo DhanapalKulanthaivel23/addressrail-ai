@@ -1,6 +1,11 @@
 package ai.addressrail.payments;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -21,6 +26,7 @@ import java.time.Duration;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class GoRailEngineResource {
+    @Inject EntityManager em;
     @ConfigProperty(name = "addressrail.lab.go-engine.enabled", defaultValue = "false")
     boolean enabled;
 
@@ -101,6 +107,43 @@ public class GoRailEngineResource {
             return Response.status(503).entity(java.util.Map.of(
                     "error", "Local Go rules service is unavailable.")).build();
         }
+    }
+
+    /**
+     * Java reads its own persisted evidence, then delegates ONLY the bounded,
+     * deterministic event-correlation decision to the Go service.
+     */
+    @GET
+    @Path("/payments/{id}/reconcile")
+    public Response reviewStoredSyntheticPayment(@PathParam("id") String id) {
+        ensureEnabled();
+        if (id == null || !id.matches("[A-Za-z0-9_-]{1,80}")) {
+            throw new BadRequestException("Invalid synthetic payment identifier.");
+        }
+        PaymentRecord payment = em.find(PaymentRecord.class, id);
+        if (payment == null || !payment.synthetic) throw new NotFoundException("Fictional payment not found.");
+        List<PaymentEvent> events = em.createQuery(
+                "from PaymentEvent e where e.paymentId = :id order by e.occurredAt, e.id",
+                PaymentEvent.class).setParameter("id", id).setMaxResults(257).getResultList();
+        if (events.isEmpty() || events.size() > 256) {
+            return Response.status(422).entity(java.util.Map.of(
+                    "error", "Expected 1 to 256 complete synthetic payment events.")).build();
+        }
+        ObjectNode body = mapper.createObjectNode();
+        body.put("synthetic", true);
+        body.put("paymentId", id);
+        body.put("recordedStatus", payment.status);
+        ArrayNode entries = body.putArray("events");
+        for (PaymentEvent event : events) {
+            ObjectNode e = entries.addObject();
+            e.put("paymentId", event.paymentId);
+            e.put("occurredAt", event.occurredAt.toString());
+            e.put("type", event.type);
+            e.put("source", event.source);
+            e.put("evidenceRef", event.evidenceRef);
+            // Deliberately omit descriptions, amounts, accounts and names.
+        }
+        return forward(body, "reconcile");
     }
 
     @POST
