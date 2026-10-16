@@ -63,3 +63,17 @@ func TestReconcileContract(t *testing.T){
  if err:=json.Unmarshal(rr.Body.Bytes(),&got);err!=nil{t.Fatal(err)}
  if rr.Code!=200||got.Verdict!="REVIEW_REQUIRED"||got.SafeToRetry||got.SettlementAttested||len(got.Rules)==0{t.Fatal(rr.Code,got)}
 }
+
+func TestXMLInspectionHTTP(t *testing.T){
+ sample:=`<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.08">
+ <FIToFICstmrCdtTrf><GrpHdr><MsgId>AR-DEMO-TEST</MsgId></GrpHdr>
+ <CdtTrfTxInf><IntrBkSttlmAmt Ccy="EUR">1.00</IntrBkSttlmAmt>
+ <Dbtr><Nm>SYNTHETIC BANK</Nm></Dbtr></CdtTrfTxInf></FIToFICstmrCdtTrf></Document>`
+ rr:=post("/v1/xml/inspect",rails.XMLRequest{Synthetic:true,Rail:"SCT",Message:sample})
+ if rr.Code!=200{t.Fatal(rr.Code,rr.Body.String())}
+ var result rails.XMLResult
+ if err:=json.Unmarshal(rr.Body.Bytes(),&result);err!=nil{t.Fatal(err)}
+ if !result.ValidSubset||!result.WellFormed||result.SettlementAttested||result.SafeToRetry{
+  t.Fatal(result)
+ }
+}

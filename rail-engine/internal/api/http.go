@@ -52,6 +52,11 @@ func NewHandler() http.Handler {
   if !decode(w,r,limitSingle,&input){return}
   response(w,200,rails.Validate(input))
  })
+ mux.HandleFunc("/v1/xml/inspect",func(w http.ResponseWriter,r *http.Request){
+  var input rails.XMLRequest
+  if !decode(w,r,limitSingle,&input){return}
+  response(w,200,rails.InspectXML(input))
+ })
  mux.HandleFunc("/v1/reconcile",func(w http.ResponseWriter,r *http.Request){
   var input rails.ReconcileRequest
   if !decode(w,r,limitSingle,&input){return}
