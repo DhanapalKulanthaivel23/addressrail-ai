@@ -112,3 +112,18 @@ The existing unified dashboard at **http://127.0.0.1:8093/dashboard** now includ
 The Quarkus case-management API is at `/api/v1/labs/investigation-cases`, with same-origin FastAPI dashboard proxy endpoints under `/api/dashboard/workflow`. It is enabled **only under the local dev/test profiles** and disabled by default and in production. Unlike the separate read-only payment APIs, this teaching endpoint intentionally persists synthetic case activity. The dashboard operates without authentication only because both services must be bound to loopback and must **never** be published to the network.
 
 Before any bank pilot, this module still requires authentication, real reviewer identity and access control, tenant isolation, optimistic concurrency verification across clients, immutable externally anchored audit, evidence snapshots, secure note handling, data retention, and approval separation of duties. No billable resources, cloud access or new production deployment are part of this milestone.
+
+## Optional Go independent evidence validation
+
+The Python LangGraph agent has an opt-in second deterministic check against the local Go `rail-engine`. Python remains responsible for structured investigation and optional Gemini explanations. Java Quarkus remains the primary payment/events data owner.
+
+Start `rail-engine` on `127.0.0.1:8094` and Quarkus on `127.0.0.1:8081`, then run the agent with:
+
+```bash
+INVESTIGATION_ENABLE_GO_RULES=true GO_RULES_URL=http://127.0.0.1:8094 \
+  uvicorn investigation.app:app --host 127.0.0.1 --port 8093
+```
+
+With `INVESTIGATION_ENABLE_GO_RULES=true`, the agent checks the **same fictional payment and event history** with Go before allowing optional LLM explanation. `UNKNOWN` and `PENDING` remain unknown/pending and require human reconciliation. Mismatched event IDs, timestamps, status or missing Go service lead to an `INSUFFICIENT_EVIDENCE` outcome; Go never authorises a retry or settlement. When disabled (default), the existing Python-only investigation works unchanged.
+
+`GoRulesClient` allows loopback `http://127.0.0.1:<port>` only; requests are bounded, redirect-following is disabled, and unexpected Go contract replies are rejected. This is a local *synthetic educational* integration and not an independent trusted production status source. Never pass real customer or bank data.

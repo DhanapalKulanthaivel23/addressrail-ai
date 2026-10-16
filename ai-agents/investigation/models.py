@@ -44,3 +44,5 @@ class InvestigationResult(StrictModel):
     ai_used: bool = False
     synthetic: bool = True
     prompt_version: str = "investigation-v2"
+    # Optional independent Go rules outcome, never payment finality evidence.
+    go_engine: dict | None = None

@@ -8,6 +8,7 @@ from typing import TypedDict
 from .models import InvestigationResult, Finding
 from .llm import gemini_explanation
 from .tools import PaymentTools, PaymentNotFound, CoreUnavailable
+from .go_rules import GoRulesClient, GoRulesUnavailable
 
 log = logging.getLogger("addressrail.investigation")
 
@@ -109,6 +110,44 @@ def build_agent(tools: PaymentTools):
             result=_evidence(state["payment"],state["events"],pid)
         return {"result":result}
 
+    async def go_cross_check(state: State):
+        """Opt-in Go event review is a veto/check, never a status authority."""
+        if os.getenv("INVESTIGATION_ENABLE_GO_RULES", "false").lower() != "true":
+            return {}
+        result = state["result"]
+        if result.outcome != "EVIDENCE_FOUND":
+            return {}
+        try:
+            go = await GoRulesClient().reconcile(state["payment"], state["events"])
+            # UNKNOWN and PENDING are expected as review-required; mismatched or
+            # malformed evidence is NOT permitted through the LLM node.
+            risk_ids = {rule.id for rule in go.rules}
+            ordinary_review = (
+                go.verdict == "REVIEW_REQUIRED"
+                and risk_ids <= {"EVT-UNKNOWN", "EVT-PENDING"}
+                and result.finding.status in ("UNKNOWN", "PENDING")
+            )
+            consistent = go.verdict == "CONSISTENT" and not risk_ids
+            if not (ordinary_review or consistent):
+                return {"result": result.model_copy(update={
+                    "outcome": "INSUFFICIENT_EVIDENCE",
+                    "finding": Finding(status="CONFLICT",
+                        explanation="Independent Go event correlation requires human review.",
+                        recommended_action="Investigate source event IDs and timestamps without retrying.",
+                        evidence_refs=[]),
+                    "go_engine": go.model_dump(),
+                })}
+            return {"result": result.model_copy(update={"go_engine": go.model_dump()})}
+        except (GoRulesUnavailable, ValueError):
+            return {"result": result.model_copy(update={
+                "outcome": "INSUFFICIENT_EVIDENCE",
+                "finding": Finding(status="UNAVAILABLE",
+                    explanation="Opt-in independent Go rule checks are unavailable.",
+                    recommended_action="Review the authoritative synthetic event trail before continuing."),
+                "go_engine": {"verdict": "UNAVAILABLE", "synthetic": True,
+                              "settlementAttested": False, "safeToRetry": False},
+            })}
+
     async def explain(state: State):
         result=state["result"]
         text=await gemini_explanation(result)
@@ -117,10 +156,12 @@ def build_agent(tools: PaymentTools):
     graph=StateGraph(State)
     graph.add_node("read_only_tools",fetch)
     graph.add_node("deterministic_guardrails",validate)
+    graph.add_node("go_deterministic_cross_check",go_cross_check)
     graph.add_node("optional_ai_explanation",explain)
     graph.add_edge(START,"read_only_tools")
     graph.add_edge("read_only_tools","deterministic_guardrails")
-    graph.add_edge("deterministic_guardrails","optional_ai_explanation")
+    graph.add_edge("deterministic_guardrails","go_deterministic_cross_check")
+    graph.add_edge("go_deterministic_cross_check","optional_ai_explanation")
     graph.add_edge("optional_ai_explanation",END)
     return graph.compile()
 
