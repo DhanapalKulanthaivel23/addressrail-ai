@@ -67,7 +67,7 @@ class KnowledgeStore:
             corpus.append(r)
         self.records = tuple(corpus)
         # Local, deterministic sparse TF-IDF vectors. No embeddings or managed vector service.
-        self.tf = [Counter(tokens(" ".join((r["topic"]+" ")*2 + (r["rail"]+" ")*2 + r["facts"]))) for r in corpus]
+        self.tf = [Counter(tokens((r["topic"]+" ")*2 + (r["rail"]+" ")*2 + r["facts"])) for r in corpus]
         df = Counter(token for doc_tokens in self.tf for token in doc_tokens)
         self.idf = {term:math.log(1+(len(corpus)+1)/(freq+1)) for term,freq in df.items()}
         self.vectors = [{k:(1+math.log(v))*self.idf[k] for k,v in counter.items()} for counter in self.tf]
