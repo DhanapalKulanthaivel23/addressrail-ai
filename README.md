@@ -47,15 +47,3 @@ See the [complete 43-context UK/EU payment coverage matrix](docs/UK-EU-PAYMENT-C
 **Not official XSD/MIG or scheme conformance, live tracking, sanctions screening or settlement.** Every case stays in your own browser tab and is not sent to a shared backend.
 
 [Coverage and safety documentation](docs/PAYMENT_INTELLIGENCE.md)
-
-## Try the public payment case demo — no login
-
-**[Open the free guest case-management workspace](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/open-demo/)**
-
-Anyone with the link can inspect synthetic SEPA SCT, SCT Inst and CHAPS cases, create a fictional case, assign an example owner, add notes and submit a **training-only** decision. No account, password, MFA, Keycloak instance, API key, installation or payments backend is needed. Each visitor's actions stay within their own browser tab; this is **not** a shared multi-user service, real tenant isolation, live AI or genuine case approval.
-
-[Public guest demo guide](docs/GUEST_DEMO.md)
-
-## Running the demo locally
-
-Open `web/index.html` with a browser. It loads `web/app.js`. No Python or API key is needed for local checks.
