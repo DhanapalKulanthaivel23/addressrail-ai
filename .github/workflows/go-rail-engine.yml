@@ -1,0 +1,46 @@
+name: Go rail engine tests
+on:
+  push:
+    paths:
+      - 'rail-engine/**'
+      - '.github/workflows/go-rail-engine.yml'
+  pull_request:
+    paths:
+      - 'rail-engine/**'
+      - '.github/workflows/go-rail-engine.yml'
+permissions:
+  contents: read
+jobs:
+  go-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: rail-engine/go.mod
+          cache-dependency-path: rail-engine/go.mod
+      - name: Go format verification
+        working-directory: rail-engine
+        run: |
+          test -z "$(gofmt -l ./cmd ./internal)"
+      - name: Go vet
+        working-directory: rail-engine
+        run: go vet ./...
+      - name: Test with race detector
+        working-directory: rail-engine
+        run: go test -race -count=1 ./...
+      - name: Benchmark dry-run
+        working-directory: rail-engine
+        run: go test ./internal/rails -run '^$' -bench '^Benchmark' -benchtime=50x
+      - name: HTTP contract — local binding
+        working-directory: rail-engine
+        run: |
+          go build -o /tmp/addressrail-raild ./cmd/raild
+          /tmp/addressrail-raild >/tmp/addressrail-go.log 2>&1 &
+          echo $! >/tmp/addressrail-go.pid
+          trap 'kill $(cat /tmp/addressrail-go.pid)' EXIT
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8094/healthz | grep -q 'synthetic-only'; then break; fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:8094/healthz | grep -q 'addressrail-go-educational'
