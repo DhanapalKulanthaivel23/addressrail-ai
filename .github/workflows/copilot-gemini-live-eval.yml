@@ -1,0 +1,43 @@
+name: Opt-in genuine Gemini copilot eval
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: 'Model ID allowed by your Gemini account'
+        default: 'gemini-2.5-flash'
+        required: true
+      count:
+        description: 'Max 1-8 synthetic provider calls'
+        default: '5'
+        required: true
+permissions:
+  contents: read
+jobs:
+  live-provider-eval:
+    if: ${{ vars.ADDRESSRAIL_ENABLE_REAL_GEMINI_EVAL == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      INVESTIGATION_ENABLE_GEMINI: 'true'
+      INVESTIGATION_GEMINI_MODEL: ${{ inputs.model }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install isolated investigation dependencies
+        run: pip install -r ai-agents/investigation/requirements.txt
+      - name: Call actual Gemini provider for synthetic test cases
+        env:
+          EVAL_COUNT: ${{ inputs.count }}
+        run: |
+          test -n "$GEMINI_API_KEY" || { echo 'Real provider secret not configured'; exit 1; }
+          PYTHONPATH=ai-agents python -m investigation.eval_harness --live \
+            --confirm-live-provider-cost --limit "$EVAL_COUNT" \
+            --output /tmp/real-gemini-evaluation.jsonl
+      - uses: actions/upload-artifact@v4
+        with:
+          name: genuine-gemini-eval-private-review
+          path: /tmp/real-gemini-evaluation.jsonl
+          retention-days: 3
