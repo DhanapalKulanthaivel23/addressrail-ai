@@ -5,9 +5,26 @@ import secrets
 import time
 from collections import deque
 from fastapi import APIRouter, Header, HTTPException, Request, Response
-from .copilot import CopilotRequest, CopilotResponse, run_copilot
+from .copilot import CopilotRequest, CopilotResponse, run_copilot, validate_request
+from .event_queue import DemoEventQueue
 
 router=APIRouter(prefix="/api/copilot/v1",tags=["synthetic-copilot"])
+_job_queue: DemoEventQueue | None = None
+
+async def start_demo_queue():
+    """Explicit startup only. Not durable or distributed."""
+    global _job_queue
+    if _job_queue is not None:
+        return
+    _job_queue = DemoEventQueue(run_copilot,capacity=16)
+    await _job_queue.start()
+
+async def stop_demo_queue():
+    global _job_queue
+    if _job_queue is not None:
+        await _job_queue.stop()
+        _job_queue = None
+
 _recent: deque[float]=deque()
 # Instance-local throttle only; a production gateway needs tenant-scoped durable limits.
 
@@ -45,3 +62,35 @@ async def copilot_investigate(request: Request, payload: CopilotRequest,
         raise HTTPException(status_code=422,detail="Rejected unsafe or invalid synthetic request") from exc
     except Exception as exc:
         raise HTTPException(status_code=503,detail="Local copilot unavailable") from exc
+
+@router.post("/jobs",status_code=202)
+async def submit_synthetic_job(request:Request,payload:CopilotRequest,
+                              authorization:str | None = Header(default=None)):
+    gateway_auth(request,authorization)
+    if os.getenv("COPILOT_ENABLE_QUEUE","false").lower()!="true" or _job_queue is None:
+        raise HTTPException(404,"In-process training job queue disabled")
+    try:
+        validate_request(payload)
+        id=_job_queue.publish(payload)
+        return {"id":id,"state":"QUEUED","synthetic":True,
+                "durable":False,"human_review_required":True}
+    except ValueError as exc:
+        raise HTTPException(422,"Unsafe or non-synthetic request") from exc
+    except (OverflowError,RuntimeError) as exc:
+        raise HTTPException(503,"Local event worker unavailable") from exc
+
+@router.get("/jobs/{job_id}")
+async def synthetic_job_status(job_id:str,request:Request,
+                               authorization:str | None = Header(default=None)):
+    gateway_auth(request,authorization)
+    if not job_id.startswith("AR-JOB-") or len(job_id)>45:
+        raise HTTPException(422,"Invalid synthetic job reference")
+    if os.getenv("COPILOT_ENABLE_QUEUE","false").lower()!="true" or _job_queue is None:
+        raise HTTPException(404,"In-process training queue disabled")
+    job=_job_queue.lookup(job_id)
+    if job is None:
+        raise HTTPException(404,"Job expired or not found")
+    return {"id":job.id,"state":job.state,"synthetic":True,
+            "durable":False,"human_review_required":True,
+            "result":job.result if job.state=="DONE" else None,
+            "error_code":job.error_code}

@@ -1,5 +1,6 @@
 """Local synthetic investigation lab API. No CORS; do not expose publicly."""
 from contextlib import asynccontextmanager
+import os
 from pathlib import Path as FilePath
 from fastapi import FastAPI, HTTPException, Query, Path
 from pydantic import BaseModel, Field
@@ -8,11 +9,18 @@ from fastapi.responses import FileResponse
 from .agent import investigate
 from .models import InvestigationRequest, InvestigationResult
 from .tools import PaymentTools, PaymentNotFound, CoreUnavailable
-from .copilot_api import router as copilot_router
+from .copilot_api import router as copilot_router, start_demo_queue, stop_demo_queue
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    yield
+    use_queue=os.getenv("COPILOT_ENABLE_API","false").lower()=="true" and os.getenv("COPILOT_ENABLE_QUEUE","false").lower()=="true"
+    if use_queue:
+        await start_demo_queue()
+    try:
+        yield
+    finally:
+        if use_queue:
+            await stop_demo_queue()
 
 app=FastAPI(title="AddressRail AI Investigation Lab (Synthetic)", version="0.2.0", lifespan=lifespan)
 app.include_router(copilot_router)
