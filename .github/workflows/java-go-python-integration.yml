@@ -1,0 +1,67 @@
+name: Java Go Python contract integration
+on:
+  push:
+    paths:
+      - 'rail-engine/**'
+      - 'payments-core/**'
+      - 'ai-agents/investigation/**'
+      - '.github/workflows/java-go-python-integration.yml'
+  pull_request:
+    paths:
+      - 'rail-engine/**'
+      - 'payments-core/**'
+      - 'ai-agents/investigation/**'
+      - '.github/workflows/java-go-python-integration.yml'
+permissions:
+  contents: read
+jobs:
+  cross-language-synthetic-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      GO_ENGINE_INTEGRATION: 'true'
+      ADDRESSRAIL_LAB_GO_ENGINE_ENABLED: 'true'
+      GO_RULES_URL: http://127.0.0.1:8094
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: rail-engine/go.mod
+          cache-dependency-path: rail-engine/go.mod
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: payments-core/pom.xml
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: ai-agents/investigation/requirements.txt
+      - name: Build and start real Go localhost rules engine
+        working-directory: rail-engine
+        run: |
+          go build -o /tmp/addressrail-go-raild ./cmd/raild
+          /tmp/addressrail-go-raild > /tmp/addressrail-go-server.log 2>&1 &
+          echo $! > /tmp/addressrail-go-server.pid
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8094/healthz | grep -q 'addressrail-go-educational-v1'; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:8094/healthz | grep -q 'synthetic-only'
+      - name: Run Java Quarkus + live Go proxy integration tests
+        working-directory: payments-core
+        run: mvn --batch-mode --no-transfer-progress test
+      - name: Run Python adapter + live Go contract tests
+        env:
+          PYTHONPATH: ai-agents
+        run: |
+          python -m pip install -r ai-agents/investigation/requirements.txt
+          python -m pytest -q ai-agents/investigation/tests/test_go_rules.py ai-agents/investigation/tests/test_go_live.py
+      - name: Cleanup local Go service
+        if: always()
+        run: |
+          if test -f /tmp/addressrail-go-server.pid; then
+            kill "$(cat /tmp/addressrail-go-server.pid)" || true
+          fi

@@ -1,6 +1,6 @@
 ## Community comments on all pages
 
-Every one of the **14 public content pages** now contains a **Comments & discussion** section. Visitors can read approved comments and submit a public display-name/comment without accounts **after** the Cloudflare Worker, D1 comments table, Turnstile and moderator secret are activated.
+Every public content page now contains a **Comments & discussion** section. Visitors can read approved comments and submit a public display-name/comment without accounts **after** the Cloudflare Worker, D1 comments table, Turnstile and moderator secret are activated.
 
 **Activation is still required.** GitHub Pages cannot provide a persistent database on its own. Until the owner deploys the updated backend, the comments widget honestly reports that submissions are unavailable rather than claiming to save comments. Submitted comments are private/pending until the owner approves them.
 
@@ -29,7 +29,7 @@ Developers who want to host their own instance can follow the [deployment guide]
 
 ## v2 entry points — learn, present and test AI
 
-- **[Start Here](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/start/)** — five foundational lessons, glossary and tab-private progress.
+- **[Start Here](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/start/)** — eight foundational lessons, glossary and tab-private progress.
 - **[SCT Inst instant exception lab](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/sct-inst/?scenario=timeout)** — illustrative RT1 **or** TIPS route, rejections and unknown outcomes.
 - **[CHAPS liquidity investigation](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/chaps/?scenario=liquidity-hold#case-lab)** — fictional BoE RTGS liquidity hold, evidence and rule IDs.
 - **[Banking AI guardrails](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/ai-lab/)** — eight authored claim fixtures, deterministic checks; **not real recorded LLM outputs**.
