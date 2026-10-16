@@ -19,20 +19,9 @@ jobs:
         with:
           go-version-file: rail-engine/go.mod
           cache-dependency-path: rail-engine/go.mod
-      - name: Normalize Go formatting before static analysis
+      - name: Verify Go source is gofmt-clean
         working-directory: rail-engine
-        run: |
-          gofmt -w ./cmd/raild/main.go ./internal/api/*.go ./internal/rails/*.go
-          test -z "$(gofmt -l ./cmd ./internal)"
-      - name: Temporary formatted-source snapshot for repository cleanup
-        working-directory: rail-engine
-        run: |
-          for src in cmd/raild/main.go internal/api/*.go internal/rails/*.go; do
-            echo "AR_GO_FORMAT_BEGIN:$src"
-            base64 -w0 "$src"
-            echo
-            echo "AR_GO_FORMAT_END:$src"
-          done
+        run: test -z "$(gofmt -l ./cmd ./internal)"
       - name: Go vet
         working-directory: rail-engine
         run: go vet ./...
