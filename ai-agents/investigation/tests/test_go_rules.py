@@ -117,3 +117,36 @@ def test_go_opt_out_is_backwards_compatible(monkeypatch):
     monkeypatch.delenv("INVESTIGATION_ENABLE_GO_RULES",raising=False)
     result=asyncio.run(investigate("PAY-10001",core()))
     assert result.outcome=="EVIDENCE_FOUND" and result.go_engine is None
+
+def test_python_go_xml_contract_without_live_customer_data():
+    sample = """<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.08">
+      <FIToFICstmrCdtTrf><GrpHdr><MsgId>AR-DEMO-101</MsgId></GrpHdr>
+      <CdtTrfTxInf><IntrBkSttlmAmt Ccy="EUR">1.00</IntrBkSttlmAmt>
+      <Dbtr><Nm>SYNTHETIC SENDER</Nm></Dbtr></CdtTrfTxInf>
+      </FIToFICstmrCdtTrf></Document>"""
+    expected = {
+        "validator":"addressrail-go-educational-v1",
+        "wellFormed":True,"validSubset":True,"messageFamily":"pacs.008",
+        "namespace":"urn:iso:std:iso:20022:tech:xsd:pacs.008.001.08",
+        "elements":9,"rules":[],"synthetic":True,
+        "settlementAttested":False,"safeToRetry":False,
+        "disclaimer":"Synthetic subset only."
+    }
+    def handler(req):
+        assert req.url.path == "/v1/xml/inspect"
+        body = json.loads(req.content)
+        assert body["synthetic"] and body["rail"] == "SCT"
+        assert body["message"] == sample
+        return httpx.Response(200,json=expected)
+    client = GoRulesClient(transport=httpx.MockTransport(handler))
+    result = asyncio.run(client.inspect_xml("SCT",sample))
+    assert result.wellFormed and result.validSubset and result.messageFamily == "pacs.008"
+    assert not result.settlementAttested and not result.safeToRetry
+    with pytest.raises(ValueError):
+        asyncio.run(client.inspect_xml("SCT","<Document>JOHN SMITH</Document>"))
+    with pytest.raises(ValueError):
+        asyncio.run(client.inspect_xml("SCT",sample * 1000))
+    with pytest.raises(GoRulesUnavailable):
+        denied = {**expected,"settlementAttested":True}
+        unsafe = GoRulesClient(transport=httpx.MockTransport(lambda _: httpx.Response(200,json=denied)))
+        asyncio.run(unsafe.inspect_xml("SCT",sample))
