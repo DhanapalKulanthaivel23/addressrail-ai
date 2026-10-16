@@ -47,6 +47,6 @@ test("GPI does not invent successful network outcome if bank binding fails",asyn
  assert.equal(r.status,502);assert.equal(j.error,"swift_network_unavailable");assert.equal(j.trackingStatus,undefined);
 });
 test("SEPA returns an error when clearing binding is absent",async()=>{
- const r=await worker.fetch(req("/",{...pay,scheme:"SDD_CORE"}),service("sepa"));const j=await r.json();
+ const r=await worker.fetch(req("/",{...pay,scheme:"SDD_CORE",messageType:"pain.008"}),service("sepa"));const j=await r.json();
  assert.equal(r.status,502);assert.equal(j.error,"clearing_service_unavailable");
 });
