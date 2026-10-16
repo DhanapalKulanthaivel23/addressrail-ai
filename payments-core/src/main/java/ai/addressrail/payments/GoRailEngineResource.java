@@ -147,6 +147,13 @@ public class GoRailEngineResource {
     }
 
     @POST
+    @Path("/xml/inspect")
+    public Response inspectSyntheticXml(JsonNode input) {
+        // Streaming structural checks and rule IDs live in Go, not a second Java parser.
+        return forward(input, "xml/inspect");
+    }
+
+    @POST
     @Path("/validate")
     public Response validate(JsonNode input) {
         return forward(input, "validate");
