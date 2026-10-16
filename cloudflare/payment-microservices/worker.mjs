@@ -32,7 +32,7 @@ export default {async fetch(request,env){
  if(!roles.has(role))return err("invalid_role",500);
  const url=new URL(request.url);
  if(url.pathname==="/health")return json({service:role,status:"up",simulated:true});
- if(role==="gateway" && (url.pathname==="/v1/payments" || /^\\/v1\\/payments\\//.test(url.pathname))){
+ if(role==="gateway" && (url.pathname==="/v1/payments" || url.pathname.startsWith("/v1/payments/"))){
    if(!env.API_KEY||request.headers.get("x-api-key")!==env.API_KEY)return err("unauthorized",401);
    return phase1(request,env);
  }
