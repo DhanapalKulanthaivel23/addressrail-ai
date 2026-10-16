@@ -30,6 +30,20 @@ class GoReconciliation(BaseModel):
     safeToRetry: bool
     disclaimer: str
 
+class GoXMLInspection(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    validator: str
+    wellFormed: bool
+    validSubset: bool
+    messageFamily: str | None = None
+    namespace: str | None = None
+    elements: int
+    rules: list[GoFinding]
+    synthetic: bool
+    settlementAttested: bool
+    safeToRetry: bool
+    disclaimer: str
+
 class GoRulesClient:
     """Bounded synthetic JSON payloads to loopback only; never a payment-action tool."""
     def __init__(self, base_url: str | None = None, transport=None):
@@ -79,3 +93,29 @@ class GoRulesClient:
             return result
         except (httpx.HTTPError, ValueError, KeyError, IndexError) as exc:
             raise GoRulesUnavailable("Go rules check unavailable") from exc
+
+    async def inspect_xml(self, rail: str, message: str) -> GoXMLInspection:
+        """Go does streaming subset XML checks. No real payment data permitted."""
+        if (rail not in {"SCT", "SCT_INST", "SDD", "CHAPS", "T2", "CBPR", "CLS"}
+                or not isinstance(message, str) or not 10 <= len(message) <= 60000
+                or not any(marker in message.upper() for marker in
+                           ("SYNTHETIC", "AR-DEMO", "TEST-"))):
+            raise ValueError("Provide synthetic ISO message XML under 60 KB")
+        payload = {"synthetic": True, "rail": rail, "message": message}
+        try:
+            async with httpx.AsyncClient(
+                base_url=self.base_url, transport=self.transport,
+                timeout=3, follow_redirects=False, trust_env=False
+            ) as client:
+                response = await client.post("/v1/xml/inspect", json=payload)
+            response.raise_for_status()
+            if len(response.content) > 65536:
+                raise GoRulesUnavailable("Oversize XML inspection reply")
+            result = GoXMLInspection.model_validate(response.json())
+            if (result.validator != "addressrail-go-educational-v1"
+                    or not result.synthetic or result.safeToRetry or
+                    result.settlementAttested):
+                raise GoRulesUnavailable("Unsafe or mismatched Go XML contract")
+            return result
+        except (httpx.HTTPError, ValueError, KeyError) as exc:
+            raise GoRulesUnavailable("Local Go XML inspector unavailable") from exc
