@@ -45,7 +45,7 @@ test("replay does not resubmit or double append events",async()=>{
  await phase1(send(input),e);
  const r=await phase1(send(input),e);assert.equal((await r.json()).replayed,true);
  assert.equal(db.payments.length,1);assert.equal(db.events.length,4);
- const changed=await phase1(send({...input,receiverBic:"OTHERDEFF"}),e);
+ const changed=await phase1(send({...input,receiverBic:"OTHRDEFF"}),e);
  assert.equal(changed.status,409);
 });
 test("rejection and unknown network outcomes never claim settlement",async()=>{
