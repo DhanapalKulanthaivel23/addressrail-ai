@@ -40,3 +40,13 @@ test("Gateway must have tenant quota database, fails closed",async()=>{
 test("Unknown scheme message is rejected",async()=>{
  assert.equal((await worker.fetch(req("/",{...pay,messageType:"pain.001"}),service("gpi"))).status,400);
 });
+test("GPI does not invent successful network outcome if bank binding fails",async()=>{
+ const swift=service("swift-network"); // no Bank service binding
+ const gpi=service("gpi",{SWIFT:binding(swift)});
+ const r=await worker.fetch(req("/",pay),gpi);const j=await r.json();
+ assert.equal(r.status,502);assert.equal(j.error,"swift_network_unavailable");assert.equal(j.trackingStatus,undefined);
+});
+test("SEPA returns an error when clearing binding is absent",async()=>{
+ const r=await worker.fetch(req("/",{...pay,scheme:"SDD_CORE"}),service("sepa"));const j=await r.json();
+ assert.equal(r.status,502);assert.equal(j.error,"clearing_service_unavailable");
+});
