@@ -1,23 +1,38 @@
-# GitHub-only deployment preparation
+# Manually gated synthetic Cloudflare deployment
 
-Cloudflare has **not** been deployed from this branch. The workflow is manually triggered and requires the literal `DEPLOY_SYNTHETIC_ONLY` input. It cannot deploy until the repository owner configures a GitHub Actions environment named `cloudflare-synthetic` and the following environment settings:
+This workflow has not been deployed as part of this hardening change. It deploys only on `workflow_dispatch`, on `feature/cloudflare-payment-microservices`, with literal confirmation `DEPLOY_SYNTHETIC_ONLY`. Checkout uses the dispatch commit SHA, not a moving branch. Nothing merges automatically.
 
-| Name | GitHub setting |
+Configure the `cloudflare-synthetic` GitHub environment:
+
+| Setting | Kind |
 | --- | --- |
-| `CLOUDFLARE_API_TOKEN` | Environment secret: token scoped to required Workers Scripts + D1 edit rights |
-| `CLOUDFLARE_ACCOUNT_ID` | Environment secret |
-| `AR_INTERNAL_TOKEN` | Environment secret: strong random value (32+ characters) |
-| `AR_DEMO_API_KEY` | Environment secret: strong random value (32+ characters) |
-| `CLOUDFLARE_D1_DATABASE_ID` | Environment variable: existing D1 database ID |
+| CLOUDFLARE_API_TOKEN | Secret; account-scoped Workers Scripts edit and D1 edit permissions |
+| CLOUDFLARE_ACCOUNT_ID | Secret; 32 hexadecimal characters |
+| AR_INTERNAL_TOKEN | Secret; random 32+ characters |
+| AR_DEMO_API_KEY | Secret; different random 32+ characters |
+| CLOUDFLARE_D1_DATABASE_ID | Variable; existing D1 UUID |
+| CLOUDFLARE_GATEWAY_URL | Variable; `https://ar-gateway.<your-subdomain>.workers.dev/` |
 
-The D1 database must first be created by an authorised Cloudflare administrator under the name `addressrail-payment-usage`. **Do not place any secrets in GitHub files, issues, PRs, logs or this conversation.** This is an optional, not-yet-verified deployment workflow. Manual invocation can mutate the Cloudflare account; costs/entitlements must be independently verified. Internal Workers now default to `workers_dev=false` and are called through service bindings. The public gateway remains enabled.
+Create the D1 database `addressrail-payment-usage` with an authorized administrator. Enable the account's workers.dev subdomain first. Do not paste credentials in code, chat, issues or logs. Configure environment reviewers and deployment branch restrictions where your GitHub plan supports them. The workflow file may need to exist on the default branch to appear in GitHub's dispatch UI; this change does not merge it.
 
-For an additional safety check, configure deployment environment reviewers in GitHub Settings so a manual run requires approval. Inspect all script behaviour and use Cloudflare Free entitlements only.
+## Deployment behavior
 
-## Known limitations and follow-ups
+`npm ci` installs locked deployment tooling. `scripts/cloudflare-config.mjs` validates the UUID and generates a sibling gateway config, preserving the `./worker.mjs` path. D1 schema initialization explicitly uses `--config .../wrangler.gateway.deploy.toml` and binding `DB`; it is idempotent CREATE IF NOT EXISTS, not a migration framework. All ten bundles are checked separately by CI without credentials.
 
-1. The synthetic-only workflow has not been verified against a live Cloudflare account or real D1 database.
-2. The payment orchestration gateway performs API key checks, but the demo uses one hard-coded tenant and does not implement full production multi-tenancy, identity, atomic rate limiting of payment submissions or bank integrations.
-3. Worker role separation remains a shared JavaScript module with independent config; it is not a Kubernetes installation, and it does not run Java Quarkus/Python/Go processes on Cloudflare.
-4. Validation and lifecycle behaviour are educational subsets, not official SWIFT, EPC, Bank of England or Eurosystem conformance.
-5. Run GitHub CI and manually review deploy logs and gateway REST responses before inviting users.
+The deploy script validates every required setting before any remote command, initializes the existing database, then deploys backend dependencies before gateway. Secrets are JSON files with mode 0600 in a temporary directory and sent using `wrangler deploy --secrets-file`, alongside code. They are removed on exit; no secret values are printed or uploaded as artifacts. Internal Workers disable workers.dev and preview URLs. Inspect any existing custom routes separately; these configs do not audit account-level routing.
+
+Deployment is sequential, not transactional. A failure can leave a partially updated graph. Rotating the shared internal token can cause transient failures while Workers update. Restore a reviewed commit and matching secrets with an authorized manual run; do not assume automatic rollback.
+
+## Actual smoke automation
+
+After deployment `scripts/cloudflare-smoke.mjs` calls the configured HTTPS gateway with redirects disabled and bounded timeouts. It checks gateway health, invalid-key rejection, an unknown path, rejection of non-synthetic input and an actual GPI → SWIFT → bank service-binding response. It requires HTTP 200, ACSP, simulated network ACK, simulated=true and settlementAttested=false. Any failure fails the workflow. It consumes two of the demo's 25 daily quota units, so an already exhausted quota causes a truthful smoke failure. It does not exhaust a live account's quota or submit a durable payment.
+
+CI runs the same smoke function against real local workerd Workers with SQLite-backed D1, plus durable payment creation/replay/events, quota concurrency, orchestration quota checks and missing-table failures. These are local results, not evidence of live Cloudflare deployment.
+
+## Quota and Free-plan scope
+
+One configured API key maps to tenant `demo`. All authenticated recognized gateway API requests, including payment reads and retries, consume a daily UTC quota unit before parsing. Health, invalid keys, unknown paths and unsupported methods do not. Atomic conditional SQL increments permit only the configured number of requests under concurrency. DB failures return 503, exhausted quota 429. DAILY_LIMIT must be an integer 1–1000 and defaults to 25. Downstream or invalid-body failures still consume the accepted request's unit.
+
+Application quota does not cap unauthorized traffic, health requests, storage growth or account-wide Cloudflare usage. This lab uses Workers, Service Bindings and D1, not paid queues or containers; account entitlements and existing usage must still be checked by the owner. It does not set billing controls or guarantee zero cost. Review current [Workers limits](https://developers.cloudflare.com/workers/platform/limits/) and [D1 limits](https://developers.cloudflare.com/d1/platform/limits/).
+
+This remains a synthetic educational subset, not SWIFT/EPC/CHAPS/T2 conformance or live payment connectivity.

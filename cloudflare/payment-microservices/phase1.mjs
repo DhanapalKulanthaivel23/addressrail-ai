@@ -37,7 +37,7 @@ export async function phase1(request,env,tenant="demo"){
    return response(payment);
  }
  if(request.method!=="POST"||url.pathname!=="/v1/payments")return reject("not_found",404);
- let p;try{const body=await request.text();if(body.length>60000)return reject("payload_too_large",413);p=JSON.parse(body)}catch{return reject("invalid_json")}
+ let p;try{const body=await request.text();if(new TextEncoder().encode(body).byteLength>60000)return reject("payload_too_large",413);p=JSON.parse(body)}catch{return reject("invalid_json")}
  if(p?.synthetic!==true||!["MT103","pacs.008"].includes(p.messageType)||!uetrRx.test(p.uetr||"")||!bicRx.test(p.receiverBic||""))return reject("invalid_synthetic_payment");
  const idempotency=request.headers.get("idempotency-key");
  if(!idempotency||!/^[A-Za-z0-9_-]{8,90}$/.test(idempotency))return reject("idempotency_key_required");

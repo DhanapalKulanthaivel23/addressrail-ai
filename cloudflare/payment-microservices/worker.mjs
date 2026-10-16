@@ -18,8 +18,9 @@ const allowed=(kind,type)=>schemeTypes[kind]?.some(x=>type===x||type.startsWith(
 const safeRef=p=>String(p.reference??p.uetr??"").slice(0,80);
 async function forward(env,binding,path,payload){
  if(!env[binding])return {status:503,result:{error:"service_binding_missing",binding}};
- const response=await env[binding].fetch(new Request("https://internal"+path,{method:"POST",headers:{"content-type":"application/json","x-internal-token":env.INTERNAL_TOKEN||""},body:JSON.stringify(payload)}));
+ try { const response=await env[binding].fetch(new Request("https://internal"+path,{method:"POST",headers:{"content-type":"application/json","x-internal-token":env.INTERNAL_TOKEN||""},body:JSON.stringify(payload)}));
  return {status:response.status,result:await response.json()};
+ } catch { return {status:503,result:{error:"downstream_unavailable"}}; }
 }
 async function quota(db,tenant,limit){
  if(!db) return false; // fail closed
@@ -33,21 +34,26 @@ export default {async fetch(request,env){
  if(!roles.has(role))return err("invalid_role",500);
  const url=new URL(request.url);
  if(url.pathname==="/health")return json({service:role,status:"up",simulated:true});
- if(role==="gateway" && (url.pathname==="/v1/payments" || url.pathname.startsWith("/v1/payments/"))){
+ if(role==="gateway"){
    if(!env.API_KEY||request.headers.get("x-api-key")!==env.API_KEY)return err("unauthorized",401);
-   return phase1(request,env);
+   const payment=url.pathname==="/v1/payments"||/^\/v1\/payments\/[A-Za-z0-9_-]{1,90}(?:\/(events|investigation|report))?$/.test(url.pathname);
+   const routes={"/v1/cbpr/validate":"CBPR","/v1/gpi/payments":"GPI","/v1/swift-network/payments":"SWIFT","/v1/sepa/payments":"SEPA","/v1/rtgs/settle":"RTGS","/v1/chaps/payments":"CHAPS","/v1/t2/payments":"T2"};
+   if(!payment&&!routes[url.pathname])return err("unknown_service",404);
+   if(request.method!=="POST"&&!(payment&&request.method==="GET"&&url.pathname!=="/v1/payments"))return err("method_not_allowed",405);
+   const limit=Number(env.DAILY_LIMIT??25);
+   if(!Number.isSafeInteger(limit)||limit<1||limit>1000)return err("invalid_daily_limit",503);
+   try {
+     if(!env.DB)return err("quota_database_unavailable",503);
+     if(!await quota(env.DB,"demo",limit))return err("quota_exceeded",429);
+   }catch{return err("quota_database_unavailable",503)}
+   if(payment){try{return await phase1(request,env)}catch{return err("payment_database_unavailable",503)}}
  }
  if(request.method!=="POST")return err("method_not_allowed",405);
  if((role!=="gateway")&&(!env.INTERNAL_TOKEN||request.headers.get("x-internal-token")!==env.INTERNAL_TOKEN))return err("internal_only",403);
- let data;try{if(Number(request.headers.get("content-length"))>65536)return err("payload_too_large",413);const raw=await request.text();if(raw.length>65536)return err("payload_too_large",413);data=JSON.parse(raw)}catch{return err("invalid_json")}
+ let data;try{if(Number(request.headers.get("content-length"))>65536)return err("payload_too_large",413);const raw=await request.text();if(new TextEncoder().encode(raw).byteLength>65536)return err("payload_too_large",413);data=JSON.parse(raw)}catch{return err("invalid_json")}
  if(data?.synthetic!==true)return err("synthetic_true_required");
  if(role==="gateway"){
-   if(!env.API_KEY||request.headers.get("x-api-key")!==env.API_KEY)return err("unauthorized",401);
-   const tenant="demo"; // single configured demo tenant; never trust arbitrary caller tenant IDs
-   if(!await quota(env.DB,tenant,Number(env.DAILY_LIMIT||25)))return err("quota_exceeded_or_database_unavailable",429);
-   const service=url.pathname.split("/")[2];
-   const bind={"cbpr":"CBPR","gpi":"GPI","swift-network":"SWIFT","sepa":"SEPA","rtgs":"RTGS","chaps":"CHAPS","t2":"T2"}[service];
-   if(!bind)return err("unknown_service",404);
+   const bind={"/v1/cbpr/validate":"CBPR","/v1/gpi/payments":"GPI","/v1/swift-network/payments":"SWIFT","/v1/sepa/payments":"SEPA","/v1/rtgs/settle":"RTGS","/v1/chaps/payments":"CHAPS","/v1/t2/payments":"T2"}[url.pathname];
    const r=await forward(env,bind,url.pathname,data);return json(r.result,r.status);
  }
  const typ=String(data.messageType||"");

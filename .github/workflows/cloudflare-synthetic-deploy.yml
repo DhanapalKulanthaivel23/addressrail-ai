@@ -15,59 +15,27 @@ concurrency:
 
 jobs:
   deploy:
-    if: ${{ inputs.confirmation == 'DEPLOY_SYNTHETIC_ONLY' }}
+    if: ${{ inputs.confirmation == 'DEPLOY_SYNTHETIC_ONLY' && github.ref == 'refs/heads/feature/cloudflare-payment-microservices' }}
     runs-on: ubuntu-latest
     environment: cloudflare-synthetic
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: feature/cloudflare-payment-microservices
+          ref: ${{ github.sha }}
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - run: npm ci
       - name: Verify synthetic contract tests
-        run: node --test tests/cloudflare-payment-microservices.test.mjs tests/payment-message-registry.test.mjs tests/payment-phase1.test.mjs tests/payment-rail-flows.test.mjs
-      - name: Check Cloudflare configuration and credentials
-        env:
-          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CF_DATABASE: ${{ vars.CLOUDFLARE_D1_DATABASE_ID }}
-          INTERNAL_TOKEN: ${{ secrets.AR_INTERNAL_TOKEN }}
-          DEMO_KEY: ${{ secrets.AR_DEMO_API_KEY }}
-        run: |
-          test -n "$CF_TOKEN" || { echo 'Missing CLOUDFLARE_API_TOKEN'; exit 1; }
-          test -n "$CF_ACCOUNT" || { echo 'Missing CLOUDFLARE_ACCOUNT_ID'; exit 1; }
-          test -n "$CF_DATABASE" || { echo 'Missing CLOUDFLARE_D1_DATABASE_ID'; exit 1; }
-          test -n "$INTERNAL_TOKEN" || { echo 'Missing AR_INTERNAL_TOKEN'; exit 1; }
-          test -n "$DEMO_KEY" || { echo 'Missing AR_DEMO_API_KEY'; exit 1; }
-          test "${#INTERNAL_TOKEN}" -ge 32 || { echo 'Internal token must be >=32 characters'; exit 1; }
-          test "${#DEMO_KEY}" -ge 32 || { echo 'Demo API key must be >=32 characters'; exit 1; }
-      - name: Deploy independent Workers
+        run: node --test tests/cloudflare*.test.mjs tests/payment-message-registry.test.mjs tests/payment-phase1.test.mjs tests/payment-rail-flows.test.mjs
+      - name: Deploy and verify live synthetic chain
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           D1_DATABASE_ID: ${{ vars.CLOUDFLARE_D1_DATABASE_ID }}
+          GATEWAY_URL: ${{ vars.CLOUDFLARE_GATEWAY_URL }}
           AR_INTERNAL_TOKEN: ${{ secrets.AR_INTERNAL_TOKEN }}
           AR_DEMO_API_KEY: ${{ secrets.AR_DEMO_API_KEY }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          root="cloudflare/payment-microservices"
-          cp "$root/wrangler.gateway.toml" "$root/wrangler.gateway.deploy.toml"
-          sed -i "s/^# \[\[d1_databases\]\]/[[d1_databases]]/" "$root/wrangler.gateway.deploy.toml"
-          sed -i "s/^# binding = \"DB\"/binding = \"DB\"/" "$root/wrangler.gateway.deploy.toml"
-          sed -i "s/^# database_name = /database_name = /" "$root/wrangler.gateway.deploy.toml"
-          sed -i "s/^# database_id = /database_id = /" "$root/wrangler.gateway.deploy.toml"
-          sed -i "s/REPLACE_WITH_REAL_DATABASE_ID/$D1_DATABASE_ID/" "$root/wrangler.gateway.deploy.toml"
-          npx --yes wrangler@4 d1 execute addressrail-payment-usage --remote --file="$root/schema.sql"
-          for role in bank swift-network cbpr gpi sepa-clearing sepa rtgs chaps t2 gateway; do
-            conf="$root/wrangler.$role.toml"
-            if [ "$role" = gateway ]; then conf="$root/wrangler.gateway.deploy.toml"; fi
-            npx --yes wrangler@4 deploy --config "$conf"
-            printf '%s' "$AR_INTERNAL_TOKEN" | npx --yes wrangler@4 secret put INTERNAL_TOKEN --config "$conf"
-            if [ "$role" = gateway ]; then
-              printf '%s' "$AR_DEMO_API_KEY" | npx --yes wrangler@4 secret put API_KEY --config "$conf"
-            fi
-          done
-          echo 'Deployed synthetic Worker configurations. Live smoke test requires the configured gateway URL.'
+        run: bash scripts/cloudflare-deploy.sh

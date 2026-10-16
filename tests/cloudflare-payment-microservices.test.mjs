@@ -35,7 +35,7 @@ test("CHAPS settlement uses RTGS service and enforces GBP",async()=>{
 test("Gateway must have tenant quota database, fails closed",async()=>{
  const s=service("gateway",{API_KEY:"key",CBPR:binding(service("cbpr"))});
  const r=await worker.fetch(req("/v1/cbpr/validate",{...pay,payload:"<Document/>"},{"x-api-key":"key"}),s);
- assert.equal(r.status,429);
+ assert.equal(r.status,503);
 });
 test("Unknown scheme message is rejected",async()=>{
  assert.equal((await worker.fetch(req("/",{...pay,messageType:"pain.001"}),service("gpi"))).status,400);
