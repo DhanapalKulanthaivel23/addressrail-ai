@@ -1,3 +1,4 @@
+import {phase1} from "./phase1.mjs";
 import {support,PROFILE_VERSION} from "./registry.mjs";
 // Independently deployable, synthetic-only payment simulators for Cloudflare Workers.
 // Each deployment uses SERVICE_ROLE. There is NO live network connectivity.
@@ -31,6 +32,10 @@ export default {async fetch(request,env){
  if(!roles.has(role))return err("invalid_role",500);
  const url=new URL(request.url);
  if(url.pathname==="/health")return json({service:role,status:"up",simulated:true});
+ if(role==="gateway" && (url.pathname==="/v1/payments" || /^\\/v1\\/payments\\//.test(url.pathname))){
+   if(!env.API_KEY||request.headers.get("x-api-key")!==env.API_KEY)return err("unauthorized",401);
+   return phase1(request,env);
+ }
  if(request.method!=="POST")return err("method_not_allowed",405);
  if((role!=="gateway")&&(!env.INTERNAL_TOKEN||request.headers.get("x-internal-token")!==env.INTERNAL_TOKEN))return err("internal_only",403);
  let data;try{if(Number(request.headers.get("content-length"))>65536)return err("payload_too_large",413);const raw=await request.text();if(raw.length>65536)return err("payload_too_large",413);data=JSON.parse(raw)}catch{return err("invalid_json")}
