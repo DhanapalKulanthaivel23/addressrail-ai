@@ -155,3 +155,34 @@ def test_tenant_scoped_pending_jobs_never_dispatch_and_cannot_cross_read(prepare
             assert db.execute("SELECT count(*) FROM saas_jobs").fetchone()[0]==0
             with pytest.raises(psycopg.errors.InsufficientPrivilege):
                 db.execute("DELETE FROM saas_jobs WHERE id=%s",(data["job_id"],))
+
+
+def test_atomic_outbox_is_tenant_scoped_and_write_once(prepared):
+    a=token(prepared,TENANT_A)
+    b=token(prepared,TENANT_B)
+    with TestClient(app) as c:
+        created=c.post("/v1/tenancy/cases",json=new_payment("OUTBOX"),headers=a)
+        assert created.status_code==201,created.text
+        cid=created.json()["id"]
+        job=c.post(f"/v1/tenancy/cases/{cid}/jobs",headers=a)
+        assert job.status_code==201,job.text
+        jid=job.json()["job_id"]
+        assert c.get("/v1/tenancy/jobs/"+jid,headers=b).status_code==404
+        with psycopg.connect(os.environ["SAAS_DATABASE_URL"]) as db:
+            with db.transaction():
+                db.execute("SELECT set_config('app.tenant_id', %s, true)",(TENANT_A,))
+                rows=db.execute("""SELECT event_type,payload FROM saas_outbox
+                                    WHERE job_id=%s""",(jid,)).fetchall()
+                assert len(rows)==1
+                assert rows[0][0]=="SYNTHETIC_JOB_PENDING"
+                payload=rows[0][1]
+                assert payload["tenant_id"]==TENANT_A and payload["job_id"]==jid
+                assert payload["case_id"]==cid and payload["synthetic"] is True
+                assert payload["safe_to_retry"] is False
+            with db.transaction():
+                db.execute("SELECT set_config('app.tenant_id', %s, true)",(TENANT_B,))
+                assert db.execute("SELECT count(*) FROM saas_outbox WHERE job_id=%s",(jid,)).fetchone()[0]==0
+        with psycopg.connect(os.environ["SAAS_DATABASE_URL"]) as db:
+            assert db.execute("SELECT count(*) FROM saas_outbox").fetchone()[0]==0
+            with pytest.raises(psycopg.errors.InsufficientPrivilege):
+                db.execute("DELETE FROM saas_outbox WHERE job_id=%s",(jid,))

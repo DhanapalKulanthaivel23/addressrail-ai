@@ -82,3 +82,32 @@ CREATE POLICY saas_jobs_isolation ON public.saas_jobs
   USING(tenant_id = NULLIF(current_setting('app.tenant_id', true),'')::uuid)
   WITH CHECK(tenant_id = NULLIF(current_setting('app.tenant_id', true),'')::uuid);
 GRANT SELECT,INSERT ON public.saas_jobs TO addressrail_api;
+
+-- Write-once per-tenant outbox envelope recorded atomically with saas_jobs.
+-- This table is NOT a Kafka publisher. Only a separately reviewed privileged
+-- dispatcher should ever be allowed to claim/ack rows; API login has INSERT/SELECT.
+CREATE TABLE IF NOT EXISTS public.saas_outbox(
+  event_id uuid PRIMARY KEY,
+  tenant_id uuid NOT NULL,
+  job_id uuid NOT NULL,
+  event_type text NOT NULL CHECK(event_type='SYNTHETIC_JOB_PENDING'),
+  envelope_version integer NOT NULL DEFAULT 1 CHECK(envelope_version=1),
+  payload jsonb NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  UNIQUE(tenant_id,job_id,event_type),
+  FOREIGN KEY(tenant_id,job_id) REFERENCES public.saas_jobs(tenant_id,id),
+  CHECK(jsonb_typeof(payload)='object'
+        AND payload->>'synthetic'='true'
+        AND payload->>'settlement_attested'='false'
+        AND payload->>'safe_to_retry'='false'
+        AND payload->>'event_type'='SYNTHETIC_JOB_PENDING'
+        AND payload->>'tenant_id'=tenant_id::text
+        AND payload->>'job_id'=job_id::text)
+);
+ALTER TABLE public.saas_outbox ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.saas_outbox FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS saas_outbox_isolation ON public.saas_outbox;
+CREATE POLICY saas_outbox_isolation ON public.saas_outbox
+  USING(tenant_id = NULLIF(current_setting('app.tenant_id', true),'')::uuid)
+  WITH CHECK(tenant_id = NULLIF(current_setting('app.tenant_id', true),'')::uuid);
+GRANT SELECT,INSERT ON public.saas_outbox TO addressrail_api;

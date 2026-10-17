@@ -234,6 +234,16 @@ def create_job(case_id:uuid.UUID,identity=Depends(verify_token)):
                  (job_id,identity["tenant"],case_id,identity["actor"])).fetchone()
             if not row:
                 raise HTTPException(409,"A synthetic job already exists for this case")
+            from psycopg.types.json import Jsonb
+            event_id=uuid.uuid4()
+            db.execute("""INSERT INTO saas_outbox
+                (event_id,tenant_id,job_id,event_type,payload)
+                VALUES(%s,%s,%s,%s,%s)""",
+                (event_id,identity["tenant"],row[0],"SYNTHETIC_JOB_PENDING",
+                 Jsonb({"event_type":"SYNTHETIC_JOB_PENDING",
+                        "tenant_id":identity["tenant"],"job_id":str(row[0]),
+                        "case_id":str(case_id),"synthetic":True,
+                        "settlement_attested":False,"safe_to_retry":False})))
         return {"job_id":str(row[0]),"case_id":str(case_id),
                 "state":row[1],"synthetic":True,"dispatched":False}
     except psycopg.Error:
