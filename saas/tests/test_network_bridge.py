@@ -15,6 +15,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 from saas.app import app
+from saas import iso_simulation
+from xml.etree import ElementTree as ET
 from saas.tests.test_tenant_api import prepared,token,TENANT_A,TENANT_B
 
 pytestmark=pytest.mark.skipif(not os.getenv("SAAS_TEST_ADMIN_DSN"),
@@ -24,15 +26,29 @@ KEY="synthetic-staging-private-network-key-test-1234"
 class StubHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         self.server.calls.append(("POST",self.path,self.headers.get("X-Sim-Service-Key")))
-        if self.path!="/v1/async/messages" or self.headers.get("X-Sim-Service-Key")!=KEY:
+        if (self.path not in {"/v1/async/messages","/v1/validate-iso-pacs008-async"}
+             or self.headers.get("X-Sim-Service-Key")!=KEY):
             return self.send(403,{"error":"forbidden"})
         if self.server.fail_once:
             self.server.fail_once=False
             return self.send(503,{"error":"temporary outage"})
         size=int(self.headers.get("Content-Length","0"))
         data=json.loads(self.rfile.read(size))
-        if (data.get("synthetic") is not True or data.get("message_format")!="PACS008"
-             or data.get("payload")!="<Synthetic/>"):
+        iso=self.path=="/v1/validate-iso-pacs008-async"
+        if data.get("synthetic") is not True or data.get("message_format")!="PACS008":
+            return self.send(400,{"error":"invalid fictional payment"})
+        if iso:
+            try:
+                doc=ET.fromstring(data["payload"])
+                namespace=doc.tag.split("}")[0].lstrip("{")
+                version=next(ver for ver,pinned in iso_simulation.PINNED.items()
+                             if pinned[0]==namespace)
+                e2e=doc.findtext(".//{"+namespace+"}EndToEndId")
+                if e2e!=data["reference"] or len(e2e)>35:
+                    raise ValueError("Invalid fictional payment correlation")
+            except (KeyError,ValueError,StopIteration,ET.ParseError,TypeError):
+                return self.send(400,{"error":"Invalid ISO fixture"})
+        elif data.get("payload")!="<Synthetic/>":
             return self.send(400,{"error":"invalid fictional payment"})
         reference=data["reference"]
         previous=self.server.records.get(reference)
@@ -41,7 +57,20 @@ class StubHandler(BaseHTTPRequestHandler):
         if not previous:
             previous={"id":str(uuid.uuid4()),"payload":data}
             self.server.records[reference]=previous
-        return self.send(202,self.reply(previous,duplicate=previous["payload"]!=data))
+        reply=self.reply(previous,duplicate=previous["payload"]!=data)
+        if iso:
+            proof=iso_simulation.PINNED[version]
+            reply["iso_base_validation"]={
+                "result":"BASE_XSD_VALID",
+                "namespace":proof[0],
+                "schema_sha256":("0"*64 if self.server.bad_iso else proof[1]),
+                "schema_version":proof[2],
+                "original_reference":data["reference"],
+                "synthetic":True,"settled":False,
+                "certified_cbpr":False,"swift_usage_guidelines_checked":False
+            }
+            reply["scheme_conformance"]="NOT_ASSESSED"
+        return self.send(202,reply)
     def do_GET(self):
         self.server.calls.append(("GET",self.path,self.headers.get("X-Sim-Service-Key")))
         if self.headers.get("X-Sim-Service-Key")!=KEY:return self.send(403,{"error":"forbidden"})
@@ -83,6 +112,7 @@ def network_stub(monkeypatch):
     server.calls=[]
     server.complete=False
     server.malicious=False
+    server.bad_iso=False
     server.fail_once=False
     monkeypatch.setenv("SAAS_ENABLE_NETWORK_BRIDGE","true")
     monkeypatch.setenv("SAAS_SIM_NETWORK_URL",f"http://127.0.0.1:{server.server_port}")
