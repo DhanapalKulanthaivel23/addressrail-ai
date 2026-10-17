@@ -174,3 +174,28 @@ CREATE POLICY saas_quarantine_isolation ON public.saas_quarantine
  USING(tenant_id = NULLIF(current_setting('app.tenant_id', true),'')::uuid)
  WITH CHECK(tenant_id = NULLIF(current_setting('app.tenant_id', true),'')::uuid);
 GRANT SELECT,INSERT ON public.saas_quarantine TO addressrail_consumer;
+
+
+-- PRIVATE synthetic network staging mapping. Store per-tenant references so
+-- clients cannot query another tenant's upstream network message ID.
+-- This does not constitute authorisation for real bank/payment operations.
+CREATE TABLE IF NOT EXISTS public.saas_network_simulations(
+  tenant_id uuid NOT NULL,
+  client_reference text NOT NULL CHECK(client_reference ~ '^[A-Za-z0-9_-]{4,60}$'),
+  scenario text NOT NULL CHECK(scenario IN ('ACCEPT','REJECT','PENDING')),
+  network_reference text NOT NULL CHECK(network_reference ~ '^(SIMOK_|SIMRJCT_|SIMWAIT_)[A-F0-9]{28}$'),
+  remote_message_id uuid,
+  bridge_state text NOT NULL DEFAULT 'SUBMITTING'
+    CHECK(bridge_state IN ('SUBMITTING','ACKNOWLEDGED')),
+  created_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY(tenant_id,client_reference),
+  UNIQUE(tenant_id,network_reference)
+);
+ALTER TABLE public.saas_network_simulations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.saas_network_simulations FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS saas_network_isolation ON public.saas_network_simulations;
+CREATE POLICY saas_network_isolation ON public.saas_network_simulations
+  USING(tenant_id=NULLIF(current_setting('app.tenant_id',true),'')::uuid)
+  WITH CHECK(tenant_id=NULLIF(current_setting('app.tenant_id',true),'')::uuid);
+GRANT SELECT,INSERT ON public.saas_network_simulations TO addressrail_api;
+GRANT UPDATE(remote_message_id,bridge_state) ON public.saas_network_simulations TO addressrail_api;

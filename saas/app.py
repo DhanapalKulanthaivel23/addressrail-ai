@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from datetime import datetime,timezone
+from typing import Literal
+from saas import network_bridge
 import hmac
 import os
 import re
@@ -32,6 +34,11 @@ class CaseIn(Strict):
     payment_ref: str = Field(min_length=9, max_length=76)
     simulated_status: str
     synthetic: bool = True
+
+class NetworkSimulationIn(Strict):
+    reference: str = Field(min_length=4,max_length=60,pattern=r"^[A-Za-z0-9_-]{4,60}$")
+    scenario: Literal["ACCEPT","REJECT","PENDING"]
+    synthetic: Literal[True] = True
 
 class ReportIn(Strict):
     validation_rule_ids: list[str] = Field(max_length=30)
@@ -272,3 +279,79 @@ def pending_event(job_id:uuid.UUID,identity=Depends(verify_token)):
     return {"event_id":str(row[0]),"event_type":row[1],"payload":row[2],
             "created_at":row[3].isoformat(),"delivery_status":"NOT_DISPATCHED",
             "synthetic":True,"signed":False}
+
+@app.post("/v1/tenancy/network/simulations",status_code=202)
+def start_network_simulation(body:NetworkSimulationIn,identity=Depends(verify_token)):
+    """Tenant-scoped synthetic gateway. No private source or browser service key."""
+    enabled();permits(identity,"ADMIN","INVESTIGATOR")
+    try:
+        network_bridge.network_config()
+        remote_ref=network_bridge.scoped_reference(identity["tenant"],body.reference,body.scenario)
+    except ValueError:
+        raise HTTPException(503,"Private synthetic gateway is disabled or unavailable")
+    try:
+        with session(identity) as db:
+            db.execute("""INSERT INTO saas_network_simulations
+                   (tenant_id,client_reference,scenario,network_reference)
+                   VALUES(%s,%s,%s,%s)
+                   ON CONFLICT (tenant_id,client_reference) DO NOTHING""",
+                       (identity["tenant"],body.reference,body.scenario,remote_ref))
+            row=db.execute("""SELECT scenario,remote_message_id
+                   FROM saas_network_simulations WHERE client_reference=%s""",
+                   (body.reference,)).fetchone()
+            if not row:
+                raise HTTPException(503,"Network simulation reservation unavailable")
+            if row[0]!=body.scenario:
+                raise HTTPException(409,"Reference is already reserved for another scenario")
+            existing=row[1]
+    except psycopg.Error:
+        raise HTTPException(503,"Tenant simulation storage unavailable")
+    try:
+        if existing is None:
+            remote_id,status=network_bridge.submit(identity["tenant"],body.reference,body.scenario)
+            with session(identity) as db:
+                row=db.execute("""UPDATE saas_network_simulations
+                     SET remote_message_id=%s,bridge_state='ACKNOWLEDGED'
+                     WHERE client_reference=%s AND
+                     (remote_message_id IS NULL OR remote_message_id=%s)
+                     RETURNING remote_message_id""",
+                     (remote_id,body.reference,remote_id)).fetchone()
+                if not row:
+                    raise HTTPException(409,"Conflicting private simulation correlation")
+        else:
+            status=network_bridge.status(str(existing))
+    except (ValueError,KeyError,psycopg.Error):
+        # The durable tenant reservation remains. Retrying the same reference
+        # uses the same upstream idempotency key; no false network ACK is issued.
+        raise HTTPException(503,"Private synthetic network unavailable; retry same reference")
+    return {"reference":body.reference,"scenario":body.scenario,
+            **status,"verified_scheme":False,"settlement_attested":False}
+
+@app.get("/v1/tenancy/network/simulations/{reference}")
+def get_network_simulation(reference:str,identity=Depends(verify_token)):
+    enabled()
+    try:
+        network_bridge.network_config()
+    except ValueError:
+        raise HTTPException(503,"Private synthetic gateway is disabled or unavailable")
+    if not network_bridge.REF.fullmatch(reference):
+        raise HTTPException(404,"Synthetic simulation not found")
+    try:
+        with session(identity) as db:
+            row=db.execute("""SELECT scenario,remote_message_id,bridge_state
+                 FROM saas_network_simulations WHERE client_reference=%s""",
+                 (reference,)).fetchone()
+    except psycopg.Error:
+        raise HTTPException(503,"Tenant simulation storage unavailable")
+    if not row:
+        raise HTTPException(404,"Synthetic simulation not found")
+    if row[1] is None:
+        return {"reference":reference,"scenario":row[0],"state":"SUBMITTING",
+                "synthetic":True,"settled":False,"verified_scheme":False,
+                "settlement_attested":False}
+    try:
+        status=network_bridge.status(str(row[1]))
+    except (ValueError,KeyError):
+        raise HTTPException(503,"Private synthetic status temporarily unavailable")
+    return {"reference":reference,"scenario":row[0],**status,
+            "verified_scheme":False,"settlement_attested":False}
