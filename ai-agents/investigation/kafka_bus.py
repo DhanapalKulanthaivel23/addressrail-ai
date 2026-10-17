@@ -38,7 +38,7 @@ def kafka_config() -> dict:
         raise ValueError("Non-local Kafka requires explicit remote TLS opt-in")
     # Reject comma-separated clusters and ambiguous forms until a vetted
     # multi-broker parser is provided. Ports are required.
-    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9.-]{0,251}:\\d{2,5}", host):
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9.-]{0,251}:\d{2,5}", host):
         raise ValueError("Invalid remote Kafka host")
     hostname, port = host.rsplit(":", 1)
     if (hostname.lower() in ("localhost", "localhost.localdomain") or
