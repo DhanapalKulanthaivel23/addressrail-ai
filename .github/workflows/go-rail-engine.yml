@@ -62,4 +62,4 @@ jobs:
             http://127.0.0.1:8110/v1/validate \
             -d '{"synthetic":true,"rail":"CHAPS","messageType":"pacs.008","currency":"GBP","amount":"1.00","reference":"AR-DEMO-CHAPS"}')
           test "$status" = "422"
-          grep -q 'different' /tmp/wrong-rail.json
+          grep -q 'differs' /tmp/wrong-rail.json
