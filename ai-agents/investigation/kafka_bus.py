@@ -23,11 +23,49 @@ GROUPS = {"validate":"addressrail-go-validation-v1",
 MAX_VALUE = 90_000
 LOCAL_BROKER = re.compile(r"^(?:127\.0\.0\.1|localhost):\d{4,5}$")
 
+def kafka_config() -> dict:
+    """Local PLAINTEXT by default; remote brokers require explicit TLS opt-in.
+
+    Credentials are read at runtime from secret-backed environment variables,
+    never copied into event envelopes or exception messages.
+    """
+    host = os.getenv("ADDRESSRAIL_KAFKA_BOOTSTRAP", "127.0.0.1:9092")
+    if LOCAL_BROKER.fullmatch(host):
+        if os.getenv("ADDRESSRAIL_KAFKA_REMOTE_ENABLED", "false").lower() == "true":
+            raise ValueError("Remote Kafka mode cannot target a local broker")
+        return {"bootstrap.servers": host, "socket.timeout.ms": 3000}
+    if os.getenv("ADDRESSRAIL_KAFKA_REMOTE_ENABLED", "false").lower() != "true":
+        raise ValueError("Non-local Kafka requires explicit remote TLS opt-in")
+    # Reject comma-separated clusters and ambiguous forms until a vetted
+    # multi-broker parser is provided. Ports are required.
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9.-]{0,251}:\\d{2,5}", host):
+        raise ValueError("Invalid remote Kafka host")
+    hostname, port = host.rsplit(":", 1)
+    if (hostname.lower() in ("localhost", "localhost.localdomain") or
+        hostname.startswith(("127.", "0.", "169.254.", "10.", "192.168.")) or
+        hostname.endswith(".local") or not 1 <= int(port) <= 65535):
+        raise ValueError("Unapproved remote Kafka destination")
+    ca = os.getenv("ADDRESSRAIL_KAFKA_CA_FILE", "")
+    if not ca or not os.path.isfile(ca):
+        raise ValueError("Remote Kafka requires an installed CA certificate")
+    cfg = {"bootstrap.servers": host, "socket.timeout.ms": 3000,
+           "security.protocol": "SSL", "ssl.ca.location": ca,
+           "enable.ssl.certificate.verification": True}
+    username = os.getenv("ADDRESSRAIL_KAFKA_SASL_USERNAME", "")
+    password = os.getenv("ADDRESSRAIL_KAFKA_SASL_PASSWORD", "")
+    if bool(username) != bool(password):
+        raise ValueError("Kafka SASL username and password must both be configured")
+    if username:
+        mechanism = os.getenv("ADDRESSRAIL_KAFKA_SASL_MECHANISM", "SCRAM-SHA-512")
+        if mechanism not in ("SCRAM-SHA-256", "SCRAM-SHA-512"):
+            raise ValueError("Unsupported Kafka SASL mechanism")
+        cfg.update({"security.protocol": "SASL_SSL",
+                    "sasl.mechanism": mechanism,
+                    "sasl.username": username, "sasl.password": password})
+    return cfg
+
 def broker_address() -> str:
-    host = os.getenv("ADDRESSRAIL_KAFKA_BOOTSTRAP","127.0.0.1:9092")
-    if not LOCAL_BROKER.fullmatch(host):
-        raise ValueError("Training pipeline permits only a localhost Kafka broker")
-    return host
+    return kafka_config()["bootstrap.servers"]
 
 @dataclass(frozen=True)
 class Event:
@@ -54,8 +92,7 @@ def decode(raw: bytes) -> dict:
 class KafkaBus:
     def __init__(self, group: str | None = None):
         from confluent_kafka import Producer, Consumer
-        conf={"bootstrap.servers":broker_address(),
-              "socket.timeout.ms":3000}
+        conf=kafka_config()
         self.producer=Producer({**conf,"enable.idempotence":True,
              "acks":"all","message.timeout.ms":5000,"retries":3})
         self.consumer=None
@@ -102,8 +139,8 @@ class KafkaBus:
 def create_topics():
     from confluent_kafka.admin import AdminClient, NewTopic
     from concurrent.futures import TimeoutError
-    broker=broker_address()
-    admin=AdminClient({"bootstrap.servers":broker,"socket.timeout.ms":5000})
+    conf=kafka_config()
+    admin=AdminClient({**conf,"socket.timeout.ms":5000})
     topic_defs=[NewTopic(name,num_partitions=1,replication_factor=1)
                 for name in TOPICS.values()]
     jobs=admin.create_topics(topic_defs)
