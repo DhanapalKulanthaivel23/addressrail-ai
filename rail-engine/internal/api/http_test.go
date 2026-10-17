@@ -133,6 +133,9 @@ func TestIndependentRailServiceProfiles(t *testing.T) {
 	if rr.Code != 422 {
 		t.Fatal("Cross-rail request was accepted", rr.Code)
 	}
+	// Each HTTP request has a one-shot body; use a fresh request for the second scope.
+	req = httptest.NewRequest("POST", "/v1/validate", bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
 	rr = httptest.NewRecorder()
 	NewHandlerForRail("SCT").ServeHTTP(rr, req)
 	if rr.Code != 200 {
