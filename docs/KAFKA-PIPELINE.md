@@ -106,3 +106,14 @@ The **real Kafka/Go/Java** integration is gated by `ADDRESSRAIL_LIVE_KAFKA_TEST=
 No tenant-scoped Kafka partitions, OIDC, managed Kafka, durable outbox, robust PII/DLP, Java/Go native Kafka consumers, full ISO XSD/CBPR+ validation, bank-approved AI traces, distributed rate limits, schema registry or full per-rail microservices have been delivered by this stage. The pipeline creates or reuses a **fictional** Java/H2 record and status event for each unique PAY-* ID; XML upload does not transmit a live payment or derive an authoritative payment status. Never use real bank data.
 
 Until Cloudflare/hosting accounts and security controls are explicitly provisioned, this entire event pipeline is **local development only**, not an internet-hosted product.
+
+## Independent rail-profile rule services
+
+After Go is installed, run `bash deploy/run-rail-services.sh` to launch **eleven separate local Go processes**, one per **synthetic teaching profile**, on ports 8110–8120. Each process rejects a different rail's `/v1/validate`, `/v1/validate/batch` and `/v1/xml/inspect` requests. For example:
+
+```bash
+curl -fsS http://127.0.0.1:8110/healthz   # CBPR
+curl -fsS http://127.0.0.1:8116/healthz   # CHAPS
+```
+
+This is an **optional set of independent educational Go rule services**. The Kafka end-to-end pipeline continues to use the existing general Go engine at 8094. This setup does not create eleven licensed, officially conformant settlement processors, Kafka consumers, or cloud deployments.
