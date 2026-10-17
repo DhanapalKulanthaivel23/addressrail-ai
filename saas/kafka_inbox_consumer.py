@@ -20,18 +20,22 @@ def process_one(*, consumer, dsn, tenant_id, key, name="python-inbox", timeout=1
         return None
     if message.error():
         raise RuntimeError("Kafka consumer error")
-    if message.topic()!=TOPIC or not message.value() or len(message.value())>MAX_BYTES:
+    raw=message.value()
+    if message.topic()!=TOPIC or not isinstance(raw,bytes) or not raw or len(raw)>MAX_BYTES:
+        # Oversized/unexpected records stop processing, never ack; bounded
+        # quarantine metadata cannot safely represent oversized raw events.
         raise ValueError("Unexpected or oversized synthetic Kafka event")
     try:
-        event=json.loads(message.value())
-    except (ValueError,UnicodeDecodeError,TypeError) as exc:
-        raise ValueError("Malformed event JSON") from exc
-    try:
+        event=json.loads(raw)
         kafka_key=message.key().decode("ascii") if message.key() else ""
-    except (UnicodeDecodeError,AttributeError):
-        raise ValueError("Malformed Kafka event key") from None
-    if not isinstance(event,dict) or str(event.get("event_id",""))!=kafka_key:
-        raise ValueError("Event identity does not match Kafka key")
+        if not isinstance(event,dict) or str(event.get("event_id",""))!=kafka_key:
+            raise ValueError("Event identity does not match Kafka key")
+    except (ValueError,UnicodeDecodeError,TypeError,AttributeError) as exc:
+        # Deterministic malformed messages are recorded without raw payload.
+        # Never commit Kafka offset or label transient DB errors as poison.
+        record_quarantine(dsn=dsn,tenant_id=tenant_id,consumer_name=name,
+                          reason="INVALID_ENVELOPE",raw_event=raw)
+        raise ValueError("Malformed or mismatched synthetic event") from exc
     try:
         outcome=record_event(dsn=dsn,event=event,key=key,
                              expected_tenant=tenant_id,consumer_name=name)
