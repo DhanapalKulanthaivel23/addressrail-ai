@@ -221,7 +221,7 @@ def test_iso_v13_v14_tenant_isolation_and_pinned_evidence(prepared,network_stub)
                   "iso_version":version,"amount_minor":12345,"synthetic":True}
             created=client.post("/v1/tenancy/network/iso-pacs008",
                                 headers=a,json=body)
-            assert created.status_code==202,created.text
+            assert created.status_code==202,(created.text,len(network_stub.records),[call[1] for call in network_stub.calls])
             data=created.json()
             assert data["base_xsd_validated"] is True
             assert data["schema_sha256"]==iso_simulation.PINNED[version][1]
@@ -290,7 +290,7 @@ def test_iso_outage_and_bad_attestation_rejected(prepared,network_stub):
                           headers=a).json()["state"]=="SUBMITTING"
         network_stub.bad_iso=False
         accepted=client.post("/v1/tenancy/network/iso-pacs008",headers=a,json=body)
-        assert accepted.status_code==202,accepted.text
+        assert accepted.status_code==202,(accepted.text,len(network_stub.records),[call[1] for call in network_stub.calls])
         assert accepted.json()["schema_sha256"]==iso_simulation.PINNED["14"][1]
         assert len(network_stub.records)==1
         network_stub.malicious=True
