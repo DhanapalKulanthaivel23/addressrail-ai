@@ -19,6 +19,11 @@ class Submit(BaseModel):
     simulated_status: Literal["RJCT","PENDING","UNKNOWN"]="RJCT"
 
 def enabled():
+    # The local SQLite/shared-token Kafka API has no per-tenant isolation.
+    # Fail closed when the separate PostgreSQL SaaS staging API is enabled:
+    # deploying both must never accidentally expose this as a tenant API.
+    if os.getenv("SAAS_ENABLE_API","false").lower()=="true":
+        raise HTTPException(503,"Local synthetic Kafka pipeline is not tenant isolated")
     if os.getenv("ADDRESSRAIL_ENABLE_KAFKA_PIPELINE","false").lower()!="true":
         raise HTTPException(404,"Local Kafka pipeline disabled")
 
