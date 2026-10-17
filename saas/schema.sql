@@ -111,3 +111,19 @@ CREATE POLICY saas_outbox_isolation ON public.saas_outbox
   USING(tenant_id = NULLIF(current_setting('app.tenant_id', true),'')::uuid)
   WITH CHECK(tenant_id = NULLIF(current_setting('app.tenant_id', true),'')::uuid);
 GRANT SELECT,INSERT ON public.saas_outbox TO addressrail_api;
+
+-- Prototype dispatcher access: provision a separate non-owner LOGIN credential
+-- into this NOLOGIN group using an administrator. Never use addressrail_api.
+ALTER TABLE public.saas_outbox
+  ADD COLUMN IF NOT EXISTS dispatched_at timestamptz;
+DO $$
+BEGIN
+  IF NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='addressrail_dispatcher') THEN
+    CREATE ROLE addressrail_dispatcher NOLOGIN NOSUPERUSER NOBYPASSRLS;
+  END IF;
+END $$;
+GRANT USAGE ON SCHEMA public TO addressrail_dispatcher;
+GRANT SELECT ON public.saas_outbox TO addressrail_dispatcher;
+GRANT UPDATE(dispatched_at) ON public.saas_outbox TO addressrail_dispatcher;
+-- FORCE RLS still applies. A per-tenant dispatcher credential and mandatory
+-- tenant binding by provisioning are required before any external exposure.
