@@ -76,3 +76,31 @@ def test_poison_kafka_input_does_not_touch_inbox_or_commit(monkeypatch,raw_key,r
     with pytest.raises(ValueError):
         module.process_one(consumer=broker,dsn="test",tenant_id=TENANT,key=KEY)
     broker.commit.assert_not_called()
+
+
+def test_signed_rejection_writes_quarantine_but_does_not_ack(monkeypatch):
+    broker=MagicMock()
+    broker.poll.return_value=message()
+    quarantine=[]
+    def invalid(**kwargs):
+        raise ValueError("Event integrity failure")
+    monkeypatch.setattr(module,"record_event",invalid)
+    monkeypatch.setattr(module,"record_quarantine",
+                        lambda **kwargs:quarantine.append(kwargs))
+    with pytest.raises(ValueError,match="integrity failure"):
+        module.process_one(consumer=broker,dsn="test",tenant_id=TENANT,key=KEY)
+    assert len(quarantine)==1
+    assert quarantine[0]["reason"]=="INVALID_SIGNATURE"
+    assert quarantine[0]["tenant_id"]==TENANT
+    broker.commit.assert_not_called()
+
+def test_transient_inbox_failure_never_quarantined_or_acknowledged(monkeypatch):
+    broker=MagicMock()
+    broker.poll.return_value=message()
+    monkeypatch.setattr(module,"record_event",
+                        lambda **kwargs:(_ for _ in ()).throw(RuntimeError("database offline")))
+    monkeypatch.setattr(module,"record_quarantine",
+                        lambda **kwargs:pytest.fail("transient errors must not be quarantined"))
+    with pytest.raises(RuntimeError,match="database offline"):
+        module.process_one(consumer=broker,dsn="test",tenant_id=TENANT,key=KEY)
+    broker.commit.assert_not_called()
