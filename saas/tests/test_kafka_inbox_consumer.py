@@ -75,9 +75,13 @@ def test_poison_kafka_input_does_not_touch_inbox_or_commit(monkeypatch,raw_key,r
     msg.value.return_value=raw_body
     broker.poll.return_value=msg
     monkeypatch.setattr(module,"record_event",
-                        lambda **kwargs:pytest.fail("poison event must not reach database"))
+                        lambda **kwargs:pytest.fail("poison event must not reach inbox"))
+    quarantine=[]
+    monkeypatch.setattr(module,"record_quarantine",lambda **kw:quarantine.append(kw))
     with pytest.raises(ValueError):
         module.process_one(consumer=broker,dsn="test",tenant_id=TENANT,key=KEY)
+    assert len(quarantine)==1 and quarantine[0]["reason"]=="INVALID_ENVELOPE"
+    assert quarantine[0]["raw_event"]==raw_body
     broker.commit.assert_not_called()
 
 
