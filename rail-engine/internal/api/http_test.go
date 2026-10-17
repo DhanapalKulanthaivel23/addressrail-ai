@@ -122,3 +122,25 @@ func TestXMLInspectionHTTP(t *testing.T) {
 		t.Fatal(result)
 	}
 }
+
+func TestIndependentRailServiceProfiles(t *testing.T) {
+	input := requestFixture()
+	b, _ := json.Marshal(input)
+	req := httptest.NewRequest("POST", "/v1/validate", bytes.NewReader(b))
+	req.Header.Set("Content-Type", "application/json")
+	rr := httptest.NewRecorder()
+	NewHandlerForRail("CBPR").ServeHTTP(rr, req)
+	if rr.Code != 422 {
+		t.Fatal("Cross-rail request was accepted", rr.Code)
+	}
+	rr = httptest.NewRecorder()
+	NewHandlerForRail("SCT").ServeHTTP(rr, req)
+	if rr.Code != 200 {
+		t.Fatal("Correct rail rejected", rr.Code, rr.Body.String())
+	}
+	rr = httptest.NewRecorder()
+	NewHandlerForRail("SCT").ServeHTTP(rr, httptest.NewRequest("GET", "/healthz", nil))
+	if !strings.Contains(rr.Body.String(), `"railProfile":"SCT"`) {
+		t.Fatal("Service did not publish profile identity", rr.Body.String())
+	}
+}

@@ -91,6 +91,8 @@ var profiles = map[string]railProfile{
 	"BACS":     {"GBP", allowed("BACS_FILE"), false, false},
 	"T2":       {"EUR", allowed("pacs.008", "pacs.009", "camt.053"), false, false},
 	"CBPR":     {"", allowed("pacs.008", "pacs.009", "pacs.002", "pacs.004"), false, true},
+	"GPI":      {"", allowed("pacs.008", "pacs.009", "pacs.002"), false, true},
+	"G4C":      {"", allowed("pacs.008", "pacs.009", "pacs.002"), false, true},
 	"CLS":      {"", allowed("CLS_INSTRUCTION"), false, false},
 }
 var (
@@ -275,4 +277,10 @@ func Reconcile(req ReconcileRequest) ReconcileResponse {
 		add("EVT-UNSUPPORTED", "/recordedStatus", "Unrecognised status in the educational subset.")
 	}
 	return result
+}
+
+// KnownRail identifies an educational rule profile, not a scheme certification.
+func KnownRail(name string) bool {
+	_, exists := profiles[name]
+	return exists
 }
