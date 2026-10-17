@@ -208,3 +208,89 @@ def test_downstream_outage_can_recover_without_duplicate_simulated_payment(prepa
         network_stub.malicious=True
         unsafe=client.get("/v1/tenancy/network/simulations/"+reference,headers=auth)
         assert unsafe.status_code==503
+
+
+def test_iso_v13_v14_tenant_isolation_and_pinned_evidence(prepared,network_stub):
+    ref="ISO_"+uuid.uuid4().hex[:15]
+    a,b=token(prepared,TENANT_A),token(prepared,TENANT_B)
+    with TestClient(app) as client:
+        for version in ("13","14"):
+            reference=ref+version
+            body={"reference":reference,"scenario":"REJECT",
+                  "iso_version":version,"amount_minor":12345,"synthetic":True}
+            created=client.post("/v1/tenancy/network/iso-pacs008",
+                                headers=a,json=body)
+            assert created.status_code==202,created.text
+            data=created.json()
+            assert data["base_xsd_validated"] is True
+            assert data["schema_sha256"]==iso_simulation.PINNED[version][1]
+            assert data["state"]=="AWAITING_BANK"
+            assert data["network_ack"]=="SIMULATED_ACK"
+            assert data["cbpr_conformance"]=="NOT_ASSESSED"
+            assert data["verified_scheme"] is False and data["settled"] is False
+            assert KEY not in created.text and "message_id" not in data
+            assert client.get("/v1/tenancy/network/iso-pacs008/"+reference,
+                              headers=b).status_code==404
+            other=client.post("/v1/tenancy/network/iso-pacs008",
+                              headers=b,json=body)
+            assert other.status_code==202,other.text
+            # A user's local reference never maps to another tenant's payment.
+            assert len({key for key in network_stub.records if
+                        key.startswith("SIMRJCT_")})>=4 if version=="14" else True
+            reread=client.post("/v1/tenancy/network/iso-pacs008",
+                               headers=a,json=body)
+            assert reread.status_code==202
+            network_stub.complete=True
+            result=client.get("/v1/tenancy/network/iso-pacs008/"+reference,
+                              headers=a)
+            assert result.status_code==200,result.text
+            assert result.json()["bank_status"]=="BANK_REJECTED"
+            assert result.json()["base_xsd_validated"] is True
+            assert not result.json()["settled"]
+            invalid={**body,"amount_minor":999}
+            assert client.post("/v1/tenancy/network/iso-pacs008",
+                               headers=a,json=invalid).status_code==409
+            assert client.post("/v1/tenancy/network/iso-pacs008",
+                               headers=token(prepared,TENANT_A,"VIEWER"),
+                               json=body).status_code==403
+            assert client.post("/v1/tenancy/network/iso-pacs008",
+                               headers=a,json={**body,"synthetic":False}).status_code==422
+            assert client.post("/v1/tenancy/network/iso-pacs008",
+                               headers=a,json={**body,"iso_version":"08"}).status_code==422
+            assert client.post("/v1/tenancy/network/iso-pacs008",
+                               headers=a,json={**body,"amount_minor":0}).status_code==422
+    with psycopg.connect(os.environ["SAAS_DATABASE_URL"]) as db:
+        assert db.execute("SELECT count(*) FROM saas_iso_simulations").fetchone()[0]==0
+        with db.transaction():
+            db.execute("SELECT set_config('app.tenant_id',%s,true)",(TENANT_A,))
+            assert db.execute("SELECT count(*) FROM saas_iso_simulations WHERE client_reference LIKE %s",(ref+"%",)).fetchone()[0]==2
+        with db.transaction():
+            db.execute("SELECT set_config('app.tenant_id',%s,true)",(TENANT_B,))
+            assert db.execute("SELECT count(*) FROM saas_iso_simulations WHERE client_reference LIKE %s",(ref+"%",)).fetchone()[0]==2
+
+def test_iso_outage_and_bad_attestation_rejected(prepared,network_stub):
+    a=token(prepared,TENANT_A)
+    reference="ISOERROR_"+uuid.uuid4().hex[:14]
+    body={"reference":reference,"scenario":"ACCEPT","iso_version":"14",
+          "amount_minor":1000,"synthetic":True}
+    network_stub.fail_once=True
+    with TestClient(app) as client:
+        first=client.post("/v1/tenancy/network/iso-pacs008",headers=a,json=body)
+        assert first.status_code==503
+        reserved=client.get("/v1/tenancy/network/iso-pacs008/"+reference,headers=a)
+        assert reserved.status_code==200
+        assert reserved.json()["state"]=="SUBMITTING"
+        assert reserved.json()["base_xsd_validated"] is False
+        network_stub.bad_iso=True
+        refused=client.post("/v1/tenancy/network/iso-pacs008",headers=a,json=body)
+        assert refused.status_code==503
+        assert client.get("/v1/tenancy/network/iso-pacs008/"+reference,
+                          headers=a).json()["state"]=="SUBMITTING"
+        network_stub.bad_iso=False
+        accepted=client.post("/v1/tenancy/network/iso-pacs008",headers=a,json=body)
+        assert accepted.status_code==202,accepted.text
+        assert accepted.json()["schema_sha256"]==iso_simulation.PINNED["14"][1]
+        assert len(network_stub.records)==1
+        network_stub.malicious=True
+        unsafe=client.get("/v1/tenancy/network/iso-pacs008/"+reference,headers=a)
+        assert unsafe.status_code==503
