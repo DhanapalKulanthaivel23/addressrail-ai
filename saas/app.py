@@ -9,7 +9,7 @@ from __future__ import annotations
 from contextlib import contextmanager
 from datetime import datetime,timezone
 from typing import Literal
-from saas import network_bridge, iso_simulation
+from saas import network_bridge, iso_simulation, iso_investigation
 import hmac
 import os
 import re
@@ -455,3 +455,93 @@ def get_iso_pacs008(reference:str,identity=Depends(verify_token)):
             "base_xsd_validated":True,"schema_sha256":stored_hash,
             "cbpr_conformance":"NOT_ASSESSED",
             "verified_scheme":False,"settlement_attested":False}
+
+
+@app.post("/v1/tenancy/network/iso-pacs008/{reference}/investigation",status_code=201)
+def investigate_iso_pacs008(reference:str,identity=Depends(verify_token)):
+    """Snapshot a FINAL, base-XSD-evidenced fictional bank response into a tenant case.
+
+    Read private status before the DB transaction; lock the tenant simulation row
+    when persisting the linked immutable case/report. Never take a tenant-supplied
+    bank status as evidence. LLMs cannot change the deterministic outcome.
+    """
+    enabled();permits(identity,"ADMIN","INVESTIGATOR")
+    if not network_bridge.REF.fullmatch(reference):
+        raise HTTPException(404,"Synthetic ISO simulation not found")
+    try:
+        network_bridge.network_config()
+    except ValueError:
+        raise HTTPException(503,"Private synthetic gateway disabled")
+    with session(identity) as db:
+        row=db.execute("""SELECT iso_version,amount_minor,remote_message_id,validation_sha256
+                FROM saas_iso_simulations WHERE client_reference=%s""",
+                (reference,)).fetchone()
+        link=db.execute("""SELECT case_id FROM saas_iso_investigation_links
+                WHERE client_reference=%s""",(reference,)).fetchone()
+    if row is None:raise HTTPException(404,"Synthetic ISO simulation not found")
+    if link:
+        return {"case_id":str(link[0]),"reference":reference,
+                "report_url":f"/v1/tenancy/cases/{link[0]}/report",
+                "created":False,"synthetic":True,"requires_human_review":True}
+    version,amount,remote_id,sha=row
+    if remote_id is None:
+        raise HTTPException(409,"Synthetic ISO payment has no validated network ACK")
+    if sha!=iso_simulation.PINNED[version][1]:
+        raise HTTPException(503,"Stored ISO schema provenance inconsistent")
+    try:
+        status=network_bridge.status(str(remote_id))
+        case_status,report=iso_investigation.build(reference,version,amount,sha,status)
+    except (ValueError,KeyError,TypeError,OSError):
+        raise HTTPException(503,"Private network outcome or curated evidence unavailable")
+    caseid=iso_investigation.case_id(identity["tenant"],reference)
+    from psycopg.types.json import Jsonb
+    try:
+        with session(identity) as db:
+            latest=db.execute("""SELECT iso_version,amount_minor,remote_message_id,
+                       validation_sha256 FROM saas_iso_simulations
+                       WHERE client_reference=%s FOR UPDATE""",(reference,)).fetchone()
+            if latest!=row:
+                raise HTTPException(409,"Synthetic ISO evidence changed; retry investigation")
+            existing=db.execute("""SELECT case_id FROM saas_iso_investigation_links
+                         WHERE client_reference=%s""",(reference,)).fetchone()
+            if existing:
+                return {"case_id":str(existing[0]),"reference":reference,
+                        "report_url":f"/v1/tenancy/cases/{existing[0]}/report",
+                        "created":False,"synthetic":True,"requires_human_review":True}
+            created=db.execute("""INSERT INTO saas_cases
+                         (id,tenant_id,payment_ref,simulated_status,creator)
+                         VALUES(%s,%s,%s,%s,%s)
+                         ON CONFLICT (tenant_id,payment_ref) DO NOTHING
+                         RETURNING id""",(caseid,identity["tenant"],"PAY-"+reference,
+                                        case_status,identity["actor"])).fetchone()
+            if not created:
+                raise HTTPException(409,"Existing unrelated case uses this reference")
+            db.execute("""INSERT INTO saas_reports(tenant_id,case_id,payload,actor)
+                      VALUES(%s,%s,%s,%s)""",
+                      (identity["tenant"],caseid,Jsonb(report),identity["actor"]))
+            db.execute("""INSERT INTO saas_iso_investigation_links
+                      (tenant_id,client_reference,case_id) VALUES(%s,%s,%s)""",
+                      (identity["tenant"],reference,caseid))
+            for action in ("CASE_CREATED","REPORT_ATTACHED"):
+                db.execute("""INSERT INTO saas_audit
+                      (tenant_id,case_id,actor,action) VALUES(%s,%s,%s,%s)""",
+                      (identity["tenant"],caseid,identity["actor"],action))
+    except psycopg.Error:
+        raise HTTPException(503,"Tenant investigation storage unavailable")
+    return {"case_id":str(caseid),"reference":reference,
+            "report_url":f"/v1/tenancy/cases/{caseid}/report",
+            "created":True,"synthetic":True,"requires_human_review":True,
+            "bank_status":report["bank_status"],"settled":False}
+
+@app.get("/v1/tenancy/network/iso-pacs008/{reference}/investigation")
+def find_iso_investigation(reference:str,identity=Depends(verify_token)):
+    enabled()
+    if not network_bridge.REF.fullmatch(reference):
+        raise HTTPException(404,"Synthetic investigation not found")
+    with session(identity) as db:
+        row=db.execute("""SELECT case_id FROM saas_iso_investigation_links
+                   WHERE client_reference=%s""",(reference,)).fetchone()
+    if not row:raise HTTPException(404,"Synthetic investigation not found")
+    return {"case_id":str(row[0]),"reference":reference,
+            "report_url":f"/v1/tenancy/cases/{row[0]}/report",
+            "synthetic":True,"requires_human_review":True}
