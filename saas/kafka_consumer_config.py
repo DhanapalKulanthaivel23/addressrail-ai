@@ -7,7 +7,7 @@ def kafka_consumer_config(tenant_id):
     UUID(tenant_id)
     host=os.environ["SAAS_KAFKA_BOOTSTRAP"]
     ca=os.environ["SAAS_KAFKA_CA_FILE"]
-    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9.-]{0,251}:\\d{2,5}",host):
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9.-]{0,251}:\d{2,5}",host):
         raise ValueError("Single TLS Kafka host:port required")
     if not os.path.isfile(ca):
         raise ValueError("Verified Kafka CA file required")
