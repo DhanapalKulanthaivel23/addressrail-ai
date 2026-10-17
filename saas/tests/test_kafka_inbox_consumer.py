@@ -53,8 +53,11 @@ def test_bad_signature_and_tenant_refuse_offset_commit(monkeypatch):
     broker.poll.return_value=message({**EVENT,"mac":"0"*64})
     # Full cryptographic check occurs in the inbox, before DB writes.
     monkeypatch.setattr(module,"record_event",lambda **kw:record_event(**kw))
+    quarantined=[]
+    monkeypatch.setattr(module,"record_quarantine",lambda **kw:quarantined.append(kw))
     with pytest.raises(ValueError):
         module.process_one(consumer=broker,dsn="test",tenant_id=TENANT,key=KEY)
+    assert len(quarantined)==1 and quarantined[0]["reason"]=="INVALID_SIGNATURE"
     broker.commit.assert_not_called()
 
 
