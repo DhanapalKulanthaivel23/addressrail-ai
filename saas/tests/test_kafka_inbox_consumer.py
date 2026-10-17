@@ -41,9 +41,10 @@ def test_db_failure_never_commits_offset(monkeypatch):
 def test_mismatched_event_id_never_reaches_database(monkeypatch):
     broker=MagicMock()
     broker.poll.return_value=message(key=str(uuid4()))
+    monkeypatch.setattr(module,"record_quarantine",lambda **kwargs:None)
     monkeypatch.setattr(module,"record_event",
                         lambda **kwargs:pytest.fail("must not write untrusted event"))
-    with pytest.raises(ValueError,match="identity"):
+    with pytest.raises(ValueError,match="Malformed or mismatched"):
         module.process_one(consumer=broker,dsn="test",tenant_id=TENANT,key=KEY)
     broker.commit.assert_not_called()
 
