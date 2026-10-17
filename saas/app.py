@@ -217,3 +217,35 @@ def audit(identity=Depends(verify_token)):
                            ORDER BY occurred_at DESC LIMIT 100""").fetchall()
     return [{"action":r[0],"actor":r[1],"case_id":str(r[2]),
              "occurred_at":r[3].isoformat()} for r in rows]
+
+@app.post("/v1/tenancy/cases/{case_id}/jobs",status_code=201)
+def create_job(case_id:uuid.UUID,identity=Depends(verify_token)):
+    """Create a tenant-bound pending record; never publish to unsafe Kafka."""
+    enabled();permits(identity,"ADMIN","INVESTIGATOR")
+    job_id=uuid.uuid4()
+    try:
+        with session(identity) as db:
+            exists=db.execute("SELECT 1 FROM saas_cases WHERE id=%s",(case_id,)).fetchone()
+            if not exists:
+                raise HTTPException(404,"Fictional case not found")
+            row=db.execute("""INSERT INTO saas_jobs(id,tenant_id,case_id,creator)
+                 VALUES(%s,%s,%s,%s) ON CONFLICT(tenant_id,case_id) DO NOTHING
+                 RETURNING id,state""",
+                 (job_id,identity["tenant"],case_id,identity["actor"])).fetchone()
+            if not row:
+                raise HTTPException(409,"A synthetic job already exists for this case")
+        return {"job_id":str(row[0]),"case_id":str(case_id),
+                "state":row[1],"synthetic":True,"dispatched":False}
+    except psycopg.Error:
+        raise HTTPException(503,"Tenant job storage unavailable")
+
+@app.get("/v1/tenancy/jobs/{job_id}")
+def get_job(job_id:uuid.UUID,identity=Depends(verify_token)):
+    enabled()
+    with session(identity) as db:
+        row=db.execute("SELECT id,case_id,state FROM saas_jobs WHERE id=%s",
+                       (job_id,)).fetchone()
+    if not row:
+        raise HTTPException(404,"Synthetic job not found")
+    return {"job_id":str(row[0]),"case_id":str(row[1]),"state":row[2],
+            "synthetic":True,"dispatched":False}

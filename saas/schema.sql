@@ -61,3 +61,24 @@ GRANT SELECT,INSERT ON public.saas_cases TO addressrail_api;
 GRANT SELECT,INSERT ON public.saas_reports TO addressrail_api;
 GRANT SELECT,INSERT ON public.saas_audit TO addressrail_api;
 GRANT USAGE,SELECT ON SEQUENCE public.saas_audit_id_seq TO addressrail_api;
+
+-- Tenant-scoped synthetic processing jobs. A separate publisher/outbox integration
+-- is required before these may be emitted to Kafka. Job state is immutable here.
+CREATE TABLE IF NOT EXISTS public.saas_jobs(
+  id uuid PRIMARY KEY,
+  tenant_id uuid NOT NULL,
+  case_id uuid NOT NULL,
+  creator text NOT NULL CHECK(length(creator) BETWEEN 1 AND 128),
+  state text NOT NULL DEFAULT 'PENDING_DISPATCH' CHECK(state='PENDING_DISPATCH'),
+  created_at timestamptz NOT NULL DEFAULT now(),
+  UNIQUE(tenant_id,id),
+  UNIQUE(tenant_id,case_id),
+  FOREIGN KEY(tenant_id,case_id) REFERENCES public.saas_cases(tenant_id,id)
+);
+ALTER TABLE public.saas_jobs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.saas_jobs FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS saas_jobs_isolation ON public.saas_jobs;
+CREATE POLICY saas_jobs_isolation ON public.saas_jobs
+  USING(tenant_id = NULLIF(current_setting('app.tenant_id', true),'')::uuid)
+  WITH CHECK(tenant_id = NULLIF(current_setting('app.tenant_id', true),'')::uuid);
+GRANT SELECT,INSERT ON public.saas_jobs TO addressrail_api;
