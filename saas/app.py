@@ -514,7 +514,7 @@ def investigate_iso_pacs008(reference:str,identity=Depends(verify_token)):
                          (id,tenant_id,payment_ref,simulated_status,creator)
                          VALUES(%s,%s,%s,%s,%s)
                          ON CONFLICT (tenant_id,payment_ref) DO NOTHING
-                         RETURNING id""",(caseid,identity["tenant"],"PAY-"+reference,
+                         RETURNING id""",(caseid,identity["tenant"],"PAY-ISO-"+reference,
                                         case_status,identity["actor"])).fetchone()
             if not created:
                 raise HTTPException(409,"Existing unrelated case uses this reference")
