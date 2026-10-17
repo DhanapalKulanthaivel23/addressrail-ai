@@ -243,3 +243,55 @@ def test_real_postgres_inbox_dedup_and_tenant_isolation(prepared):
     finally:
         with psycopg.connect(os.environ["SAAS_TEST_ADMIN_DSN"],autocommit=True) as admin:
             admin.execute("REVOKE addressrail_consumer FROM addressrail_api")
+
+
+def test_consumer_integration_real_postgres_commit_after_durable_inbox(prepared):
+    """Test consumer ordering with real RLS PostgreSQL and a fake Kafka transport."""
+    import json
+    from unittest.mock import MagicMock
+    from saas.event_contract import sign_event
+    from saas.kafka_inbox_consumer import process_one, TOPIC
+    a=token(prepared,TENANT_A)
+    with TestClient(app) as c:
+        case=c.post("/v1/tenancy/cases",json=new_payment("CONSUMER"),headers=a)
+        assert case.status_code==201,case.text
+        cid=case.json()["id"]
+        job=c.post(f"/v1/tenancy/cases/{cid}/jobs",headers=a)
+        assert job.status_code==201,job.text
+        jid=job.json()["job_id"]
+    key=b"test-only-synthetic-consumer-key-with-long-entropy"
+    event=sign_event(event_id=str(uuid.uuid4()),
+        payload={"event_type":"SYNTHETIC_JOB_PENDING","tenant_id":TENANT_A,
+                 "job_id":jid,"case_id":cid,"synthetic":True,
+                 "settlement_attested":False,"safe_to_retry":False},key=key)
+    broker=MagicMock()
+    msg=MagicMock()
+    msg.error.return_value=None
+    msg.topic.return_value=TOPIC
+    msg.key.return_value=event["event_id"].encode()
+    msg.value.return_value=json.dumps(event).encode()
+    broker.poll.return_value=msg
+    with psycopg.connect(os.environ["SAAS_TEST_ADMIN_DSN"],autocommit=True) as admin:
+        admin.execute("GRANT addressrail_consumer TO addressrail_api")
+    try:
+        first=process_one(consumer=broker,dsn=os.environ["SAAS_DATABASE_URL"],
+                          tenant_id=TENANT_A,key=key)
+        assert first["accepted"] is True
+        assert broker.commit.call_count==1
+        repeated=process_one(consumer=broker,dsn=os.environ["SAAS_DATABASE_URL"],
+                             tenant_id=TENANT_A,key=key)
+        assert repeated["duplicate"] is True
+        assert broker.commit.call_count==2
+        with psycopg.connect(os.environ["SAAS_DATABASE_URL"]) as db:
+            with db.transaction():
+                db.execute("SELECT set_config('app.tenant_id', %s, true)",(TENANT_A,))
+                assert db.execute("SELECT count(*) FROM saas_inbox WHERE event_id=%s",
+                                  (event["event_id"],)).fetchone()[0]==1
+        broker.commit.reset_mock()
+        with pytest.raises(ValueError,match="Tenant mismatch"):
+            process_one(consumer=broker,dsn=os.environ["SAAS_DATABASE_URL"],
+                        tenant_id=TENANT_B,key=key)
+        broker.commit.assert_not_called()
+    finally:
+        with psycopg.connect(os.environ["SAAS_TEST_ADMIN_DSN"],autocommit=True) as admin:
+            admin.execute("REVOKE addressrail_consumer FROM addressrail_api")
