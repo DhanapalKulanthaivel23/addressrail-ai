@@ -215,6 +215,7 @@ def test_iso_v13_v14_tenant_isolation_and_pinned_evidence(prepared,network_stub)
     a,b=token(prepared,TENANT_A),token(prepared,TENANT_B)
     with TestClient(app) as client:
         for version in ("13","14"):
+            network_stub.complete=False
             reference=ref+version
             body={"reference":reference,"scenario":"REJECT",
                   "iso_version":version,"amount_minor":12345,"synthetic":True}
@@ -235,8 +236,9 @@ def test_iso_v13_v14_tenant_isolation_and_pinned_evidence(prepared,network_stub)
                               headers=b,json=body)
             assert other.status_code==202,other.text
             # A user's local reference never maps to another tenant's payment.
-            assert len({key for key in network_stub.records if
-                        key.startswith("SIMRJCT_")})>=4 if version=="14" else True
+            if version=="14":
+                assert len({key for key in network_stub.records if
+                            key.startswith("SIMRJCT_")})==4
             reread=client.post("/v1/tenancy/network/iso-pacs008",
                                headers=a,json=body)
             assert reread.status_code==202
