@@ -27,7 +27,7 @@ class NetworkTests(unittest.TestCase):
                  "BACS":"BACS_STANDARD18"}
         self.assertEqual(RAILS,set(formats))
         for rail,fmt in formats.items():
-            request=sample(rail,fmt,rail)
+            request=sample(rail,fmt,'RAIL_'+rail)
             accepted=self.net.submit(request)
             self.assertEqual(accepted["state"],"NETWORK_ACCEPTED")
             self.assertFalse(accepted["settlement_attested"])
