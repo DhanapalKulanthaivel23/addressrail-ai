@@ -1,0 +1,25 @@
+name: Synthetic multi-rail network simulator
+on:
+  push:
+    paths:
+      - 'network-simulator/**'
+      - '.github/workflows/network-simulator-ci.yml'
+  pull_request:
+    paths:
+      - 'network-simulator/**'
+      - '.github/workflows/network-simulator-ci.yml'
+permissions:
+  contents: read
+jobs:
+  network-simulation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test durable synthetic bank-to-bank request and response for eight rail profiles
+        run: python -m unittest discover -s network-simulator/tests -p 'test_*.py' -v
+      - name: Syntax check
+        run: python -m compileall -q network-simulator
