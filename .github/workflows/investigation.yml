@@ -3,10 +3,12 @@ on:
   push:
     paths:
       - 'ai-agents/**'
+      - 'schemas/iso20022/**'
       - '.github/workflows/investigation.yml'
   pull_request:
     paths:
       - 'ai-agents/**'
+      - 'schemas/iso20022/**'
       - '.github/workflows/investigation.yml'
 permissions:
   contents: read
