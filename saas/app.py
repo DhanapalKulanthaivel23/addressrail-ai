@@ -490,6 +490,8 @@ def investigate_iso_pacs008(reference:str,identity=Depends(verify_token)):
         raise HTTPException(503,"Stored ISO schema provenance inconsistent")
     try:
         status=network_bridge.status(str(remote_id))
+        if status["state"]!="BANK_RESPONSE_RECEIVED":
+            raise HTTPException(409,"Simulated bank outcome is not final; investigate later")
         case_status,report=iso_investigation.build(reference,version,amount,sha,status)
     except (ValueError,KeyError,TypeError,OSError):
         raise HTTPException(503,"Private network outcome or curated evidence unavailable")
