@@ -30,7 +30,7 @@ async def submit(request:Request,body:Submit,response:Response,
     gateway_auth(request,authorization)
     try:
         if not idempotency_key:raise ValueError("Idempotency-Key required")
-        req=CopilotRequest.model_validate(body.model_dump())
+        req=CopilotRequest.model_validate(body.model_dump(exclude={"simulated_status"}))
         validate_request(req)
         if "<Document" not in body.synthetic_xml or "pacs.008" not in body.synthetic_xml:
             raise ValueError("Only fictional ISO 20022 pacs.008 training documents")
