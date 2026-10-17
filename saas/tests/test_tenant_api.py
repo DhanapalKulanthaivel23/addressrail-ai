@@ -295,3 +295,29 @@ def test_consumer_integration_real_postgres_commit_after_durable_inbox(prepared)
     finally:
         with psycopg.connect(os.environ["SAAS_TEST_ADMIN_DSN"],autocommit=True) as admin:
             admin.execute("REVOKE addressrail_consumer FROM addressrail_api")
+
+
+def test_quarantine_metadata_is_durable_and_tenant_isolated(prepared):
+    from saas.quarantine import record_quarantine
+    raw=b"synthetic invalid kafka event, no customer information"
+    with psycopg.connect(os.environ["SAAS_TEST_ADMIN_DSN"],autocommit=True) as admin:
+        admin.execute("GRANT addressrail_consumer TO addressrail_api")
+    try:
+        first=record_quarantine(dsn=os.environ["SAAS_DATABASE_URL"],
+            tenant_id=TENANT_A,consumer_name="python-inbox",
+            reason="INVALID_ENVELOPE",raw_event=raw)
+        second=record_quarantine(dsn=os.environ["SAAS_DATABASE_URL"],
+            tenant_id=TENANT_A,consumer_name="python-inbox",
+            reason="INVALID_ENVELOPE",raw_event=raw)
+        assert first["new"] and not second["new"]
+        assert first["offset_committed"] is False
+        with psycopg.connect(os.environ["SAAS_DATABASE_URL"]) as db:
+            with db.transaction():
+                db.execute("SELECT set_config('app.tenant_id',%s,true)",(TENANT_A,))
+                assert db.execute("SELECT count(*) FROM saas_quarantine WHERE event_fingerprint=%s",(first["fingerprint"],)).fetchone()[0]==1
+            with db.transaction():
+                db.execute("SELECT set_config('app.tenant_id',%s,true)",(TENANT_B,))
+                assert db.execute("SELECT count(*) FROM saas_quarantine WHERE event_fingerprint=%s",(first["fingerprint"],)).fetchone()[0]==0
+    finally:
+        with psycopg.connect(os.environ["SAAS_TEST_ADMIN_DSN"],autocommit=True) as admin:
+            admin.execute("REVOKE addressrail_consumer FROM addressrail_api")
