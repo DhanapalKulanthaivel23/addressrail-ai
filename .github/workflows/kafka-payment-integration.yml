@@ -82,6 +82,13 @@ jobs:
           PYTHONPATH: ai-agents
         run: |
           python -m pytest -q ai-agents/investigation/tests/test_kafka_live.py
+      - name: Upload fictional end-to-end investigation report
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: synthetic-kafka-investigation-report
+          path: /tmp/addressrail-kafka-e2e-report.json
+          retention-days: 7
       - name: Output targeted logs if failed
         if: failure()
         run: |

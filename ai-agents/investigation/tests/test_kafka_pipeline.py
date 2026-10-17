@@ -168,3 +168,54 @@ def test_protected_http_submission_and_report(tmp_path,monkeypatch):
         assert downloaded.headers["content-disposition"].endswith('.json"')
         assert downloaded.json()["case_id"]=="CASE-0001"
         assert client.post(endpoint,json=REQUEST,headers={**token,"Origin":"https://evil.example"}).status_code==403
+
+def test_completed_report_replay_is_noop(tmp_path,monkeypatch):
+    from investigation.kafka_bus import Event
+    store=PipelineStore(str(tmp_path/"complete.db"))
+    id,_=store.begin("COMPLETED-REPLAY-101",REQUEST)
+    store.complete(id,{"job_id":id,"synthetic":True,"settlement_attested":False,
+                       "safe_to_retry":False,"case_id":"CASE-IMMUTABLE"})
+    bus=FakeBus("validate",[Event(TOPICS["submitted"],id,envelope(id,**REQUEST))])
+    def unexpected(*args):
+        raise AssertionError("Replayed completed job must not be re-executed")
+    monkeypatch.setattr(kafka_workers,"process_one",unexpected)
+    assert run_role("validate",bus=bus,store=store,stop_after=1)==1
+    assert bus.acks==1 and not bus.emitted
+    assert store.read(id)["state"]=="COMPLETED"
+    assert store.read(id)["report"]["case_id"]=="CASE-IMMUTABLE"
+
+def test_duplicate_training_case_reused_after_retry():
+    class DuplicateJava:
+        async def training_case_request(self,path,payload=None):
+            if payload is not None:
+                return {"error":409}
+            assert path.endswith("/by-payment/PAY-10001")
+            return {"trainingCase":{"id":"CASE-EXISTING","state":"IN_REVIEW"}}
+    async def describe(request):
+        return result()
+    validated=envelope("AR-JOB-existing",**REQUEST,validation={"status":"REVIEW_REQUIRED","rules":[]})
+    out=asyncio.run(investigate_payment(validated,tools=DuplicateJava(),copilot=describe))
+    assert out["report"]["case_id"]=="CASE-EXISTING"
+    assert out["report"]["case_state"]=="IN_REVIEW"
+
+def test_broker_unavailable_does_not_claim_submission(tmp_path,monkeypatch):
+    from investigation import pipeline_api
+    class OfflineProducer:
+        def send(self,*args):
+            raise RuntimeError("Kafka broker disconnected")
+        def close(self):pass
+    monkeypatch.setattr(pipeline_api,"KafkaBus",OfflineProducer)
+    monkeypatch.setattr(pipeline_api,"PipelineStore",lambda:PipelineStore(str(tmp_path/"fail.db")))
+    monkeypatch.setenv("COPILOT_ENABLE_API","true")
+    monkeypatch.setenv("ADDRESSRAIL_ENABLE_KAFKA_PIPELINE","true")
+    monkeypatch.setenv("COPILOT_API_TOKEN","P"*50)
+    with TestClient(app) as client:
+        headers={"Authorization":"Bearer "+"P"*50,
+                 "Idempotency-Key":"BROKER-OUTAGE-101"}
+        reply=client.post("/api/pipeline/v1/submissions",json=REQUEST,headers=headers)
+        assert reply.status_code==503
+        assert "unavailable" in reply.json()["detail"].lower()
+        db=PipelineStore(str(tmp_path/"fail.db"))
+        with db.connect() as conn:
+            state=conn.execute("SELECT state FROM jobs WHERE idem_key='BROKER-OUTAGE-101'").fetchone()
+        assert state["state"]=="PUBLISH_FAILED"

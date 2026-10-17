@@ -1,5 +1,7 @@
 """True broker + Go + Java + Python synthetic integration when explicit opt-in."""
 import os
+import json
+from pathlib import Path
 from uuid import uuid4
 import pytest
 from fastapi.testclient import TestClient
@@ -45,3 +47,6 @@ def test_real_kafka_three_stages_and_report_download():
         assert report["validation"]["validator"]=="addressrail-go-educational-v1"
         assert report["investigation"]["ai_used"] is False  # No real Gemini key
         assert "SYNTHETIC BANK A" not in file.text
+        # CI publishes an inspectable fictional report only after the full chain succeeds.
+        report_path=Path(os.getenv("ADDRESSRAIL_CI_REPORT","/tmp/addressrail-kafka-e2e-report.json"))
+        report_path.write_text(json.dumps(report,indent=2,sort_keys=True)+"\n",encoding="utf8")
