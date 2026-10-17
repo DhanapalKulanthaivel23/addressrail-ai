@@ -15,6 +15,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 from saas.app import app
+from saas import iso_simulation
+from xml.etree import ElementTree as ET
 from saas.tests.test_tenant_api import prepared,token,TENANT_A,TENANT_B
 
 pytestmark=pytest.mark.skipif(not os.getenv("SAAS_TEST_ADMIN_DSN"),
@@ -24,15 +26,30 @@ KEY="synthetic-staging-private-network-key-test-1234"
 class StubHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         self.server.calls.append(("POST",self.path,self.headers.get("X-Sim-Service-Key")))
-        if self.path!="/v1/async/messages" or self.headers.get("X-Sim-Service-Key")!=KEY:
+        if (self.path not in {"/v1/async/messages","/v1/validate-iso-pacs008-async"}
+             or self.headers.get("X-Sim-Service-Key")!=KEY):
             return self.send(403,{"error":"forbidden"})
         if self.server.fail_once:
             self.server.fail_once=False
             return self.send(503,{"error":"temporary outage"})
         size=int(self.headers.get("Content-Length","0"))
         data=json.loads(self.rfile.read(size))
-        if (data.get("synthetic") is not True or data.get("message_format")!="PACS008"
-             or data.get("payload")!="<Synthetic/>"):
+        iso=self.path=="/v1/validate-iso-pacs008-async"
+        if data.get("synthetic") is not True or data.get("message_format")!="PACS008":
+            return self.send(400,{"error":"invalid fictional payment"})
+        if iso:
+            try:
+                doc=ET.fromstring(data["payload"])
+                namespace=doc.tag.split("}")[0].lstrip("{")
+                version=next(ver for ver,pinned in iso_simulation.PINNED.items()
+                             if pinned[0]==namespace)
+                e2e=doc.findtext(".//{"+namespace+"}EndToEndId")
+                if e2e!=data["reference"] or len(e2e)>35:
+                    raise ValueError("Invalid fictional payment correlation")
+            except (KeyError,ValueError,StopIteration,ET.ParseError,TypeError) as exc:
+                self.server.last_iso_error=type(exc).__name__+":"+str(exc)[:100]
+                return self.send(400,{"error":"Invalid ISO fixture"})
+        elif data.get("payload")!="<Synthetic/>":
             return self.send(400,{"error":"invalid fictional payment"})
         reference=data["reference"]
         previous=self.server.records.get(reference)
@@ -41,7 +58,20 @@ class StubHandler(BaseHTTPRequestHandler):
         if not previous:
             previous={"id":str(uuid.uuid4()),"payload":data}
             self.server.records[reference]=previous
-        return self.send(202,self.reply(previous,duplicate=previous["payload"]!=data))
+        reply=self.reply(previous,duplicate=previous["payload"]!=data)
+        if iso:
+            proof=iso_simulation.PINNED[version]
+            reply["iso_base_validation"]={
+                "result":"BASE_XSD_VALID",
+                "namespace":proof[0],
+                "schema_sha256":("0"*64 if self.server.bad_iso else proof[1]),
+                "schema_version":proof[2],
+                "original_reference":data["reference"],
+                "synthetic":True,"settled":False,
+                "certified_cbpr":False,"swift_usage_guidelines_checked":False
+            }
+            reply["scheme_conformance"]="NOT_ASSESSED"
+        return self.send(202,reply)
     def do_GET(self):
         self.server.calls.append(("GET",self.path,self.headers.get("X-Sim-Service-Key")))
         if self.headers.get("X-Sim-Service-Key")!=KEY:return self.send(403,{"error":"forbidden"})
@@ -83,6 +113,8 @@ def network_stub(monkeypatch):
     server.calls=[]
     server.complete=False
     server.malicious=False
+    server.bad_iso=False
+    server.last_iso_error=None
     server.fail_once=False
     monkeypatch.setenv("SAAS_ENABLE_NETWORK_BRIDGE","true")
     monkeypatch.setenv("SAAS_SIM_NETWORK_URL",f"http://127.0.0.1:{server.server_port}")
@@ -177,4 +209,92 @@ def test_downstream_outage_can_recover_without_duplicate_simulated_payment(prepa
         assert final.json()["bank_status"]=="BANK_ACCEPTED"
         network_stub.malicious=True
         unsafe=client.get("/v1/tenancy/network/simulations/"+reference,headers=auth)
+        assert unsafe.status_code==503
+
+
+def test_iso_v13_v14_tenant_isolation_and_pinned_evidence(prepared,network_stub):
+    ref="ISO_"+uuid.uuid4().hex[:15]
+    a,b=token(prepared,TENANT_A),token(prepared,TENANT_B)
+    with TestClient(app) as client:
+        for version in ("13","14"):
+            network_stub.complete=False
+            reference=ref+version
+            body={"reference":reference,"scenario":"REJECT",
+                  "iso_version":version,"amount_minor":12345,"synthetic":True}
+            created=client.post("/v1/tenancy/network/iso-pacs008",
+                                headers=a,json=body)
+            assert created.status_code==202,(created.text,len(network_stub.records),[call[1] for call in network_stub.calls],network_stub.last_iso_error)
+            data=created.json()
+            assert data["base_xsd_validated"] is True
+            assert data["schema_sha256"]==iso_simulation.PINNED[version][1]
+            assert data["state"]=="AWAITING_BANK"
+            assert data["network_ack"]=="SIMULATED_ACK"
+            assert data["cbpr_conformance"]=="NOT_ASSESSED"
+            assert data["verified_scheme"] is False and data["settled"] is False
+            assert KEY not in created.text and "message_id" not in data
+            assert client.get("/v1/tenancy/network/iso-pacs008/"+reference,
+                              headers=b).status_code==404
+            other=client.post("/v1/tenancy/network/iso-pacs008",
+                              headers=b,json=body)
+            assert other.status_code==202,other.text
+            # A user's local reference never maps to another tenant's payment.
+            if version=="14":
+                assert len({key for key in network_stub.records if
+                            key.startswith("SIMRJCT_")})==4
+            reread=client.post("/v1/tenancy/network/iso-pacs008",
+                               headers=a,json=body)
+            assert reread.status_code==202
+            network_stub.complete=True
+            result=client.get("/v1/tenancy/network/iso-pacs008/"+reference,
+                              headers=a)
+            assert result.status_code==200,result.text
+            assert result.json()["bank_status"]=="BANK_REJECTED"
+            assert result.json()["base_xsd_validated"] is True
+            assert not result.json()["settled"]
+            invalid={**body,"amount_minor":999}
+            assert client.post("/v1/tenancy/network/iso-pacs008",
+                               headers=a,json=invalid).status_code==409
+            assert client.post("/v1/tenancy/network/iso-pacs008",
+                               headers=token(prepared,TENANT_A,"VIEWER"),
+                               json=body).status_code==403
+            assert client.post("/v1/tenancy/network/iso-pacs008",
+                               headers=a,json={**body,"synthetic":False}).status_code==422
+            assert client.post("/v1/tenancy/network/iso-pacs008",
+                               headers=a,json={**body,"iso_version":"08"}).status_code==422
+            assert client.post("/v1/tenancy/network/iso-pacs008",
+                               headers=a,json={**body,"amount_minor":0}).status_code==422
+    with psycopg.connect(os.environ["SAAS_DATABASE_URL"]) as db:
+        assert db.execute("SELECT count(*) FROM saas_iso_simulations").fetchone()[0]==0
+        with db.transaction():
+            db.execute("SELECT set_config('app.tenant_id',%s,true)",(TENANT_A,))
+            assert db.execute("SELECT count(*) FROM saas_iso_simulations WHERE client_reference LIKE %s",(ref+"%",)).fetchone()[0]==2
+        with db.transaction():
+            db.execute("SELECT set_config('app.tenant_id',%s,true)",(TENANT_B,))
+            assert db.execute("SELECT count(*) FROM saas_iso_simulations WHERE client_reference LIKE %s",(ref+"%",)).fetchone()[0]==2
+
+def test_iso_outage_and_bad_attestation_rejected(prepared,network_stub):
+    a=token(prepared,TENANT_A)
+    reference="ISOERROR_"+uuid.uuid4().hex[:14]
+    body={"reference":reference,"scenario":"ACCEPT","iso_version":"14",
+          "amount_minor":1000,"synthetic":True}
+    network_stub.fail_once=True
+    with TestClient(app) as client:
+        first=client.post("/v1/tenancy/network/iso-pacs008",headers=a,json=body)
+        assert first.status_code==503
+        reserved=client.get("/v1/tenancy/network/iso-pacs008/"+reference,headers=a)
+        assert reserved.status_code==200
+        assert reserved.json()["state"]=="SUBMITTING"
+        assert reserved.json()["base_xsd_validated"] is False
+        network_stub.bad_iso=True
+        refused=client.post("/v1/tenancy/network/iso-pacs008",headers=a,json=body)
+        assert refused.status_code==503
+        assert client.get("/v1/tenancy/network/iso-pacs008/"+reference,
+                          headers=a).json()["state"]=="SUBMITTING"
+        network_stub.bad_iso=False
+        accepted=client.post("/v1/tenancy/network/iso-pacs008",headers=a,json=body)
+        assert accepted.status_code==202,(accepted.text,len(network_stub.records),[call[1] for call in network_stub.calls])
+        assert accepted.json()["schema_sha256"]==iso_simulation.PINNED["14"][1]
+        assert len(network_stub.records)==1
+        network_stub.malicious=True
+        unsafe=client.get("/v1/tenancy/network/iso-pacs008/"+reference,headers=a)
         assert unsafe.status_code==503

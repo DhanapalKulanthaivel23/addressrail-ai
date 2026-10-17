@@ -37,3 +37,55 @@ A tenant `ADMIN` or `INVESTIGATOR` may call `POST /v1/tenancy/network/simulation
 Submission is reservation-first: if the private API is down, the reservation remains `SUBMITTING` and can be retried using **the same reference and scenario**. Upstream idempotency prevents synthetic duplicate processing. Conflicting scenario reuse returns HTTP 409. This is an **illustrative server-to-server staging integration**, not yet a live deployed private network connection or scheme-validating transaction processor. CI tests use a contract-compatible localhost HTTP stub together with **real PostgreSQL RLS**, not the private source or a real bank. Actual private-service cross-repository integration is a separate acceptance gate.
 
 Required for production: non-loopback zero-trust service identity, mTLS and secure ingress, IdP key rotation, quotas/rate limiting, tenant-propagating signed network contracts, secret rotation, operational audit, retries/reconciliation, and end-to-end workload identity isolation. **Never expose or run this plaintext, shared-key development bridge outside loopback.**
+
+
+## Tenant-scoped pinned ISO pacs.008 test submission (opt-in)
+
+The public SaaS staging API now provides a **server-generated, fictional-only**
+ISO pacs.008 v13/v14 entry point. This deliberately does **not** accept
+arbitrary customer/payment XML, names, account numbers, BICs, external URLs
+or bank credentials from a browser.
+
+`POST /v1/tenancy/network/iso-pacs008`
+
+Example JSON:
+
+```json
+{"reference":"DEMO-ISO-001","scenario":"REJECT","iso_version":"14","amount_minor":12345,"synthetic":true}
+```
+
+`GET /v1/tenancy/network/iso-pacs008/DEMO-ISO-001` returns the
+simulated network status. Only a signed tenant ADMIN/INVESTIGATOR can submit;
+signed VIEWER/REVIEWER can inspect their own tenant's existing submission.
+
+With `SAAS_ENABLE_NETWORK_BRIDGE=true`, the backend generates a deterministic
+fictional pacs.008.001.13 or .14 XML sample in-memory (never stores or returns
+the XML), and calls the **private**
+`POST /v1/validate-iso-pacs008-async` gateway using a backend-only test
+service key. The private gateway verifies the version-pinned ISO **BASE XSD**
+before accepting the async payment. The public API checks the returned
+namespace, exact published XSD SHA-256 digest, schema version, matching
+original reference and explicitly `settled=false` and
+`certified_cbpr=false`. No validation result is trusted if any of these
+values disagree.
+
+Requests are reserved in a dedicated PostgreSQL `saas_iso_simulations`
+table protected by FORCE RLS. An identical tenant/reference/request can
+be retried after an outage; changing its version, scenario or amount returns
+409. Tenant-specific deterministic network references stay under 35
+characters for ISO `EndToEndId`. The private message ID, raw sample XML
+and service key never enter the public API response.
+
+**The private SAA also needs a locally provisioned**
+`SIM_ISO_XSD_DIR` with the pinned published XSDs and manifest. Missing or
+modified XSDs cause submission to fail closed (503 at the SaaS boundary).
+The legacy `/v1/tenancy/network/simulations` remains unchanged.
+
+These are fictional bank participants and synthetic states. The sample uses
+a fixed fictional creation timestamp to ensure byte-identical retries.
+`base_xsd_validated=true` is **not** CBPR+ validation, FINplus certification,
+settlement confirmation or operational permission to send real payments.
+Only use this over loopback with a trusted CI or development environment.
+Production requires private tenant propagation, secret rotation, mTLS,
+validated scheme usage guidelines, OIDC JWKS rotation, rate limits,
+audit trails and secure cloud deployment.
