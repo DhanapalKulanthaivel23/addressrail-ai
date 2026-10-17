@@ -199,3 +199,34 @@ CREATE POLICY saas_network_isolation ON public.saas_network_simulations
   WITH CHECK(tenant_id=NULLIF(current_setting('app.tenant_id',true),'')::uuid);
 GRANT SELECT,INSERT ON public.saas_network_simulations TO addressrail_api;
 GRANT UPDATE(remote_message_id,bridge_state) ON public.saas_network_simulations TO addressrail_api;
+
+
+-- Narrow fictional ISO pacs.008 base-XSD staging submissions.
+-- Only tenant-scoped fictional test metadata is retained, never payment XML.
+CREATE TABLE IF NOT EXISTS public.saas_iso_simulations(
+  tenant_id uuid NOT NULL,
+  client_reference text NOT NULL CHECK(client_reference ~ '^[A-Za-z0-9_-]{4,60}$'),
+  scenario text NOT NULL CHECK(scenario IN ('ACCEPT','REJECT','PENDING')),
+  iso_version text NOT NULL CHECK(iso_version IN ('13','14')),
+  amount_minor bigint NOT NULL CHECK(amount_minor BETWEEN 1 AND 1000000000),
+  network_reference text NOT NULL CHECK(
+    network_reference ~ '^(SIMOK_|SIMRJCT_|SIMWAIT_)[A-F0-9]{26}$'),
+  remote_message_id uuid,
+  validation_sha256 text CHECK(validation_sha256 ~ '^[0-9a-f]{64}$'),
+  bridge_state text NOT NULL DEFAULT 'SUBMITTING'
+    CHECK(bridge_state IN ('SUBMITTING','ACKNOWLEDGED')),
+  created_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY(tenant_id,client_reference),
+  UNIQUE(tenant_id,network_reference),
+  CHECK ((bridge_state='SUBMITTING' AND remote_message_id IS NULL AND validation_sha256 IS NULL)
+      OR (bridge_state='ACKNOWLEDGED' AND remote_message_id IS NOT NULL AND validation_sha256 IS NOT NULL))
+);
+ALTER TABLE public.saas_iso_simulations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.saas_iso_simulations FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS saas_iso_isolation ON public.saas_iso_simulations;
+CREATE POLICY saas_iso_isolation ON public.saas_iso_simulations
+  USING(tenant_id=NULLIF(current_setting('app.tenant_id',true),'')::uuid)
+  WITH CHECK(tenant_id=NULLIF(current_setting('app.tenant_id',true),'')::uuid);
+GRANT SELECT,INSERT ON public.saas_iso_simulations TO addressrail_api;
+GRANT UPDATE(remote_message_id,validation_sha256,bridge_state) ON
+  public.saas_iso_simulations TO addressrail_api;
