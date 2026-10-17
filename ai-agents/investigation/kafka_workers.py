@@ -136,6 +136,13 @@ def run_role(role: str, *, bus=None, store=None, stop_after:int | None=None):
                 # attempt log and retry schedule exist; preserve at-least-once safety.
                 continue
             try:
+                # Durable report is immutable; Kafka can replay after a crash.
+                # Once completed, never downgrade or regenerate this job.
+                completed=db.read(msg.data["job_id"])
+                if completed is not None and completed["state"]=="COMPLETED":
+                    broker.ack()
+                    seen+=1
+                    continue
                 out=process_one(role,msg.data,db)
                 if out is not None:
                     broker.send(ROLE_OUT[role],msg.key,out)
