@@ -6,3 +6,4 @@ langgraph>=0.2.60,<2
 pytest>=8,<10
 cryptography>=43,<48
 confluent-kafka>=2.5,<3
+lxml>=5.4,<7
