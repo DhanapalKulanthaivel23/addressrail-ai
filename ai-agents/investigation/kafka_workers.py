@@ -19,6 +19,7 @@ from .go_rules import GoRulesClient
 from .tools import PaymentTools
 from .pipeline_store import PipelineStore
 from .kafka_bus import KafkaBus, TOPICS, create_topics
+from .schema_validation import inspect as inspect_base_xsd
 
 ROLE_IN = {"validate":TOPICS["submitted"],
            "investigate":TOPICS["validated"],
@@ -40,6 +41,13 @@ async def validate_payment(event: dict, go=None) -> dict:
                           question=event["question"],synthetic_xml=event["synthetic_xml"])
     validate_request(request)
     client=go or GoRulesClient()
+    # An operator-provisioned ISO base XSD is validated independently from
+    # Go educational rules. Missing official XSD never becomes a PASS.
+    schema_review=inspect_base_xsd(request.synthetic_xml).asdict()
+    if schema_review["status"] in ("INVALID_XML","UNSUPPORTED_ROOT","UNSUPPORTED_NAMESPACE",
+                                     "BASE_XSD_INVALID","SCHEMA_LOAD_ERROR"):
+        # Retain the review result and avoid any authority claim.
+        pass
     checked=await client.inspect_xml("CBPR",request.synthetic_xml)
     if checked.synthetic is not True or checked.safeToRetry or checked.settlementAttested:
         raise ValueError("Go validation contract breached")
@@ -48,7 +56,10 @@ async def validate_payment(event: dict, go=None) -> dict:
         raise ValueError("Unsupported fictional status")
     return envelope(event["job_id"],payment_id=request.payment_id,question=request.question,
         simulated_status=status,synthetic_xml=request.synthetic_xml,
-        validation={"status":review_status(checked.model_dump()),
+        validation={"status":("REVIEW_REQUIRED" if schema_review["status"] not in
+                                ("BASE_XSD_VALID","SCHEMA_UNAVAILABLE")
+                                else review_status(checked.model_dump())),
+                    "base_xsd":schema_review,
                     "wellFormed":checked.wellFormed,
                     "validSubset":checked.validSubset,
                     "rule_ids":[x.id for x in checked.rules],
