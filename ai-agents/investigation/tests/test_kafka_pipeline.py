@@ -224,3 +224,25 @@ def test_broker_unavailable_does_not_claim_submission(tmp_path,monkeypatch):
         with db.connect() as conn:
             state=conn.execute("SELECT state FROM jobs WHERE idem_key='BROKER-OUTAGE-101'").fetchone()
         assert state["state"]=="PUBLISH_FAILED"
+
+
+def test_tenant_staging_cannot_expose_shared_token_sqlite_pipeline(monkeypatch):
+    """Mixed deployment must fail closed before a Kafka or SQLite call."""
+    from investigation import pipeline_api
+    monkeypatch.setenv("ADDRESSRAIL_ENABLE_KAFKA_PIPELINE", "true")
+    monkeypatch.setenv("SAAS_ENABLE_API", "true")
+    monkeypatch.setenv("COPILOT_ENABLE_API", "true")
+    monkeypatch.setenv("COPILOT_API_TOKEN", "Z" * 48)
+    def forbidden():
+        raise AssertionError("Unsafe shared-token pipeline must not touch persistence")
+    monkeypatch.setattr(pipeline_api, "PipelineStore", forbidden)
+    monkeypatch.setattr(pipeline_api, "KafkaBus", forbidden)
+    with TestClient(app) as client:
+        headers={"Authorization": "Bearer " + "Z" * 48,
+                 "Idempotency-Key": "TENANT-STAGE-001"}
+        endpoint="/api/pipeline/v1/submissions"
+        assert client.post(endpoint,json=REQUEST,headers=headers).status_code==503
+        assert client.get(endpoint+"/AR-JOB-test",headers=headers).status_code==503
+        assert client.get(endpoint+"/AR-JOB-test/report",headers=headers).status_code==503
+    monkeypatch.setenv("SAAS_ENABLE_API", "false")
+    pipeline_api.enabled()  # Existing opt-in local pipeline remains supported.
