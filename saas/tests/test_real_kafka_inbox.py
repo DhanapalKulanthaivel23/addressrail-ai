@@ -12,7 +12,6 @@ from pathlib import Path
 
 import psycopg
 import pytest
-from confluent_kafka import Consumer, Producer
 from saas.event_contract import sign_event
 from saas.kafka_inbox_consumer import process_one, TOPIC
 
@@ -21,6 +20,7 @@ pytestmark=pytest.mark.skipif(
     reason="Ephemeral real PostgreSQL/Kafka CI required")
 
 def test_real_kafka_signed_tenant_inbox_roundtrip():
+    from confluent_kafka import Consumer, Producer
     tenant=str(uuid.uuid4())
     case_id=uuid.uuid4()
     job_id=uuid.uuid4()
