@@ -9,7 +9,7 @@ from __future__ import annotations
 from contextlib import contextmanager
 from datetime import datetime,timezone
 from typing import Literal
-from saas import network_bridge
+from saas import network_bridge, iso_simulation
 import hmac
 import os
 import re
@@ -38,6 +38,13 @@ class CaseIn(Strict):
 class NetworkSimulationIn(Strict):
     reference: str = Field(min_length=4,max_length=60,pattern=r"^[A-Za-z0-9_-]{4,60}$")
     scenario: Literal["ACCEPT","REJECT","PENDING"]
+    synthetic: Literal[True] = True
+
+class IsoSimulationIn(Strict):
+    reference: str = Field(min_length=4,max_length=60,pattern=r"^[A-Za-z0-9_-]{4,60}$")
+    scenario: Literal["ACCEPT","REJECT","PENDING"]
+    iso_version: Literal["13","14"]
+    amount_minor: int = Field(ge=1,le=1000000000,strict=True)
     synthetic: Literal[True] = True
 
 class ReportIn(Strict):
@@ -354,4 +361,97 @@ def get_network_simulation(reference:str,identity=Depends(verify_token)):
     except (ValueError,KeyError):
         raise HTTPException(503,"Private synthetic status temporarily unavailable")
     return {"reference":reference,"scenario":row[0],**status,
+            "verified_scheme":False,"settlement_attested":False}
+
+@app.post("/v1/tenancy/network/iso-pacs008",status_code=202)
+def start_iso_pacs008(body:IsoSimulationIn,identity=Depends(verify_token)):
+    """Public synthetic pacs.008 fixture -> PRIVATE, version-pinned XSD gateway."""
+    enabled();permits(identity,"ADMIN","INVESTIGATOR")
+    try:
+        network_bridge.network_config()
+        remote_ref=iso_simulation.iso_reference(identity["tenant"],body.reference,body.scenario)
+    except ValueError:
+        raise HTTPException(503,"Private ISO testing gateway is disabled or unavailable")
+    try:
+        with session(identity) as db:
+            db.execute("""INSERT INTO saas_iso_simulations
+                 (tenant_id,client_reference,scenario,iso_version,amount_minor,network_reference)
+                 VALUES(%s,%s,%s,%s,%s,%s)
+                 ON CONFLICT (tenant_id,client_reference) DO NOTHING""",
+                 (identity["tenant"],body.reference,body.scenario,
+                  body.iso_version,body.amount_minor,remote_ref))
+            row=db.execute("""SELECT scenario,iso_version,amount_minor,remote_message_id,validation_sha256
+                 FROM saas_iso_simulations WHERE client_reference=%s""",
+                 (body.reference,)).fetchone()
+            if row is None:
+                raise HTTPException(503,"Synthetic ISO reservation unavailable")
+            if row[:3]!=(body.scenario,body.iso_version,body.amount_minor):
+                raise HTTPException(409,"Reference is reserved for another fictional ISO request")
+            remote_id=row[3]
+    except psycopg.Error:
+        raise HTTPException(503,"Tenant ISO simulation storage unavailable")
+    try:
+        if remote_id is None:
+            remote_id,status,evidence=iso_simulation.submit(
+                identity["tenant"],body.reference,body.scenario,
+                body.iso_version,body.amount_minor)
+            with session(identity) as db:
+                row=db.execute("""UPDATE saas_iso_simulations
+                  SET remote_message_id=%s,validation_sha256=%s,bridge_state='ACKNOWLEDGED'
+                  WHERE client_reference=%s AND
+                    (remote_message_id IS NULL OR remote_message_id=%s)
+                  RETURNING remote_message_id""",
+                  (remote_id,evidence["schema_sha256"],body.reference,remote_id)).fetchone()
+                if row is None:
+                    raise HTTPException(409,"Conflicting synthetic ISO network correlation")
+        else:
+            if row[4]!=iso_simulation.PINNED[body.iso_version][1]:
+                raise ValueError("Stored ISO schema hash does not match pinned version")
+            status=network_bridge.status(str(remote_id))
+    except (ValueError,KeyError,TypeError,psycopg.Error):
+        # The reservation is durable. Retry the exact same request after a
+        # transient outage; upstream idempotency keeps synthetic delivery safe.
+        raise HTTPException(503,"Private ISO XSD validation/network temporarily unavailable")
+    return {"reference":body.reference,"iso_version":body.iso_version,
+            "scenario":body.scenario,"amount_minor":body.amount_minor,
+            "currency":"EUR",**status,"base_xsd_validated":True,
+            "schema_sha256":iso_simulation.PINNED[body.iso_version][1],
+            "cbpr_conformance":"NOT_ASSESSED",
+            "verified_scheme":False,"settlement_attested":False}
+
+@app.get("/v1/tenancy/network/iso-pacs008/{reference}")
+def get_iso_pacs008(reference:str,identity=Depends(verify_token)):
+    enabled()
+    try:
+        network_bridge.network_config()
+    except ValueError:
+        raise HTTPException(503,"Private ISO testing gateway is disabled or unavailable")
+    if not network_bridge.REF.fullmatch(reference):
+        raise HTTPException(404,"Synthetic ISO simulation not found")
+    try:
+        with session(identity) as db:
+            row=db.execute("""SELECT scenario,iso_version,amount_minor,
+                remote_message_id,validation_sha256 FROM saas_iso_simulations
+                WHERE client_reference=%s""",(reference,)).fetchone()
+    except psycopg.Error:
+        raise HTTPException(503,"Tenant ISO simulation storage unavailable")
+    if row is None:
+        raise HTTPException(404,"Synthetic ISO simulation not found")
+    scenario,version,amount,remote_id,stored_hash=row
+    if remote_id is None:
+        return {"reference":reference,"iso_version":version,"scenario":scenario,
+                "amount_minor":amount,"currency":"EUR","state":"SUBMITTING",
+                "base_xsd_validated":False,"cbpr_conformance":"NOT_ASSESSED",
+                "synthetic":True,"settled":False,
+                "verified_scheme":False,"settlement_attested":False}
+    if stored_hash!=iso_simulation.PINNED[version][1]:
+        raise HTTPException(503,"Pinned ISO attestation inconsistent")
+    try:
+        status=network_bridge.status(str(remote_id))
+    except (ValueError,KeyError,TypeError):
+        raise HTTPException(503,"Private synthetic ISO status temporarily unavailable")
+    return {"reference":reference,"iso_version":version,"scenario":scenario,
+            "amount_minor":amount,"currency":"EUR",**status,
+            "base_xsd_validated":True,"schema_sha256":stored_hash,
+            "cbpr_conformance":"NOT_ASSESSED",
             "verified_scheme":False,"settlement_attested":False}
