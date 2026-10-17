@@ -1,0 +1,31 @@
+name: Cloudflare synthetic checks
+on:
+  push:
+    branches: [feature/cloudflare-payment-microservices]
+    paths: ['cloudflare/payment-microservices/**', 'scripts/cloudflare-*', 'tests/**', 'package*.json', '.github/workflows/cloudflare-*.yml']
+  pull_request:
+    paths: ['cloudflare/payment-microservices/**', 'scripts/cloudflare-*', 'tests/**', 'package*.json', '.github/workflows/cloudflare-*.yml']
+permissions:
+  contents: read
+jobs:
+  runtime-and-bundles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: node --test tests/*.test.mjs
+      - name: Bundle all ten Workers and verify explicit D1 binding without credentials
+        env:
+          D1_DATABASE_ID: 00000000-0000-0000-0000-000000000001
+          WRANGLER_SEND_METRICS: 'false'
+        run: |
+          node scripts/cloudflare-config.mjs
+          for role in bank swift-network cbpr gpi sepa-clearing sepa rtgs chaps t2; do
+            ./node_modules/.bin/wrangler deploy --dry-run --config "cloudflare/payment-microservices/wrangler.$role.toml"
+          done
+          ./node_modules/.bin/wrangler deploy --dry-run --config cloudflare/payment-microservices/wrangler.gateway.deploy.toml

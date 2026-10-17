@@ -1,0 +1,8 @@
+name = "ar-sepa-clearing"
+main = "./worker.mjs"
+compatibility_date = "2026-10-01"
+workers_dev = false
+preview_urls = false
+
+[vars]
+SERVICE_ROLE = "sepa-clearing"
