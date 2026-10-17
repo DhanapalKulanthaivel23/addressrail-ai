@@ -43,3 +43,23 @@ jobs:
             sleep 1
           done
           curl --fail --silent http://127.0.0.1:8094/healthz | grep -q 'addressrail-go-educational'
+      - name: Start two separate local scheme-profile services and reject cross-rail requests
+        working-directory: rail-engine
+        run: |
+          RAIL_ENGINE_RAIL=CBPR RAIL_ENGINE_PORT=8110 /tmp/addressrail-raild > /tmp/rail-cbpr.log 2>&1 &
+          p1=$!
+          RAIL_ENGINE_RAIL=CHAPS RAIL_ENGINE_PORT=8111 /tmp/addressrail-raild > /tmp/rail-chaps.log 2>&1 &
+          p2=$!
+          trap 'kill "$p1" "$p2" 2>/dev/null || true' EXIT
+          for i in $(seq 1 20); do
+            if curl -fsS http://127.0.0.1:8110/healthz | grep -q 'CBPR' && curl -fsS http://127.0.0.1:8111/healthz | grep -q 'CHAPS'; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:8110/healthz | grep -q '"railProfile":"CBPR"'
+          curl -fsS http://127.0.0.1:8111/healthz | grep -q '"railProfile":"CHAPS"'
+          status=$(curl -sS -o /tmp/wrong-rail.json -w '%{http_code}' \
+            -H 'Content-Type: application/json' -X POST \
+            http://127.0.0.1:8110/v1/validate \
+            -d '{"synthetic":true,"rail":"CHAPS","messageType":"pacs.008","currency":"GBP","amount":"1.00","reference":"AR-DEMO-CHAPS"}')
+          test "$status" = "422"
+          grep -q 'different' /tmp/wrong-rail.json
