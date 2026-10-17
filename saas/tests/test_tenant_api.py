@@ -186,3 +186,24 @@ def test_atomic_outbox_is_tenant_scoped_and_write_once(prepared):
             assert db.execute("SELECT count(*) FROM saas_outbox").fetchone()[0]==0
             with pytest.raises(psycopg.errors.InsufficientPrivilege):
                 db.execute("DELETE FROM saas_outbox WHERE job_id=%s",(jid,))
+
+
+def test_pending_event_inspection_is_tenant_scoped_and_not_dispatched(prepared):
+    a=token(prepared,TENANT_A)
+    b=token(prepared,TENANT_B)
+    with TestClient(app) as c:
+        case=c.post("/v1/tenancy/cases",json=new_payment("EXPORT"),headers=a)
+        assert case.status_code==201,case.text
+        cid=case.json()["id"]
+        job=c.post(f"/v1/tenancy/cases/{cid}/jobs",headers=a)
+        assert job.status_code==201,job.text
+        path="/v1/tenancy/jobs/"+job.json()["job_id"]+"/pending-event"
+        assert c.get(path,headers=b).status_code==404
+        assert c.get(path,headers=token(prepared,TENANT_A,"VIEWER")).status_code==403
+        event=c.get(path,headers=a)
+        assert event.status_code==200,event.text
+        payload=event.json()
+        assert payload["payload"]["tenant_id"]==TENANT_A
+        assert payload["payload"]["case_id"]==cid
+        assert payload["delivery_status"]=="NOT_DISPATCHED"
+        assert payload["signed"] is False
