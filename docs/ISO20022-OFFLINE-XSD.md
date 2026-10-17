@@ -1,6 +1,6 @@
 # ISO 20022 offline base-schema validation
 
-`ai-agents/investigation/schema_validation.py` supports a strict, bounded **offline XSD conformance check**, but the repository **does not bundle or claim authority over an ISO XSD or Swift CBPR+ Usage Guidelines**. The small XSD created within its unit test is synthetic and not an official ISO schema.
+`ai-agents/investigation/schema_validation.py` supports a strict, bounded **offline XSD conformance check**, but the repository bundles **only the public ISO pacs.008.001.13 and .14 base XSDs** under `schemas/iso20022`, with original contents, provenance and checksum pins. It does not claim authority over ISO XSDs or Swift CBPR+ Usage Guidelines. The small XSD created within its unit test is synthetic and not an official ISO schema.
 
 Provide your legally obtained ISO 20022 base XSD (for the precise message version deployed, e.g. `pacs.008.001.08`) through a private versioned directory. Add a local `manifest.json` such as:
 
