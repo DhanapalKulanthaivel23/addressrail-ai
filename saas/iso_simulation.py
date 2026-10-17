@@ -53,6 +53,7 @@ def fixture(tenant,reference,scenario,version,amount_minor):
       <CdtrAgt><FinInstnId><BICFI>BANKBB33</BICFI></FinInstnId></CdtrAgt>
       <Cdtr><Nm>Fictional Receiver</Nm></Cdtr>
     </CdtTrfTxInf>
+  </FIToFICstmrCdtTrf>
 </Document>'''
     return remote_ref,xml
 
