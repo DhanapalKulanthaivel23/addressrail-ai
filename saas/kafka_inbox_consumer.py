@@ -8,6 +8,7 @@ import json
 import os
 from uuid import UUID
 from .inbox import record_event
+from .quarantine import record_quarantine
 from .outbox_dispatcher import TOPIC
 
 MAX_BYTES=90000
@@ -31,8 +32,19 @@ def process_one(*, consumer, dsn, tenant_id, key, name="python-inbox", timeout=1
         raise ValueError("Malformed Kafka event key") from None
     if not isinstance(event,dict) or str(event.get("event_id",""))!=kafka_key:
         raise ValueError("Event identity does not match Kafka key")
-    outcome=record_event(dsn=dsn,event=event,key=key,
-                         expected_tenant=tenant_id,consumer_name=name)
+    try:
+        outcome=record_event(dsn=dsn,event=event,key=key,
+                             expected_tenant=tenant_id,consumer_name=name)
+    except ValueError as exc:
+        # Only deterministic validation failures are quarantined. Transient
+        # database and broker failures propagate without being reclassified.
+        reason = ("TENANT_MISMATCH" if "Tenant mismatch" in str(exc) else
+                  "INVALID_SIGNATURE" if "integrity failure" in str(exc) else
+                  "UNAUTHORIZED_JOB" if "job/case mismatch" in str(exc) else
+                  "INVALID_ENVELOPE")
+        record_quarantine(dsn=dsn,tenant_id=tenant_id,consumer_name=name,
+                          reason=reason,raw_event=message.value())
+        raise
     # Never advance offset before durable inbox transaction has committed.
     consumer.commit(message=message,asynchronous=False)
     return outcome
