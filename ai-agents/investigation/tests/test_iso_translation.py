@@ -99,3 +99,18 @@ def test_actual_published_base_schema(version):
     result=mt_to_mx(MT,version,CONTEXT,schema_dir=os.getenv('ADDRESSRAIL_PUBLISHED_XSD_TEST_DIR',str(Path(__file__).resolve().parents[3]/'schemas'/'iso20022')))
     assert result['status']=='BASE_XSD_VALID_CANDIDATE',result['base_schema']
     assert result['base_schema']['certified_cbpr'] is False
+
+
+@pytest.mark.parametrize('version',['pacs.008.001.13','pacs.008.001.14'])
+def test_reverse_translation_fail_closed_when_installed_xsd_rejects_source(version):
+    schema_dir=str(Path(__file__).resolve().parents[3]/'schemas'/'iso20022')
+    candidate=mt_to_mx(MT,version,CONTEXT,schema_dir=schema_dir)
+    assert candidate['status']=='BASE_XSD_VALID_CANDIDATE'
+    # Changing the amount attribute to an invalid ISO currency token retains
+    # the same mapped field shape but violates the actual published base XSD.
+    malformed=candidate['output'].replace('Ccy="EUR"', 'Ccy="EURO"')
+    rejected=mx_to_mt(malformed,allow_metadata_loss=True,schema_dir=schema_dir)
+    assert rejected['status']=='SOURCE_SCHEMA_REJECTED'
+    assert rejected['output'] is None
+    assert rejected['base_schema']['status']=='BASE_XSD_INVALID'
+    assert rejected['safe_to_retry'] is False
