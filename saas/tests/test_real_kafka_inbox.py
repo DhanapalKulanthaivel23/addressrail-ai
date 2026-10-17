@@ -31,6 +31,7 @@ def test_real_kafka_signed_tenant_inbox_roundtrip():
     # Seed isolated synthetic records as test administrator; the actual
     # consumer below runs with the configured app-privilege connection.
     with psycopg.connect(dsn,autocommit=True) as admin:
+        admin.execute("CREATE ROLE addressrail_api LOGIN PASSWORD 'test-only-password-for-ci' NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS")
         admin.execute(Path(__file__).resolve().parents[1].joinpath("schema.sql").read_text())
         admin.execute("GRANT addressrail_consumer TO addressrail_api")
         admin.execute("INSERT INTO saas_cases(id,tenant_id,payment_ref,simulated_status,creator) VALUES(%s,%s,%s,'RJCT','ci')",
