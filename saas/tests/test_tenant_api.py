@@ -131,3 +131,27 @@ def test_service_is_disabled_without_opt_in(prepared,monkeypatch):
     with TestClient(app) as c:
         assert c.get("/readyz").status_code==503
         assert c.get("/v1/tenancy/cases",headers=token(prepared,TENANT_A)).status_code==404
+
+
+def test_tenant_scoped_pending_jobs_never_dispatch_and_cannot_cross_read(prepared):
+    a=token(prepared,TENANT_A)
+    b=token(prepared,TENANT_B)
+    with TestClient(app) as c:
+        created=c.post("/v1/tenancy/cases",json=new_payment("JOB"),headers=a)
+        assert created.status_code==201,created.text
+        case_id=created.json()["id"]
+        url=f"/v1/tenancy/cases/{case_id}/jobs"
+        assert c.post(url,headers=b).status_code==404
+        assert c.post(url,headers=token(prepared,TENANT_A,"VIEWER")).status_code==403
+        job=c.post(url,headers=a)
+        assert job.status_code==201,job.text
+        data=job.json()
+        assert data["state"]=="PENDING_DISPATCH" and data["dispatched"] is False
+        assert c.post(url,headers=a).status_code==409
+        path="/v1/tenancy/jobs/"+data["job_id"]
+        assert c.get(path,headers=a).status_code==200
+        assert c.get(path,headers=b).status_code==404
+        with psycopg.connect(os.environ["SAAS_DATABASE_URL"]) as db:
+            assert db.execute("SELECT count(*) FROM saas_jobs").fetchone()[0]==0
+            with pytest.raises(psycopg.errors.InsufficientPrivilege):
+                db.execute("DELETE FROM saas_jobs WHERE id=%s",(data["job_id"],))
