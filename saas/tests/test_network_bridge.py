@@ -46,7 +46,8 @@ class StubHandler(BaseHTTPRequestHandler):
                 e2e=doc.findtext(".//{"+namespace+"}EndToEndId")
                 if e2e!=data["reference"] or len(e2e)>35:
                     raise ValueError("Invalid fictional payment correlation")
-            except (KeyError,ValueError,StopIteration,ET.ParseError,TypeError):
+            except (KeyError,ValueError,StopIteration,ET.ParseError,TypeError) as exc:
+                self.server.last_iso_error=type(exc).__name__+":"+str(exc)[:100]
                 return self.send(400,{"error":"Invalid ISO fixture"})
         elif data.get("payload")!="<Synthetic/>":
             return self.send(400,{"error":"invalid fictional payment"})
@@ -113,6 +114,7 @@ def network_stub(monkeypatch):
     server.complete=False
     server.malicious=False
     server.bad_iso=False
+    server.last_iso_error=None
     server.fail_once=False
     monkeypatch.setenv("SAAS_ENABLE_NETWORK_BRIDGE","true")
     monkeypatch.setenv("SAAS_SIM_NETWORK_URL",f"http://127.0.0.1:{server.server_port}")
@@ -221,7 +223,7 @@ def test_iso_v13_v14_tenant_isolation_and_pinned_evidence(prepared,network_stub)
                   "iso_version":version,"amount_minor":12345,"synthetic":True}
             created=client.post("/v1/tenancy/network/iso-pacs008",
                                 headers=a,json=body)
-            assert created.status_code==202,(created.text,len(network_stub.records),[call[1] for call in network_stub.calls])
+            assert created.status_code==202,(created.text,len(network_stub.records),[call[1] for call in network_stub.calls],network_stub.last_iso_error)
             data=created.json()
             assert data["base_xsd_validated"] is True
             assert data["schema_sha256"]==iso_simulation.PINNED[version][1]
