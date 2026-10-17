@@ -4,10 +4,10 @@
 
 ## What works
 
-1. Submit the synthetic CBPR+ `pacs.008` XML + existing fictional Java payment ID (`PAY-10001`) to the **protected Python API** with a unique `Idempotency-Key`.
+1. Submit the synthetic CBPR+ `pacs.008` XML + new or existing fictional Java payment ID (for example `PAY-KAFKA-EXAMPLE-001`) to the **protected Python API** with a unique `Idempotency-Key`.
 2. Python stores the job in **SQLite** and publishes `addressrail.payments.submitted.v1` through a **real Kafka producer** with broker delivery acknowledgement.
 3. A separate `validate` consumer asks the **Go** service to stream-check XML and publishes `addressrail.payments.validated.v1`, including rule IDs, element paths and an educational subset validity result.
-4. A separate `investigate` consumer calls **Python LangGraph**, which retrieves authoritative-for-this-*synthetic-lab* Java events, calls Go for event correlation, fetches dated sources from the local RAG index and optionally requests Gemini advice when configured. It creates or reuses a **Java H2-backed training case** and publishes `addressrail.payments.investigated.v1`.
+4. A separate `investigate` consumer creates or reuses a **fictional payment record** in Java/H2 (default simulated RJCT status), then calls **Python LangGraph**, which retrieves authoritative-for-this-*synthetic-lab* Java events, calls Go for event correlation, fetches dated sources from the local RAG index and optionally requests Gemini advice when configured. It creates or reuses a **Java H2-backed training case** and publishes `addressrail.payments.investigated.v1`.
 5. A separate `report` consumer writes an **immutable JSON investigation report** to SQLite. `GET /api/pipeline/v1/submissions/{job_id}/report` downloads the report.
 
 Each Kafka worker is independently runnable but shares one Python code package for transport orchestration. **The Go and Java services are separate OS processes; their Kafka interaction is currently through the Python workers and HTTP, not through native Go or Java Kafka consumers.** This distinction matters for bank-grade service decomposition.
@@ -103,6 +103,6 @@ The **real Kafka/Go/Java** integration is gated by `ADDRESSRAIL_LIVE_KAFKA_TEST=
 
 ### Limitations before any actual SaaS claim
 
-No tenant-scoped Kafka partitions, OIDC, managed Kafka, durable outbox, robust PII/DLP, Java/Go native Kafka consumers, full ISO XSD/CBPR+ validation, bank-approved AI traces, distributed rate limits, schema registry or full per-rail microservices have been delivered by this stage. The pipeline reuses an existing Java synthetic payment record; XML upload does not create or transmit a live payment. Never use real bank data.
+No tenant-scoped Kafka partitions, OIDC, managed Kafka, durable outbox, robust PII/DLP, Java/Go native Kafka consumers, full ISO XSD/CBPR+ validation, bank-approved AI traces, distributed rate limits, schema registry or full per-rail microservices have been delivered by this stage. The pipeline creates or reuses a **fictional** Java/H2 record and status event for each unique PAY-* ID; XML upload does not transmit a live payment or derive an authoritative payment status. Never use real bank data.
 
 Until Cloudflare/hosting accounts and security controls are explicitly provisioned, this entire event pipeline is **local development only**, not an internet-hosted product.

@@ -4,6 +4,7 @@ import os
 from fastapi import APIRouter,Header,HTTPException,Request,Response
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel,ConfigDict,Field
+from typing import Literal
 from .copilot import CopilotRequest,validate_request
 from .copilot_api import gateway_auth
 from .pipeline_store import PipelineStore,JobConflict
@@ -15,6 +16,7 @@ class Submit(BaseModel):
     payment_id: str=Field(pattern=r"^[A-Za-z0-9_-]{1,80}$")
     question: str=Field(min_length=5,max_length=360)
     synthetic_xml: str=Field(min_length=40,max_length=48000)
+    simulated_status: Literal["RJCT","PENDING","UNKNOWN"]="RJCT"
 
 def enabled():
     if os.getenv("ADDRESSRAIL_ENABLE_KAFKA_PIPELINE","false").lower()!="true":

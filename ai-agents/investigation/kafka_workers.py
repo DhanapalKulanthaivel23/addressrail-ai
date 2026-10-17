@@ -43,8 +43,11 @@ async def validate_payment(event: dict, go=None) -> dict:
     checked=await client.inspect_xml("CBPR",request.synthetic_xml)
     if checked.synthetic is not True or checked.safeToRetry or checked.settlementAttested:
         raise ValueError("Go validation contract breached")
+    status=event.get("simulated_status","RJCT")
+    if status not in {"RJCT","PENDING","UNKNOWN"}:
+        raise ValueError("Unsupported fictional status")
     return envelope(event["job_id"],payment_id=request.payment_id,question=request.question,
-        synthetic_xml=request.synthetic_xml,
+        simulated_status=status,synthetic_xml=request.synthetic_xml,
         validation={"status":review_status(checked.model_dump()),
                     "wellFormed":checked.wellFormed,
                     "validSubset":checked.validSubset,
@@ -55,11 +58,13 @@ async def validate_payment(event: dict, go=None) -> dict:
 async def investigate_payment(event: dict, tools=None, go=None, copilot=None) -> dict:
     request=CopilotRequest(payment_id=event["payment_id"],
                           question=event["question"],synthetic_xml=event["synthetic_xml"])
-    result=await (copilot(request) if copilot else run_copilot(request,tools=tools,go=go))
+    java=tools or PaymentTools()
+    await java.ensure_synthetic_payment(event["payment_id"],
+                                        event.get("simulated_status","RJCT"))
+    result=await (copilot(request) if copilot else run_copilot(request,tools=java,go=go))
     if result.synthetic is not True or result.settlement_attested or result.safe_to_retry:
         raise ValueError("AI returned an unsafe payment outcome")
     # Only fictional Java case management; it must be enabled explicitly in local dev.
-    java=tools or PaymentTools()
     payload={"paymentId":event["payment_id"],"actorAlias":"TRAINING-Pipeline"}
     opened=await java.training_case_request("/api/v1/labs/investigation-cases",payload)
     if opened.get("error")==409:

@@ -37,6 +37,9 @@ class Go:
         return GoXMLInspection.model_validate(GO)
 
 class Java:
+    async def ensure_synthetic_payment(self,payment_id,status):
+        assert payment_id=="PAY-10001" and status=="RJCT"
+        return {"id":payment_id,"status":status,"synthetic":True}
     async def training_case_request(self,path,payload=None):
         assert path=="/api/v1/labs/investigation-cases"
         assert payload["paymentId"]=="PAY-10001"
@@ -186,6 +189,8 @@ def test_completed_report_replay_is_noop(tmp_path,monkeypatch):
 
 def test_duplicate_training_case_reused_after_retry():
     class DuplicateJava:
+        async def ensure_synthetic_payment(self,payment_id,status):
+            return {"id":payment_id,"status":status,"synthetic":True}
         async def training_case_request(self,path,payload=None):
             if payload is not None:
                 return {"error":409}

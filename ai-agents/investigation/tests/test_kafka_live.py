@@ -24,9 +24,10 @@ def test_real_kafka_three_stages_and_report_download():
     token=os.environ["COPILOT_API_TOKEN"]
     headers={"Authorization":"Bearer "+token,
              "Idempotency-Key":"LIVE-"+uuid4().hex[:18]}
+    payment_id="PAY-KAFKA-"+uuid4().hex[:16]
     with TestClient(app) as client:
         submission=client.post("/api/pipeline/v1/submissions",json={
-           "payment_id":"PAY-10001",
+           "payment_id":payment_id,"simulated_status":"RJCT",
            "question":"Explain CBPR+ synthetic pacs.008 rejection and Swift status evidence",
            "synthetic_xml":XML},headers=headers)
         assert submission.status_code==202,submission.text
@@ -40,6 +41,8 @@ def test_real_kafka_three_stages_and_report_download():
         assert file.status_code==200
         report=file.json()
         assert report["job_id"]==id
+        assert report["payment_id"]==payment_id
+        assert report["investigation"]["payment_id"]==payment_id
         assert report["synthetic"] and not report["settlement_attested"]
         assert not report["safe_to_retry"]
         assert report["case_id"].startswith("CASE-")
