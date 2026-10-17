@@ -20,6 +20,7 @@ from .tools import PaymentTools
 from .pipeline_store import PipelineStore
 from .kafka_bus import KafkaBus, TOPICS, create_topics
 from .schema_validation import inspect as inspect_base_xsd
+from .ops import record as record_metric
 
 ROLE_IN = {"validate":TOPICS["submitted"],
            "investigate":TOPICS["validated"],
@@ -156,15 +157,19 @@ def run_role(role: str, *, bus=None, store=None, stop_after:int | None=None):
                 # Once completed, never downgrade or regenerate this job.
                 completed=db.read(msg.data["job_id"])
                 if completed is not None and completed["state"]=="COMPLETED":
+                    record_metric(role,"replay",0)
                     broker.ack()
                     seen+=1
                     continue
+                started=time.monotonic()
                 out=process_one(role,msg.data,db)
                 if out is not None:
                     broker.send(ROLE_OUT[role],msg.key,out)
+                record_metric(role,"ok",time.monotonic()-started)
                 broker.ack()
                 seen+=1
             except Exception as exc:
+                record_metric(role,"error",0)
                 handle_error(role,msg.data,exc,broker)
                 db.state(msg.data["job_id"],"REVIEW_REQUIRED")
                 broker.ack()
