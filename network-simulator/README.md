@@ -41,3 +41,7 @@ Run `python -m unittest discover -s network-simulator/tests -v`. GitHub Actions 
 - Full automatic REST/MQ/file round trip with independent bank processes, retries, deduplication across network transport, fault injection and operational dashboards.
 
 This implementation is intentionally one small executable foundation, **not a complete multi-rail network**.
+
+## MQ-style request/reply contract
+
+`mq_adapter.py` provides a transport-neutral `process_once()` for queues exposing `get()` / `put()`. The envelope has the same `action=submit|respond` format as the file adapter. Unit tests exercise both Bank A → Bank B and Bank B → Bank A using a Python in-memory queue. **This is not an IBM MQ or Kafka broker implementation:** no real broker connectivity, transactions, backout/DLQ, TLS, authentication, or queue-manager integration is included yet. Connect those in a separate adapter before using an actual MQ system.
