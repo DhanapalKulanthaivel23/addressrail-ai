@@ -3,7 +3,7 @@ import json
 import os
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 from urllib.parse import urlsplit
-from .network import Network
+from network import Network
 
 def serve(db_path="synthetic-network.sqlite3",host="127.0.0.1",port=8099):
     if host not in {"127.0.0.1","::1"}: raise ValueError("Public bind forbidden")
