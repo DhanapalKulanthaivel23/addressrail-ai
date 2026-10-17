@@ -259,3 +259,16 @@ def get_job(job_id:uuid.UUID,identity=Depends(verify_token)):
         raise HTTPException(404,"Synthetic job not found")
     return {"job_id":str(row[0]),"case_id":str(row[1]),"state":row[2],
             "synthetic":True,"dispatched":False}
+
+@app.get("/v1/tenancy/jobs/{job_id}/pending-event")
+def pending_event(job_id:uuid.UUID,identity=Depends(verify_token)):
+    """Read-only tenant-scoped inspection. Not a Kafka publisher or signed envelope."""
+    enabled();permits(identity,"ADMIN","INVESTIGATOR")
+    with session(identity) as db:
+        row=db.execute("""SELECT event_id,event_type,payload,created_at
+                           FROM saas_outbox WHERE job_id=%s""",(job_id,)).fetchone()
+    if not row:
+        raise HTTPException(404,"Pending synthetic event not found")
+    return {"event_id":str(row[0]),"event_type":row[1],"payload":row[2],
+            "created_at":row[3].isoformat(),"delivery_status":"NOT_DISPATCHED",
+            "synthetic":True,"signed":False}
