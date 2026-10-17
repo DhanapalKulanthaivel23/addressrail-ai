@@ -154,3 +154,23 @@ END $$;
 GRANT USAGE ON SCHEMA public TO addressrail_consumer;
 GRANT SELECT,INSERT ON public.saas_inbox TO addressrail_consumer;
 GRANT SELECT ON public.saas_jobs TO addressrail_consumer;
+
+-- Quarantine records contain safe metadata only; never raw invalid payloads.
+-- The consumer records a rejected event under its independently provisioned
+-- tenant identity. No automatic replay or offset acknowledgement is implied.
+CREATE TABLE IF NOT EXISTS public.saas_quarantine(
+  tenant_id uuid NOT NULL,
+  event_fingerprint text NOT NULL CHECK(event_fingerprint ~ '^[0-9a-f]{64}$'),
+  consumer_name text NOT NULL CHECK(consumer_name ~ '^[a-z0-9_-]{3,48}$'),
+  reason text NOT NULL CHECK(reason IN ('INVALID_ENVELOPE','INVALID_SIGNATURE','TENANT_MISMATCH','UNAUTHORIZED_JOB','UNEXPECTED_EVENT')),
+  first_seen_at timestamptz NOT NULL DEFAULT now(),
+  occurrences bigint NOT NULL DEFAULT 1 CHECK(occurrences>=1),
+  PRIMARY KEY(tenant_id,event_fingerprint,consumer_name)
+);
+ALTER TABLE public.saas_quarantine ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.saas_quarantine FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS saas_quarantine_isolation ON public.saas_quarantine;
+CREATE POLICY saas_quarantine_isolation ON public.saas_quarantine
+ USING(tenant_id = NULLIF(current_setting('app.tenant_id', true),'')::uuid)
+ WITH CHECK(tenant_id = NULLIF(current_setting('app.tenant_id', true),'')::uuid);
+GRANT SELECT,INSERT ON public.saas_quarantine TO addressrail_consumer;
