@@ -45,7 +45,7 @@ async def gemini_explanation(result: InvestigationResult) -> str | None:
     key = os.getenv("GEMINI_API_KEY", "")
     if not key or result.outcome != "EVIDENCE_FOUND" or result.finding.status not in ("RJCT", "PENDING", "UNKNOWN", "ACTC", "ACSC", "SIMULATED", "OTHER"):
         return None
-    model = os.getenv("INVESTIGATION_GEMINI_MODEL", "gemini-3.8-flash")
+    model = os.getenv("INVESTIGATION_GEMINI_MODEL", "gemini-3.5-flash-lite")
     if not re.fullmatch(r"[A-Za-z0-9_.-]{1,80}", model):
         return None
 

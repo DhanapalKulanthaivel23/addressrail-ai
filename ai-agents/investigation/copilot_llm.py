@@ -105,7 +105,7 @@ async def invoke_gemini(result: InvestigationResult, question: str,
                         citations: list[Citation], rules: list[dict],
                         *, client: httpx.AsyncClient | None = None,
                         model: str | None = None, key: str | None = None) -> ModelAttempt:
-    model = model or os.getenv("INVESTIGATION_GEMINI_MODEL","gemini-2.5-flash")
+    model = model or os.getenv("INVESTIGATION_GEMINI_MODEL","gemini-3.5-flash-lite")
     key = key if key is not None else os.getenv("GEMINI_API_KEY","")
     def denied(reason: str, prompt_hash: str = "", response_id=None, body=None, tokens=None):
         return ModelAttempt(None,False,reason,"gemini",model,prompt_hash,response_id,body,tokens)
