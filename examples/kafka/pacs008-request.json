@@ -1,5 +1,6 @@
 {
-  "payment_id": "PAY-10001",
+  "payment_id": "PAY-AR-DEMO-KAFKA-001",
   "question": "Explain fictional CBPR+ pacs.008 rejection and missing postal address rules",
-  "synthetic_xml": "<Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:pacs.008.001.08\"><FIToFICstmrCdtTrf><GrpHdr><MsgId>AR-DEMO-KAFKA-PACS008</MsgId></GrpHdr><CdtTrfTxInf><IntrBkSttlmAmt Ccy=\"EUR\">125.00</IntrBkSttlmAmt><Dbtr><Nm>SYNTHETIC BANK A</Nm><PstlAdr><AdrLine>Test Avenue</AdrLine><Ctry>GB</Ctry></PstlAdr></Dbtr></CdtTrfTxInf></FIToFICstmrCdtTrf></Document>"
+  "synthetic_xml": "<Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:pacs.008.001.08\"><FIToFICstmrCdtTrf><GrpHdr><MsgId>AR-DEMO-KAFKA-PACS008</MsgId></GrpHdr><CdtTrfTxInf><IntrBkSttlmAmt Ccy=\"EUR\">125.00</IntrBkSttlmAmt><Dbtr><Nm>SYNTHETIC BANK A</Nm><PstlAdr><AdrLine>Test Avenue</AdrLine><Ctry>GB</Ctry></PstlAdr></Dbtr></CdtTrfTxInf></FIToFICstmrCdtTrf></Document>",
+  "simulated_status": "RJCT"
 }
