@@ -23,7 +23,7 @@
 - No versioned licensed ISO 20022 XSD, network usage guidelines or signed standards-expert conformance results. Local XML is a teaching subset.
 - No production cloud Kafka cluster, Kafka TLS/SASL/ACLs, schema registry, consumer lag/SLO dashboards, durable outbox, distributed tenant-isolated DLQ, exactly-once processing or disaster recovery.
 - No production customer sign-up, bank SSO/OIDC, complete enterprise multi-tenant system, organisation-scoped API authorisation, billing, commercial contracts or retention controls.
-- No actual real Gemini model outputs recorded during assistant implementation. CI uses deterministic evidence with AI disabled, plus explicitly labelled mocked model tests.
+- Real Gemini run [39032297247](https://github.com/DhanapalKulanthaivel23/addressrail-ai/actions/runs/39032297247) recorded three actual provider responses. Job logs show grounding, relevant citations and rule-ID preservation passed **2/3**, while status preservation, unsafe-claim and human-review checks passed **3/3**. This is partial acceptance, not a passing AI quality assessment. The live evaluation now fails on any rejected sample or failed metric; failed-run artifacts are retained.
 - No hardened public internet deployment of the Java/Go/Python/Kafka stack. GitHub Pages currently serves only the static site. Local H2 and SQLite are not substitutes for secured tenant-scoped PostgreSQL.
 - No independent security/penetration test, DLP certification, payment standards SME approval, procurement or regulatory acceptance.
 

@@ -10,6 +10,7 @@ from datetime import datetime,timezone
 import hashlib
 import json
 import os
+import sys
 from pathlib import Path
 from .models import InvestigationResult,Finding
 from .rag import standard_store
@@ -51,6 +52,17 @@ def evaluate_record(row:dict, recorded:dict)->dict:
         "no_unsafe_claims":not bool(UNSAFE_ACTIONS.search(recorded.get("explanation",""))),
         "human_review":recorded.get("human_review_required") is True,
         "go_ids_preserved":recorded.get("rule_ids")==[r["id"] for r in rules]}
+
+QUALITY_FIELDS = ("valid_grounded", "citations_relevant", "status_preserved",
+                  "no_unsafe_claims", "human_review", "go_ids_preserved")
+
+def live_quality_passed(records: list[dict]) -> bool:
+    """Provider completion alone is not model acceptance or evaluation success."""
+    return bool(records) and all(
+        entry.get("accepted") is True
+        and all(entry.get("evaluation", {}).get(field) is True for field in QUALITY_FIELDS)
+        for entry in records
+    )
 
 def aggregate(records:list[dict])->dict:
     if not records: raise ValueError("No results")
@@ -103,6 +115,7 @@ async def record_live(cases:list[dict], output:Path, limit:int)->dict:
     try:os.chmod(output,0o600)
     except OSError:pass
     return {"recorded":len(results),"path":str(output),
+            "quality_passed":live_quality_passed(results),
             "evaluation":aggregate([entry["evaluation"] for entry in results])}
 
 def main():
@@ -125,6 +138,11 @@ def main():
         return
     if not args.confirm_live_provider_cost or not args.output:
         parser.error("--live requires --confirm-live-provider-cost and --output")
-    print(json.dumps(asyncio.run(record_live(cases,args.output,args.limit))))
+    report = asyncio.run(record_live(cases,args.output,args.limit))
+    print(json.dumps(report))
+    if not report["quality_passed"]:
+        print("Live provider quality gate failed; inspect the retained synthetic evaluation artifact.",
+              file=sys.stderr)
+        raise SystemExit(1)
 if __name__=="__main__":
     main()
