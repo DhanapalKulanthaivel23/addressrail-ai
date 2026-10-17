@@ -107,9 +107,14 @@ def handle_error(role:str,event:dict,exc:Exception,bus):
     message=envelope(event.get("job_id","AR-JOB-invalid"),
        source_role=role,error_code=type(exc).__name__[:64],
        original_topic=ROLE_IN[role],attempt=n+1)
-    # Do not put poison requests back on Kafka without raw payload and no backoff.
-    # Reconcile/replay manually from the original topic after restoring the service.
-    bus.send(TOPICS["deadletter"],event.get("job_id","AR-JOB-invalid"),message)
+    if n<2 and event.get("synthetic") is True:
+        # Acknowledged retry to the same input topic. At-least-once duplicates
+        # are handled by an idempotency key and immutable report persistence.
+        retry={**event,"attempt":n+1}
+        time.sleep(min(2**n,2))
+        bus.send(ROLE_IN[role],event["job_id"],retry)
+    else:
+        bus.send(TOPICS["deadletter"],event.get("job_id","AR-JOB-invalid"),message)
 
 def run_role(role: str, *, bus=None, store=None, stop_after:int | None=None):
     if role not in ROLE_IN:

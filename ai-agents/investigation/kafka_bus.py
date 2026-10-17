@@ -65,8 +65,8 @@ class KafkaBus:
             self.consumer=Consumer({**conf,"group.id":GROUPS[group],
                 "enable.auto.commit":False,"auto.offset.reset":"earliest",
                 "max.poll.interval.ms":300000})
-            self.consumer.subscribe([TOPICS[group if group!="validate" else "submitted"],
-                                     TOPICS["retry"]])
+            input_topic={"validate":"submitted","investigate":"validated","report":"investigated"}[group]
+            self.consumer.subscribe([TOPICS[input_topic]])
 
     def send(self, topic: str, key: str, data: dict):
         if topic not in TOPICS.values() or not re.fullmatch(r"[A-Za-z0-9_-]{3,80}",key):

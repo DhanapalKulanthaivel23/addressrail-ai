@@ -10,6 +10,7 @@ from .agent import investigate
 from .models import InvestigationRequest, InvestigationResult
 from .tools import PaymentTools, PaymentNotFound, CoreUnavailable
 from .copilot_api import router as copilot_router, start_demo_queue, stop_demo_queue
+from .pipeline_api import router as pipeline_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -24,6 +25,7 @@ async def lifespan(app: FastAPI):
 
 app=FastAPI(title="AddressRail AI Investigation Lab (Synthetic)", version="0.2.0", lifespan=lifespan)
 app.include_router(copilot_router)
+app.include_router(pipeline_router)
 
 @app.get("/health")
 def health():
