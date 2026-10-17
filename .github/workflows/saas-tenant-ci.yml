@@ -37,3 +37,17 @@ jobs:
       - run: pip install -r saas/requirements.txt
       - name: Real PostgreSQL row-level security, RS256 and tenant report tests
         run: PYTHONPATH=. python -m pytest -q saas/tests
+      - name: Rehearse PostgreSQL encrypted-transport-free CI-only dump and restore
+        env:
+          POSTGRES_CID: ${{ job.services.postgres.id }}
+        run: |
+          set -euo pipefail
+          docker exec "$POSTGRES_CID" pg_dump -U postgres -d addressrail_test -Fc -f /tmp/saas-training.backup
+          docker exec "$POSTGRES_CID" createdb -U postgres addressrail_restore
+          docker exec "$POSTGRES_CID" pg_restore -U postgres -d addressrail_restore /tmp/saas-training.backup
+          count=$(docker exec "$POSTGRES_CID" psql -U postgres -d addressrail_restore -tAc "SELECT count(*) FROM saas_cases")
+          test "$count" -ge 2
+          rls=$(docker exec "$POSTGRES_CID" psql -U postgres -d addressrail_restore -tAc "SELECT relrowsecurity::text || ':' || relforcerowsecurity::text FROM pg_class WHERE relname='saas_cases'")
+          test "$rls" = 'true:true'
+          echo 'Ephemeral test database dump/restore and FORCE RLS verified.'
+
