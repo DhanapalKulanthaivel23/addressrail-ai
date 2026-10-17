@@ -127,3 +127,30 @@ GRANT SELECT ON public.saas_outbox TO addressrail_dispatcher;
 GRANT UPDATE(dispatched_at) ON public.saas_outbox TO addressrail_dispatcher;
 -- FORCE RLS still applies. A per-tenant dispatcher credential and mandatory
 -- tenant binding by provisioning are required before any external exposure.
+
+-- Durable inbox for synthetic tenant events. A separate authenticated consumer
+-- must verify signatures and tenant identity before recording event IDs.
+CREATE TABLE IF NOT EXISTS public.saas_inbox(
+  tenant_id uuid NOT NULL,
+  event_id uuid NOT NULL,
+  job_id uuid NOT NULL,
+  consumer_name text NOT NULL CHECK(consumer_name ~ '^[a-z0-9_-]{3,48}$'),
+  received_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY(tenant_id,event_id,consumer_name),
+  FOREIGN KEY(tenant_id,job_id) REFERENCES public.saas_jobs(tenant_id,id)
+);
+ALTER TABLE public.saas_inbox ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.saas_inbox FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS saas_inbox_isolation ON public.saas_inbox;
+CREATE POLICY saas_inbox_isolation ON public.saas_inbox
+  USING(tenant_id = NULLIF(current_setting('app.tenant_id', true),'')::uuid)
+  WITH CHECK(tenant_id = NULLIF(current_setting('app.tenant_id', true),'')::uuid);
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='addressrail_consumer') THEN
+    CREATE ROLE addressrail_consumer NOLOGIN NOSUPERUSER NOBYPASSRLS;
+  END IF;
+END $$;
+GRANT USAGE ON SCHEMA public TO addressrail_consumer;
+GRANT SELECT,INSERT ON public.saas_inbox TO addressrail_consumer;
+GRANT SELECT ON public.saas_jobs TO addressrail_consumer;

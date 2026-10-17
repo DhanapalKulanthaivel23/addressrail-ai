@@ -207,3 +207,39 @@ def test_pending_event_inspection_is_tenant_scoped_and_not_dispatched(prepared):
         assert payload["payload"]["case_id"]==cid
         assert payload["delivery_status"]=="NOT_DISPATCHED"
         assert payload["signed"] is False
+
+
+def test_real_postgres_inbox_dedup_and_tenant_isolation(prepared):
+    from saas.event_contract import sign_event
+    from saas.inbox import record_event
+    tenant=TENANT_A
+    with TestClient(app) as c:
+        created=c.post("/v1/tenancy/cases",json=new_payment("INBOX"),headers=token(prepared,tenant))
+        assert created.status_code==201,created.text
+        case_id=created.json()["id"]
+        job=c.post(f"/v1/tenancy/cases/{case_id}/jobs",headers=token(prepared,tenant))
+        assert job.status_code==201,job.text
+        job_id=job.json()["job_id"]
+    payload={"event_type":"SYNTHETIC_JOB_PENDING","tenant_id":tenant,
+             "job_id":job_id,"case_id":case_id,"synthetic":True,
+             "settlement_attested":False,"safe_to_retry":False}
+    key=b"test-only-event-key-longer-than-32-bytes"
+    event=sign_event(event_id=str(uuid.uuid4()),payload=payload,key=key)
+    # CI app login has no write access to inbox; simulate a distinct authorized
+    # test consumer by granting the group role, then revoke on cleanup.
+    with psycopg.connect(os.environ["SAAS_TEST_ADMIN_DSN"],autocommit=True) as admin:
+        admin.execute("GRANT addressrail_consumer TO addressrail_api")
+    try:
+        first=record_event(dsn=os.environ["SAAS_DATABASE_URL"],event=event,
+                           key=key,expected_tenant=tenant,consumer_name="go-validator")
+        second=record_event(dsn=os.environ["SAAS_DATABASE_URL"],event=event,
+                            key=key,expected_tenant=tenant,consumer_name="go-validator")
+        assert first["accepted"] and second["duplicate"]
+        with psycopg.connect(os.environ["SAAS_DATABASE_URL"]) as db:
+            assert db.execute("SELECT count(*) FROM saas_inbox").fetchone()[0]==0
+            with db.transaction():
+                db.execute("SELECT set_config('app.tenant_id',%s,true)",(TENANT_B,))
+                assert db.execute("SELECT count(*) FROM saas_inbox").fetchone()[0]==0
+    finally:
+        with psycopg.connect(os.environ["SAAS_TEST_ADMIN_DSN"],autocommit=True) as admin:
+            admin.execute("REVOKE addressrail_consumer FROM addressrail_api")
