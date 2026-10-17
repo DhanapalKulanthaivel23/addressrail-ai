@@ -89,3 +89,42 @@ Only use this over loopback with a trusted CI or development environment.
 Production requires private tenant propagation, secret rotation, mTLS,
 validated scheme usage guidelines, OIDC JWKS rotation, rate limits,
 audit trails and secure cloud deployment.
+
+
+## Pinned ISO payment -> tenant investigation -> immutable downloadable report
+
+A previously submitted **fictional ISO pacs.008** (created through
+`POST /v1/tenancy/network/iso-pacs008`) can be investigated once the
+private SAA/SAG/network/Bank B simulator returns a **final** business
+outcome. The signed tenant's ADMIN or INVESTIGATOR calls:
+
+`POST /v1/tenancy/network/iso-pacs008/{reference}/investigation`
+
+A pending/unresolved upstream response returns HTTP 409; a missing or
+unsafe upstream result fails closed. The API **never accepts client-supplied
+bank outcomes or reports** on this route. Final BANK_REJECTED is recorded
+as a fictional RJCT case; BANK_ACCEPTED is conservatively UNKNOWN
+because it is **not** settlement evidence.
+
+After a successful POST, the API returns a tenant-scoped case ID and
+`report_url`. A signed user from the **same tenant** can retrieve the
+association via `GET /v1/tenancy/network/iso-pacs008/{reference}/investigation`
+and download the immutable report using the existing
+`GET /v1/tenancy/cases/{case_id}/report`. PostgreSQL FORCE RLS protects
+the ISO-to-case link, case, audit and report. Repeat POSTs return the
+original case/report without regenerating outcomes. The report contains
+the original tenant-visible reference, base-XSD version/checksum, the
+simulated network ACK/business outcome, deterministic explanation,
+evidence fingerprint, two reviewed citations from the existing curated
+knowledge catalogue, and mandatory `requires_human_review=true`,
+`settlement_attested=false`, `safe_to_retry=false`.
+
+**AI scope:** This first integrated milestone deliberately creates a
+deterministic, source-referenced report. The citation selection is a
+fixed, curated evidence lookup, **not semantic RAG retrieval, not a
+live Gemini LLM call and not a claim of Swift CBPR+ conformance**.
+The existing Python investigation/RAG/Gemini components remain separate;
+an independently secured and evaluated bridge to those services is still
+pending. No private proprietary network code or service keys have been
+added to this public repository. The whole flow remains explicitly
+synthetic, local/CI-only and disabled by default.
