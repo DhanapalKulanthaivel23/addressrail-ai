@@ -230,3 +230,27 @@ CREATE POLICY saas_iso_isolation ON public.saas_iso_simulations
 GRANT SELECT,INSERT ON public.saas_iso_simulations TO addressrail_api;
 GRANT UPDATE(remote_message_id,validation_sha256,bridge_state) ON
   public.saas_iso_simulations TO addressrail_api;
+
+
+-- Immutable, tenant-bound association between a completed synthetic ISO
+-- simulation and an automatically generated investigation case/report.
+-- Report content is stored only in saas_reports under its existing FORCE RLS.
+CREATE TABLE IF NOT EXISTS public.saas_iso_investigation_links(
+  tenant_id uuid NOT NULL,
+  client_reference text NOT NULL,
+  case_id uuid NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY(tenant_id,client_reference),
+  UNIQUE(tenant_id,case_id),
+  FOREIGN KEY(tenant_id,client_reference)
+    REFERENCES public.saas_iso_simulations(tenant_id,client_reference),
+  FOREIGN KEY(tenant_id,case_id)
+    REFERENCES public.saas_cases(tenant_id,id)
+);
+ALTER TABLE public.saas_iso_investigation_links ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.saas_iso_investigation_links FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS saas_iso_investigation_isolation ON public.saas_iso_investigation_links;
+CREATE POLICY saas_iso_investigation_isolation ON public.saas_iso_investigation_links
+  USING(tenant_id=NULLIF(current_setting('app.tenant_id',true),'')::uuid)
+  WITH CHECK(tenant_id=NULLIF(current_setting('app.tenant_id',true),'')::uuid);
+GRANT SELECT,INSERT ON public.saas_iso_investigation_links TO addressrail_api;
