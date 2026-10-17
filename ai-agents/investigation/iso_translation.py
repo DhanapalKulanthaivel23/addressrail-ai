@@ -191,6 +191,14 @@ def mx_to_mt(message, allow_metadata_loss=False, schema_dir=None):
     source = ns[len(PREFIX):]
     if source not in VERSIONS:
         return envelope('UNSUPPORTED_MAPPING', source, 'MT103_BLOCK4', output=None)
+    # A definitive failure of a configured base schema must not be converted
+    # into a seemingly usable MT candidate. An unavailable schema is reported
+    # separately, preserving the existing synthetic-only offline demo mode.
+    base_verdict = inspect(message, schema_dir).asdict()
+    if base_verdict['status'] in ('BASE_XSD_INVALID', 'SCHEMA_LOAD_ERROR'):
+        return envelope('SOURCE_SCHEMA_REJECTED', source, 'MT103_BLOCK4',
+                        output=None, base_schema=base_verdict,
+                        limitation='Configured ISO base schema rejected the source.')
     n = {'m':ns}
     def one(path):
         nodes = root.findall(path, n)
@@ -263,5 +271,5 @@ def mx_to_mt(message, allow_metadata_loss=False, schema_dir=None):
     if len(reference)>16 or not all(BIC.fullmatch(parsed[k]) for k in ('52A','57A')):
         raise ValueError('Unsupported reference or agent for MT subset')
     return envelope('LOSSY_REVIEW_CANDIDATE' if lost else 'REVIEW_CANDIDATE',source,'MT103_BLOCK4',
-        output=text,unmapped_metadata=lost,base_schema=inspect(message,schema_dir).asdict(),
+        output=text,unmapped_metadata=lost,base_schema=base_verdict,
         limitation='Block 4 only; listed MX metadata has no mapped MT field. No network headers/trailers.')
