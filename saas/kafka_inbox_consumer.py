@@ -23,10 +23,13 @@ def process_one(*, consumer, dsn, tenant_id, key, name="python-inbox", timeout=1
         raise ValueError("Unexpected or oversized synthetic Kafka event")
     try:
         event=json.loads(message.value())
-    except (ValueError,UnicodeDecodeError) as exc:
+    except (ValueError,UnicodeDecodeError,TypeError) as exc:
         raise ValueError("Malformed event JSON") from exc
-    if not isinstance(event,dict) or str(event.get("event_id",""))!=(
-            message.key().decode("ascii") if message.key() else ""):
+    try:
+        kafka_key=message.key().decode("ascii") if message.key() else ""
+    except (UnicodeDecodeError,AttributeError):
+        raise ValueError("Malformed Kafka event key") from None
+    if not isinstance(event,dict) or str(event.get("event_id",""))!=kafka_key:
         raise ValueError("Event identity does not match Kafka key")
     outcome=record_event(dsn=dsn,event=event,key=key,
                          expected_tenant=tenant_id,consumer_name=name)
