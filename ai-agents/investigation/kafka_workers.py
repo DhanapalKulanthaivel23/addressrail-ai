@@ -122,12 +122,15 @@ def run_role(role: str, *, bus=None, store=None, stop_after:int | None=None):
     broker=bus or KafkaBus(group=role)
     db=store or PipelineStore()
     seen=0
+    idle_polls=0
     try:
         while stop_after is None or seen<stop_after:
             msg=broker.receive(1)
             if not msg:
-                if stop_after is not None:break
+                idle_polls+=1
+                if stop_after is not None and idle_polls>=35:break
                 continue
+            idle_polls=0
             if msg.topic!=ROLE_IN[role]:
                 # A retry topic is not replayed automatically until a durable
                 # attempt log and retry schedule exist; preserve at-least-once safety.
