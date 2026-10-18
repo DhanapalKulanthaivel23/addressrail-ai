@@ -135,6 +135,19 @@
         "tests/workbench-browser.mjs",
         ".github/workflows/pages.yml"
       ]
+    },
+    {
+      "id": "PUB-013",
+      "date": "2026-10-18",
+      "status": "PARTIAL_FEATURES",
+      "title": "AR-063 — Payment Rail workbench as primary entry point with homepage-matched branding",
+      "description": "Restyle the existing React payment workbench to the established AddressRail homepage palette of warm ivory, charcoal navigation, soft-blue actions and copper accents without replacing functional tests or banking logic. Reframe the public repository README as a Payment Rail and Transaction Simulation Learning Platform, make /studio/workbench/ the primary launch URL and preserve existing educational pages. No real networks, bank settlement, live Gemini or official scheme certification.",
+      "evidence": [
+        "apps/workbench/style.css",
+        "README.md",
+        "docs/PUBLIC_PRODUCT_STATUS.md",
+        ".github/workflows/browser-smoke.yml"
+      ]
     }
   ]
 }
