@@ -41,9 +41,10 @@ def test_db_failure_never_commits_offset(monkeypatch):
 def test_mismatched_event_id_never_reaches_database(monkeypatch):
     broker=MagicMock()
     broker.poll.return_value=message(key=str(uuid4()))
+    monkeypatch.setattr(module,"record_quarantine",lambda **kwargs:None)
     monkeypatch.setattr(module,"record_event",
                         lambda **kwargs:pytest.fail("must not write untrusted event"))
-    with pytest.raises(ValueError,match="identity"):
+    with pytest.raises(ValueError,match="Malformed or mismatched"):
         module.process_one(consumer=broker,dsn="test",tenant_id=TENANT,key=KEY)
     broker.commit.assert_not_called()
 
@@ -75,9 +76,13 @@ def test_poison_kafka_input_does_not_touch_inbox_or_commit(monkeypatch,raw_key,r
     msg.value.return_value=raw_body
     broker.poll.return_value=msg
     monkeypatch.setattr(module,"record_event",
-                        lambda **kwargs:pytest.fail("poison event must not reach database"))
+                        lambda **kwargs:pytest.fail("poison event must not reach inbox"))
+    quarantine=[]
+    monkeypatch.setattr(module,"record_quarantine",lambda **kw:quarantine.append(kw))
     with pytest.raises(ValueError):
         module.process_one(consumer=broker,dsn="test",tenant_id=TENANT,key=KEY)
+    assert len(quarantine)==1 and quarantine[0]["reason"]=="INVALID_ENVELOPE"
+    assert quarantine[0]["raw_event"]==raw_body
     broker.commit.assert_not_called()
 
 
