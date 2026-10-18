@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "project": "AddressRail AI public demonstration and customer-facing SaaS",
+  "scope": "PUBLIC_INFORMATION_ONLY",
+  "notice": "This is a public-safe snapshot from known conversations and repository references. Detailed payment network implementation, credentials and internal rulepacks must never be copied into public files.",
+  "events": [
+    {
+      "id": "PUB-001",
+      "date": "2026-10-12",
+      "status": "SYNTHETIC_DEMO",
+      "title": "AddressRail AI payment address quality demonstration",
+      "description": "Synthetic MT103/pacs.008 address checks and JSON report; live public demo scope is narrower than complete banking SaaS.",
+      "evidence": [
+        "conversation:2026-10-12",
+        "https://github.com/DhanapalKulanthaivel23/addressrail-ai"
+      ]
+    },
+    {
+      "id": "PUB-002",
+      "date": "2026-10-13",
+      "status": "PRODUCT_DESIGN",
+      "title": "Payment Studio and banking-intelligence SaaS direction",
+      "description": "Expanded public product plan to address intelligence, multiple rail examples, investigation support, educational content and customer SaaS ideas; not all deployed.",
+      "evidence": [
+        "conversation:2026-10-13"
+      ]
+    },
+    {
+      "id": "PUB-003",
+      "date": "2026-10-15",
+      "status": "PARTIAL_FEATURES",
+      "title": "Multiple public synthetic banking contexts and demo flows",
+      "description": "Public labs and use-case examples expanded while preserving original visual design; simulated examples are not scheme conformance tests.",
+      "evidence": [
+        "conversation:2026-10-15"
+      ]
+    },
+    {
+      "id": "PUB-004",
+      "date": "2026-10-16",
+      "status": "FEATURE_BRANCH_ONLY",
+      "title": "API-driven microservice SaaS demonstration",
+      "description": "Public repository feature PRs worked on payment rail microservices and optional cloud-worker packaging, without proving live external deployment or changing Cloudflare without credentials.",
+      "evidence": [
+        "https://github.com/DhanapalKulanthaivel23/addressrail-ai/pull/2"
+      ]
+    },
+    {
+      "id": "PUB-005",
+      "date": "2026-10-18",
+      "status": "DOCUMENTED",
+      "title": "Public-safe product change and release history",
+      "description": "Add mandatory public product ledger updates on material website, schema, service or public documentation changes. Detailed proprietary rules and connectivity stay private.",
+      "evidence": [
+        "conversation:2026-10-18"
+      ]
+    },
+    {
+      "id": "PUB-006",
+      "date": "2026-10-18",
+      "status": "DOCUMENTED",
+      "title": "AddressRail-owned navigation and offline payments content",
+      "description": "Removed outbound publication hyperlinks and vendor marketing references from public learning pages. Kept first-party AddressRail project pages, user-managed service consoles, synthetic payment scenarios and internal navigation.",
+      "evidence": [
+        "User approval to retain AddressRail-owned pages and signed-in service links"
+      ]
+    },
+    {
+      "id": "PUB-007",
+      "date": "2026-10-18",
+      "status": "DOCUMENTED",
+      "title": "Preserve first-party links and existing website during governance integration",
+      "description": "Limit PR #29 to its public evolution ledger, status, validator and workflow. Defer unrelated offline rebranding, website edits and its new offline-only policy test; preserve all existing website files, first-party links and public URLs exactly as on main. No website deployment is triggered by this documentation and governance change.",
+      "evidence": [
+        "AddressRail public PR #29",
+        "User request to preserve first-party links, Payment Studio, Academy and public URLs and not deploy to production"
+      ]
+    },
+    {
+      "id": "PUB-008",
+      "date": "2026-10-18",
+      "status": "TESTED_SYNTHETIC",
+      "title": "Cover existing backend components in public evolution guard",
+      "description": "The governance gate includes SaaS, network simulator, cloud-worker examples, Go rail engine, Java payments core, investigation agents and deployment packaging. Remove the obsolete invocation of the deferred offline-only branch test; retain and extend append-only and missing-evidence assertions.",
+      "evidence": [
+        "tests/test_public_evolution.py",
+        "AddressRail public PR #29"
+      ]
+    },
+    {
+      "id": "PUB-009",
+      "date": "2026-10-18",
+      "status": "TESTED_SYNTHETIC",
+      "title": "Public synthetic Worker examples integrated without deployment",
+      "description": "PR #2 adds standalone public synthetic Worker examples and D1 orchestration; 103 Node tests and ten local dry-run bundles passed. The manual deployment workflow was not invoked. Existing website, source links and API implementations are preserved; these examples do not connect to original banking networks or establish scheme conformance.",
+      "evidence": [
+        "https://github.com/DhanapalKulanthaivel23/addressrail-ai/pull/2",
+        "bff9e3dd7ed1c65b5284d7f26fee21681508b76c"
+      ]
+    }
+  ]
+}
