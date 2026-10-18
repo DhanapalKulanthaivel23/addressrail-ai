@@ -28,4 +28,4 @@ Set `ADDRESSRAIL_XSD_DIR` to the absolute path of `schemas/iso20022`. No runtime
 - Network BAH/FIN envelopes or Swift profile certification.
 - Tenant Kafka integration and a hosted backend.
 
-Public design references: [ISO catalogue](https://www.iso20022.org/catalogue-messages), [Swift translation services](https://www.swift.com/standards/iso-20022/iso-20022-faqs/translation-services). Public material is used for independent engineering; unavailable or restricted rules are not reverse-invented.
+Public design references: ISO catalogue, Swift translation services. Public material is used for independent engineering; unavailable or restricted rules are not reverse-invented.

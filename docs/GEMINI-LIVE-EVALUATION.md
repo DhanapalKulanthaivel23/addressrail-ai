@@ -17,6 +17,6 @@ The first run was green because it recorded responses without enforcing metric t
 
 Generation now receives exact required rule IDs and an explicitly bounded response schema: empty rule arrays have `minItems=maxItems=0`, populated arrays enumerate only supplied IDs, status is fixed to the recorded status, evidence IDs enumerate supplied references, and citations enumerate retrieved sources. The independent validator still rejects invented IDs, changed status, wrong order, missing human review and unsafe claims even if a provider ignores its schema.
 
-Reference: [Google structured-output documentation](https://ai.google.dev/gemini-api/docs/generate-content/structured-output?hl=en). Generation constraints supplement independent checking and do not establish semantic correctness.
+Reference: Google structured-output documentation. Generation constraints supplement independent checking and do not establish semantic correctness.
 
 Live acceptance remains incomplete until the corrected code is exercised against the real provider and every metric passes. Secrets are read only inside GitHub Actions; no secret was downloaded or copied from chat.

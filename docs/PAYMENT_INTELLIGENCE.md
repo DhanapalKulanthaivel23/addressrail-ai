@@ -62,13 +62,13 @@ GitHub Actions runs every JavaScript test using `node --test tests/*.test.mjs`, 
 
 ## Primary reference material
 
-- [SWIFT — ISO 20022 / CBPR+](https://www.swift.com/standards/iso-20022/iso-20022-programme)
-- [SWIFT gpi for Corporates developer reference](https://docs.developer.swift.com/docs/api-guides/gpi-for-corporates-api/gpi-for-corporates-api-reference)
-- [European Payments Council payment schemes](https://www.europeanpaymentscouncil.eu/what-we-do/epc-payment-scheme-management/what-payment-scheme)
-- [Bank of England — CHAPS and RTGS](https://www.bankofengland.co.uk/payment-and-settlement/a-brief-introduction-to-the-real-time-gross-settlement-system-and-chaps)
-- [Pay.UK payment systems](https://www.wearepay.uk/what-we-do/payment-systems/)
-- [ECB — TARGET services](https://www.ecb.europa.eu/paym/target/html/index.en.html)
-- [EBA CLEARING](https://www.ebaclearing.eu/)
-- [Sveriges Riksbank — RIX](https://www.riksbank.se/en-gb/payments--cash/the-payment-system---rix/)
-- [KIR — Polish payment clearing](https://www.kir.pl/en/clearing)
-- [Danmarks Nationalbank — payments infrastructure](https://www.nationalbanken.dk/en/what-we-do/safe-and-efficient-payments/the-payments-infrastructure-in-denmark)
+- SWIFT — ISO 20022 / CBPR+
+- SWIFT gpi for Corporates developer reference
+- European Payments Council payment schemes
+- Bank of England — CHAPS and RTGS
+- Pay.UK payment systems
+- ECB — TARGET services
+- EBA CLEARING
+- Sveriges Riksbank — RIX
+- KIR — Polish payment clearing
+- Danmarks Nationalbank — payments infrastructure

@@ -30,7 +30,7 @@ test("public page includes non-conformance warnings and local-only lab pointer",
  const h=readFileSync("web/studio/chaps/index.html","utf8");
  const js=readFileSync("web/studio/chaps/lab.mjs","utf8");
  assert.match(h,/deliberately incomplete teaching sketch/);
- assert.match(h,/Bank of England/);
+ assert.match(h,/UK high-value payments operator/);
  assert.match(h,/payments-core\/README.md/);
  assert.doesNotMatch(js,/fetch\(/);
  assert.doesNotMatch(js,/innerHTML\s*=/);

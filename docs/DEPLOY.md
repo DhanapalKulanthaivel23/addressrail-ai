@@ -24,14 +24,14 @@ The public site **never receives the Gemini secret key**. Do not upload real cus
 
 ## Step 1: Gemini free-tier key
 
-1. Open [Google AI Studio API keys](https://aistudio.google.com/api-keys).
+1. Open Google AI Studio API keys (provider dashboard).
 2. Create a key in a Google Cloud project eligible for Gemini API free tier.
 3. Keep the key private. Do not enter it in ChatGPT, JavaScript or GitHub code.
 4. Check current free-tier model access/rate limits for `gemini-3.1-flash-lite` in AI Studio.
 
 ## Step 2: Cloudflare Turnstile
 
-1. Open [Cloudflare Turnstile](https://dash.cloudflare.com/) and add a new widget.
+1. Open Cloudflare Turnstile (provider dashboard) and add a new widget.
 2. Restrict allowed hostname to `dhanapalkulanthaivel23.github.io`.
 3. Save its **public site key** and **private secret key** separately.
 4. The frontend uses the public site key obtained from `GET /api/config`.
@@ -41,7 +41,7 @@ Turnstile alone does not guarantee a human tester, but it helps protect the Gemi
 
 ## Step 3: Deploy on Render (free web service option)
 
-1. Open [Render Dashboard](https://dashboard.render.com/) and sign in.
+1. Open Render Dashboard (provider dashboard) and sign in.
 2. Select **New → Blueprint** and connect the `DhanapalKulanthaivel23/addressrail-ai` GitHub repository. The repository contains `render.yaml`.
 3. Review the service name `addressrail-ai-gemini`, free plan, build/start commands and region before approving.
 4. Configure **secret environment variables on Render, never GitHub Pages**:
@@ -49,7 +49,7 @@ Turnstile alone does not guarantee a human tester, but it helps protect the Gemi
    - `TURNSTILE_SITE_KEY`: Cloudflare **public** site key
    - `TURNSTILE_SECRET_KEY`: Cloudflare secret
 5. After credentials are saved, change `ENABLE_AI` from `false` to `true` in the Render service environment and deploy again.
-6. Open `https://YOUR-SERVICE.onrender.com/api/health` and `/api/config`. Verify `aiEnabled=true`. The public config displays the site key but must not contain either private key.
+6. Open `/api/health` and `/api/config` on your deployed backend. Verify `aiEnabled=true`. The public config displays the site key but must not contain either private key.
 
 **Render is a separate hosting platform**, even when using a free instance. Free services may sleep when idle; quotas, bandwidth and billing policies apply. Do not rely on the free service for production or regulated data.
 
@@ -65,7 +65,7 @@ For manual setup instead of Blueprint:
 In `web/config.js`, set:
 
 ```js
-window.ADDRESSRAIL_API_URL = 'https://YOUR-SERVICE.onrender.com';
+window.ADDRESSRAIL_API_URL = 'https://<your-addressrail-backend-host>';
 ```
 
 Commit the change. GitHub Pages will redeploy from `main`. This URL is public and contains **no secrets**.
@@ -96,10 +96,4 @@ node --check web/app.js
 
 Gemini API free tier is offered subject to eligible model/account/region and project rate limits; free-tier data can be used for product improvement. Render also has free-plan limits, and services could incur charges depending on your plan/payment method. Both are separate from GitHub Pages.
 
-Official resources:
-- https://ai.google.dev/gemini-api/docs/pricing
-- https://ai.google.dev/gemini-api/docs/billing
-- https://ai.google.dev/gemini-api/docs/api-key
-- https://developers.cloudflare.com/turnstile/get-started/
-- https://render.com/docs/deploy-fastapi
-- https://render.com/docs/free
+Operational reference: provider-specific setup and billing details are accessed from the relevant signed-in service dashboards. The public AddressRail project links above must remain intact.
