@@ -1,0 +1,21 @@
+name: Public demo TypeScript and contracts
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build:demo
+      - run: git diff --exit-code -- web/studio/shared/*.mjs
+      - run: npm run test:contracts
+      - run: node --test tests/product-registry.test.mjs

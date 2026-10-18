@@ -97,6 +97,18 @@
         "https://github.com/DhanapalKulanthaivel23/addressrail-ai/pull/2",
         "bff9e3dd7ed1c65b5284d7f26fee21681508b76c"
       ]
+    },
+    {
+      "id": "PUB-010",
+      "date": "2026-10-18",
+      "status": "PARTIAL_FEATURES",
+      "title": "AR-060 \u2014 typed registry and reproducible public execution integration",
+      "description": "Begin AR-060 incrementally in the existing cross-rail lab with typed public product metadata, expandable registry-driven navigation, bounded deterministic execution evidence and explicit AI fallback. Preserve private engines and existing URLs. Full SaaS integration, official standards validation and public API deployment remain incomplete.",
+      "evidence": [
+        "docs/AR-060-INTEGRATION.md",
+        "tests/product-registry.test.mjs",
+        "tests/demo-contract.test.ts"
+      ]
     }
   ]
 }

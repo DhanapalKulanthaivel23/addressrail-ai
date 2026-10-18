@@ -19,3 +19,5 @@ node_modules/
 .wrangler/
 .dev.vars*
 cloudflare/payment-microservices/wrangler.gateway.deploy.toml
+
+.demo-build/

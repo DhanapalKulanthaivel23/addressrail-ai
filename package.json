@@ -2,10 +2,16 @@
   "name": "addressrail-synthetic-checks",
   "private": true,
   "scripts": {
-    "test": "node --test tests/*.test.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "build:demo": "node scripts/build-demo.mjs",
+    "test:contracts": "vitest run tests/demo-contract.test.ts",
+    "test:browser": "node tests/browser-smoke.mjs"
   },
   "devDependencies": {
     "miniflare": "5.20261012.1-beta",
+    "playwright": "^1.64.1",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11",
     "wrangler": "4.151.1"
   }
 }

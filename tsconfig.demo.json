@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "allowJs": true,
+    "checkJs": false,
+    "strict": true,
+    "noEmitOnError": true,
+    "outDir": ".demo-build",
+    "rootDir": "web/studio"
+  },
+  "include": [
+    "web/studio/shared/*.mts",
+    "web/studio/shared/contracts.ts"
+  ]
+}

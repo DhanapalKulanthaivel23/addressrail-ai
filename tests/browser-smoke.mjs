@@ -22,6 +22,11 @@ try{
  assert.equal((JSON.parse(await page.locator("#json-editor").inputValue())).currency,"SEK");
  await page.locator("#validate").click();
  assert.equal(await page.locator("#download-report").isDisabled(),false);
+ assert.equal(await page.locator('#rail-list > details').count(),4);
+ const step=page.locator('#execution-evidence details').nth(1);
+ await step.locator('summary').click();
+ assert.match(await step.locator('pre').textContent(),/correlationReference/);
+ assert.match(await page.locator('#execution-evidence').textContent(),/DETERMINISTIC_FALLBACK/);
  const reportWait=page.waitForEvent("download");
  await page.locator("#download-report").click();
  const reportDownload=await reportWait;

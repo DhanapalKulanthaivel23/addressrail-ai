@@ -1,6 +1,8 @@
+import {PRODUCT_GROUPS,getProduct} from '../shared/product-registry.mjs';
+import {executeDemo} from '../shared/demo-engine.mjs';
 import {RAILS,FORMATS,getRail,listRails,currencyOptionsForRail,defaultCurrencyForRail} from "./catalog.mjs";
 import {
- SCENARIOS,generateFixture,validateFixture,applyEvidenceRepair,isUetr
+ SCENARIOS,generateFixture,applyEvidenceRepair,isUetr
 } from "./engine.mjs";
 import {
  MESSAGE_FAMILIES,teachingMessage,traceByUetr,serializeReport
@@ -22,6 +24,7 @@ let currentProposal=null;
 function feedback(msg){$("run-status").textContent=msg}
 function disableExports(){
  currentReport=null;currentOutput="";currentProposal=null;
+ $("execution-evidence")?.replaceChildren();
  $("download-report").disabled=true;$("send-case").disabled=true;
  $("download-message").disabled=true;
  $("repair-panel").hidden=true;
@@ -59,11 +62,17 @@ function replaceRailList(){
  selected.value=currentRail;
   $("load-fixture").disabled=false;$("validate").disabled=false;
   $("build-message").disabled=false;
- for(const rail of matching){
-  const b=button(rail.name,()=>chooseRail(rail.id));
-  b.setAttribute("aria-current",String(rail.id===currentRail));
-  b.append(text("span",rail.kind));
-  list.append(b);
+ for(const group of PRODUCT_GROUPS){
+  const children=matching.filter(r=>group.children.includes(r.id));
+  if(!children.length)continue;
+  const section=document.createElement('details');section.open=children.some(r=>r.id===currentRail);
+  section.append(text('summary',group.icon+' '+group.name));
+  for(const rail of children){
+   const product=getProduct(rail.id),item=button(product.name,()=>chooseRail(rail.id));
+   item.dataset.product=rail.id;item.setAttribute('aria-current',String(rail.id===currentRail));
+   item.append(text('span',product.implementation.status+' · '+rail.kind));section.append(item);
+  }
+  list.append(section);
  }
  renderRailFacts();
  return true;
@@ -81,7 +90,7 @@ function renderRailFacts(){
  $("rail-reference").href=rail.reference;
  const option=$("rail").querySelector('option[value="'+rail.id+'"]');
  if(option)$("rail").value=rail.id;
- for(const b of $("rail-list").children)b.setAttribute("aria-current",String(b.firstChild?.textContent===rail.name));
+ for(const b of $("rail-list").querySelectorAll("[data-product]"))b.setAttribute("aria-current",String(b.dataset.product===rail.id));
 }
 function chooseRail(id){
  getRail(id);
@@ -183,7 +192,9 @@ function renderIssues(report){
 function validate(){
  try{
   const model=readModel();
-  const report=validateFixture(model);
+  const execution=executeDemo({contractVersion:1,synthetic:true,productId:currentRail,
+   scenarioId:model.scenario,syntheticEpoch:'2026-10-18T00:00:00.000Z',payload:model});
+  const report=execution.report;renderExecution(execution);
   currentMessage=model;
   currentReport=report;
   renderIssues(report);
@@ -320,3 +331,19 @@ $("send-case").addEventListener("click",()=>{
 if(new URLSearchParams(window.location.search).get("beginner")==="1")$("beginner-mode").value="essentials";
 replaceRailList();
 loadSynthetic();
+
+function renderExecution(execution){
+ const root=$('execution-evidence');root.replaceChildren();
+ const product=getProduct(currentRail);
+ root.append(text('h3',product.name+' · '+product.implementation.status));
+ root.append(text('p','Actual local execution stages. Scenario timelines are illustrative input evidence.'));
+ for(const step of execution.steps){
+  const detail=document.createElement('details');
+  detail.append(text('summary',step.id+' → '+step.result+' · '+step.syntheticTimestamp));
+  detail.append(text('pre',JSON.stringify(step,null,2)));root.append(detail);
+ }
+ for(const [title,value] of [['AI explanation · '+execution.ai.status,execution.ai],['Registry capabilities and limitations',product]]){
+  const detail=document.createElement('details');detail.append(text('summary',title));
+  detail.append(text('pre',JSON.stringify(value,null,2)));root.append(detail);
+ }
+}
