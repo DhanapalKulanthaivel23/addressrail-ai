@@ -7,7 +7,7 @@ import {executeDemo} from '../web/studio/shared/demo-engine.mjs';
 test('public TypeScript execution contract produces identical results in workerd and browser-compatible module',async()=>{
  const root=new URL('../web/studio/',import.meta.url);
  const files=['shared/demo-engine.mjs','shared/product-registry.mjs','payment-intelligence/engine.mjs','payment-intelligence/catalog.mjs'];
- const mf=new Miniflare(convertV4MiniflareOptions({modules:[
+ const mf=new Miniflare(convertV4MiniflareOptions({modulesRoot:'/virtual',modules:[
   {type:'ESModule',path:'/virtual/entry.mjs',contents:"import {executeDemo} from './shared/demo-engine.mjs';export default {async fetch(request){return Response.json(executeDemo(await request.json()))}}"},
   ...files.map(file=>({type:'ESModule',path:'/virtual/'+file,contents:readFileSync(new URL(file,root),'utf8')}))
  ],compatibilityDate:'2026-10-01'}));
