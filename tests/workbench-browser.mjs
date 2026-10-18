@@ -5,7 +5,7 @@ const browser=await chromium.launch({headless:true});
 const errors=[];
 try{
  const context=await browser.newContext({acceptDownloads:true});const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
- await page.goto('http://127.0.0.1:8765/studio/workbench/');
+ await page.goto((process.env.WORKBENCH_URL || 'http://127.0.0.1:8765/studio/workbench/'));
  const palette=await page.evaluate(()=>({
   background:getComputedStyle(document.body).backgroundColor,
   sidebar:getComputedStyle(document.querySelector('aside')).backgroundColor,
@@ -66,7 +66,7 @@ try{
  await page.screenshot({path:'/tmp/addressrail-workbench-mobile.png',fullPage:true});
  await page.setViewportSize({width:1440,height:1000});await page.screenshot({path:'/tmp/addressrail-workbench-desktop.png',fullPage:true});
  const isolated=await browser.newContext();await isolated.addInitScript(()=>{Object.defineProperty(window,'indexedDB',{get(){throw Error('blocked')}})});
- const blocked=await isolated.newPage();await blocked.goto('http://127.0.0.1:8765/studio/workbench/');
+ const blocked=await isolated.newPage();await blocked.goto((process.env.WORKBENCH_URL || 'http://127.0.0.1:8765/studio/workbench/'));
  await blocked.getByRole('button',{name:'Validate / simulate checks'}).click();
  await blocked.getByRole('status').filter({hasText:'execution complete'}).waitFor();
  assert.equal(errors.length,0,errors.join('\n'));
