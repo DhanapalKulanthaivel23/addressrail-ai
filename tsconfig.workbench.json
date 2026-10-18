@@ -20,6 +20,7 @@
   },
   "include": [
     "apps/workbench/main.tsx",
+    "apps/workbench/learning-tools.tsx",
     "apps/workbench/storage.ts"
   ]
 }

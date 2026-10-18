@@ -102,7 +102,7 @@
       "id": "PUB-010",
       "date": "2026-10-18",
       "status": "PARTIAL_FEATURES",
-      "title": "AR-060 \u2014 typed registry and reproducible public execution integration",
+      "title": "AR-060 — typed registry and reproducible public execution integration",
       "description": "Begin AR-060 incrementally in the existing cross-rail lab with typed public product metadata, expandable registry-driven navigation, bounded deterministic execution evidence and explicit AI fallback. Preserve private engines and existing URLs. Full SaaS integration, official standards validation and public API deployment remain incomplete.",
       "evidence": [
         "docs/AR-060-INTEGRATION.md",
@@ -114,12 +114,26 @@
       "id": "PUB-011",
       "date": "2026-10-18",
       "status": "PARTIAL_FEATURES",
-      "title": "AR-061 \u2014 shared React payment workbench with executed flow evidence",
+      "title": "AR-061 — shared React payment workbench with executed flow evidence",
       "description": "Add an incremental React/TypeScript/Vite/Tailwind/Lucide workbench using the public registry and existing deterministic engine, side-by-side synthetic JSON editors, review-and-revalidate correction, execution-derived React Flow nodes and arrows, explicit AI fallback, BLOCKED unsupported conversion, downloads and IndexedDB draft recovery. Existing pages remain accessible. Full message conversion, anonymous APIs, private adapters and official validation remain pending.",
       "evidence": [
         "apps/workbench/main.tsx",
         "tests/workbench-browser.mjs",
         ".github/workflows/demo-contracts.yml"
+      ]
+    },
+    {
+      "id": "PUB-012",
+      "date": "2026-10-18",
+      "status": "PARTIAL_FEATURES",
+      "title": "AR-062 — public no-login AML and channel learning tool integration",
+      "description": "Extend the existing React workbench rather than replace it. Add cross-rail AddressTune panel, deterministic fictional-name watchlist screening with temporary in-browser entries, and labelled REST/MQ/Kafka/File/SFTP synthetic handoff demonstrations. Add unit and Playwright checks and rebuild the workbench from source in CI and the Pages release workflow. No live sanctions providers, actual brokers, Gemini API, real bank networks or complete message formats are implemented by this change.",
+      "evidence": [
+        "web/studio/shared/learning-tools.mjs",
+        "apps/workbench/learning-tools.tsx",
+        "tests/learning-tools.test.mjs",
+        "tests/workbench-browser.mjs",
+        ".github/workflows/pages.yml"
       ]
     }
   ]
