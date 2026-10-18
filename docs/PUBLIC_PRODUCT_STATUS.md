@@ -55,3 +55,9 @@ The primary no-login public product is now documented as the [Payment Rail / Tra
 ## Workbench palette delivery correction (18 October 2026)
 
 Refresh committed workbench build assets from the latest AR-063 source, preserving the warm ivory, charcoal and soft-blue homepage theme and AR-062 learning tools. Set the initial page canvas and browser theme to warm ivory as well.
+
+## Protected Gemini workbench integration (18 October 2026)
+
+PARTIAL: optional Ask Gemini after synthetic CBPR+, SCT, SCT Inst, SDD Core and SDD B2B checks uses the existing Render endpoint with explicit consent, Turnstile verification and server quotas. Only the rail, executed stages and bounded finding codes are sent, excluding payment fields. Successful provider/model provenance is shown separately from unchanged deterministic execution; failures remain explicit fallback. No knowledge retrieval is invoked and no RAG citations are fabricated. Human review is required and AI cannot apply corrections or authorise payments.
+
+Validation: TypeScript/Vite build, 23 Python tests, 111 JavaScript tests, existing browser regression suite and mocked-provider five-rail browser coverage pass locally. Mocked tests do not establish a real Gemini call. GitHub Pages publication and the Render backend revision require post-merge verification; this entry does not claim either deployment has completed.
