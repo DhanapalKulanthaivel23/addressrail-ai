@@ -57,3 +57,6 @@ pre{color:#334d5c}
 [role="alert"]{color:#a13232}
 footer{color:#776f65}
 @media(max-width:600px){aside{border-right:0;border-bottom:1px solid #443b33}}
+
+/* Apply the homepage palette immediately, including initial canvas paint. */
+html{background:#f5f0e8;color-scheme:light}

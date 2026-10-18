@@ -102,7 +102,7 @@
       "id": "PUB-010",
       "date": "2026-10-18",
       "status": "PARTIAL_FEATURES",
-      "title": "AR-060 — typed registry and reproducible public execution integration",
+      "title": "AR-060 \u2014 typed registry and reproducible public execution integration",
       "description": "Begin AR-060 incrementally in the existing cross-rail lab with typed public product metadata, expandable registry-driven navigation, bounded deterministic execution evidence and explicit AI fallback. Preserve private engines and existing URLs. Full SaaS integration, official standards validation and public API deployment remain incomplete.",
       "evidence": [
         "docs/AR-060-INTEGRATION.md",
@@ -114,7 +114,7 @@
       "id": "PUB-011",
       "date": "2026-10-18",
       "status": "PARTIAL_FEATURES",
-      "title": "AR-061 — shared React payment workbench with executed flow evidence",
+      "title": "AR-061 \u2014 shared React payment workbench with executed flow evidence",
       "description": "Add an incremental React/TypeScript/Vite/Tailwind/Lucide workbench using the public registry and existing deterministic engine, side-by-side synthetic JSON editors, review-and-revalidate correction, execution-derived React Flow nodes and arrows, explicit AI fallback, BLOCKED unsupported conversion, downloads and IndexedDB draft recovery. Existing pages remain accessible. Full message conversion, anonymous APIs, private adapters and official validation remain pending.",
       "evidence": [
         "apps/workbench/main.tsx",
@@ -126,7 +126,7 @@
       "id": "PUB-012",
       "date": "2026-10-18",
       "status": "PARTIAL_FEATURES",
-      "title": "AR-062 — public no-login AML and channel learning tool integration",
+      "title": "AR-062 \u2014 public no-login AML and channel learning tool integration",
       "description": "Extend the existing React workbench rather than replace it. Add cross-rail AddressTune panel, deterministic fictional-name watchlist screening with temporary in-browser entries, and labelled REST/MQ/Kafka/File/SFTP synthetic handoff demonstrations. Add unit and Playwright checks and rebuild the workbench from source in CI and the Pages release workflow. No live sanctions providers, actual brokers, Gemini API, real bank networks or complete message formats are implemented by this change.",
       "evidence": [
         "web/studio/shared/learning-tools.mjs",
@@ -140,13 +140,25 @@
       "id": "PUB-013",
       "date": "2026-10-18",
       "status": "PARTIAL_FEATURES",
-      "title": "AR-063 — Payment Rail workbench as primary entry point with homepage-matched branding",
+      "title": "AR-063 \u2014 Payment Rail workbench as primary entry point with homepage-matched branding",
       "description": "Restyle the existing React payment workbench to the established AddressRail homepage palette of warm ivory, charcoal navigation, soft-blue actions and copper accents without replacing functional tests or banking logic. Reframe the public repository README as a Payment Rail and Transaction Simulation Learning Platform, make /studio/workbench/ the primary launch URL and preserve existing educational pages. No real networks, bank settlement, live Gemini or official scheme certification.",
       "evidence": [
         "apps/workbench/style.css",
         "README.md",
         "docs/PUBLIC_PRODUCT_STATUS.md",
         ".github/workflows/browser-smoke.yml"
+      ]
+    },
+    {
+      "id": "PUB-014",
+      "date": "2026-10-18",
+      "status": "PARTIAL_FEATURES",
+      "title": "Publish refreshed homepage-matched workbench assets",
+      "description": "Rebuild and commit the current AR-062/AR-063 workbench assets from the latest source so static previews and GitHub Pages both receive the warm ivory, charcoal and soft-blue theme. Set the initial page canvas and browser theme to warm ivory and preserve the newer screening and channel tools.",
+      "evidence": [
+        "apps/workbench/style.css",
+        "apps/workbench/index.html",
+        "tests/workbench-browser.mjs"
       ]
     }
   ]

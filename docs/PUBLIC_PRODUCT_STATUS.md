@@ -51,3 +51,7 @@ PARTIAL: The existing no-login React payment workbench now includes a cross-rail
 ## AR-063 — Payment Rail workbench branded as the primary UI (18 October 2026)
 
 The primary no-login public product is now documented as the [Payment Rail / Transaction Simulation Workbench](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/workbench/). Its React UI adopts the homepage's warm ivory background, dark charcoal left navigation, sky-blue action accents and copper highlights without changing payment execution logic. README starts with the workbench and accurately distinguishes browser simulations from real messaging and certification. The legacy homepage and educational routes remain accessible. No new full standards validation, live Gemini, actual MQ, SWIFT settlement or public backend deployment is claimed.
+
+## Workbench palette delivery correction (18 October 2026)
+
+Refresh committed workbench build assets from the latest AR-063 source, preserving the warm ivory, charcoal and soft-blue homepage theme and AR-062 learning tools. Set the initial page canvas and browser theme to warm ivory as well.
