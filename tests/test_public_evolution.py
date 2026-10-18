@@ -10,7 +10,7 @@ class PublicEvolutionTests(unittest.TestCase):
     def test_public_safe_history_is_chronological(self):
         self.assertGreaterEqual(validate(DATA),5)
         self.assertEqual(DATA["events"][0]["date"],"2026-10-12")
-        self.assertIn("private",DATA["notice"].lower())
+        self.assertIn("internal rulepacks",DATA["notice"].lower())
     def test_ui_change_requires_new_event_and_updated_state(self):
         old=copy.deepcopy(DATA);old["events"]=old["events"][:-1]
         r=assess(old,DATA,["index.html",LEDGER,STATE])
