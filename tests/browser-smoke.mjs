@@ -147,7 +147,7 @@ try{
   await commentsPage.goto(base+path);
   await commentsPage.locator("#comments .ra-comment-form").waitFor({state:"attached"});
   assert.equal(await commentsPage.locator("#comments").count(),1,path);
-  assert.equal(await commentsPage.locator("#ra-comment-name").count(),1,path);
+  // Current comment form intentionally collects comment text only, not a display name.\n  assert.equal(await commentsPage.locator("#ra-comment-name").count(),0,path);
   assert.equal(await commentsPage.locator("#ra-comment-message").count(),1,path);
   assert.equal(await commentsPage.locator("#comments .ra-comment-submit").isDisabled(),true,
    "Local visitor must not get a fake shared-comment submission: "+path);

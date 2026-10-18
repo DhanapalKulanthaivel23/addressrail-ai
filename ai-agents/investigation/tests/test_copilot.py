@@ -266,3 +266,37 @@ def test_event_driven_copilot_queue_api_is_opt_in(monkeypatch):
         assert final["result"]["safe_to_retry"] is False
         assert client.get("/api/copilot/v1/jobs/AR-JOB-not-found",headers=headers).status_code==404
     assert copilot_api._job_queue is None
+
+@pytest.mark.parametrize('rules', [[], [XML_ERROR]])
+def test_generation_schema_cannot_request_invented_rule_ids(monkeypatch, rules):
+    monkeypatch.setenv('INVESTIGATION_ENABLE_GEMINI', 'true')
+    captured=[]
+    def handler(request):
+        payload=json.loads(request.content)
+        captured.append(payload)
+        # Deliberately violate the schema: independent validation still rejects.
+        body={'payment_status':'RJCT', 'evidence_refs':['AR-DEMO-EVT-4'],
+              'rule_ids':['RULE-BOE-DELAY'], 'citation_ids':['SWIFT-SR2026-DELAY'],
+              'explanation':'Synthetic payment evidence requires further human investigation.',
+              'human_review_required':True}
+        return httpx.Response(200,json={'responseId':'mock-only',
+            'candidates':[{'finishReason':'STOP','content':{'parts':[{'text':json.dumps(body)}]}}]})
+    result=InvestigationResult(payment_id='PAY-10001',payment_status='RJCT',
+        last_event_type='RJCT', outcome='EVIDENCE_FOUND', finding=Finding(
+            status='RJCT',explanation='Fictional rejection',recommended_action='Human review',
+            evidence_refs=['AR-DEMO-EVT-4']))
+    async def run():
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+            return await invoke_gemini(result,'Explain deferred Swift CBPR+ release timing',
+                standard_store().search('deferred Swift CBPR+ release timing',rail='CBPR'),
+                rules,client=client,key='test-only-not-real')
+    outcome=asyncio.run(run())
+    assert not outcome.accepted
+    schema=captured[0]['generationConfig']['responseSchema']['properties']
+    assert schema['payment_status']['enum']==['RJCT']
+    assert schema['rule_ids']['minItems']==schema['rule_ids']['maxItems']==len(rules)
+    if rules:
+        assert schema['rule_ids']['items']['enum']==['XML-ADDR-ORDER']
+    assert schema['evidence_refs']['items']['enum']==['AR-DEMO-EVT-4']
+    prompt=json.loads(captured[0]['contents'][0]['parts'][0]['text'])
+    assert prompt['required_rule_ids']==[r['id'] for r in rules]

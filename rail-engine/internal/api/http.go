@@ -62,7 +62,11 @@ func decode(w http.ResponseWriter, r *http.Request, size int64, v any) bool {
 	}
 	return true
 }
-func NewHandler() http.Handler {
+func NewHandler() http.Handler { return NewHandlerForRail("") }
+
+// NewHandlerForRail optionally restricts one independently running local Go
+// instance to one teaching profile, without duplicating the rule implementation.
+func NewHandlerForRail(profile string) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "GET" {
@@ -70,11 +74,15 @@ func NewHandler() http.Handler {
 			errorResponse(w, 405, "Method not allowed.")
 			return
 		}
-		response(w, 200, map[string]any{"ok": true, "service": "addressrail-go-rail-engine", "version": rails.Version, "scope": "synthetic-only"})
+		response(w, 200, map[string]any{"ok": true, "service": "addressrail-go-rail-engine", "version": rails.Version, "scope": "synthetic-only", "railProfile": profile})
 	})
 	mux.HandleFunc("/v1/validate", func(w http.ResponseWriter, r *http.Request) {
 		var input rails.ValidationRequest
 		if !decode(w, r, limitSingle, &input) {
+			return
+		}
+		if profile != "" && input.Rail != profile {
+			errorResponse(w, 422, "Request rail differs from this synthetic service profile.")
 			return
 		}
 		response(w, 200, rails.Validate(input))
@@ -82,6 +90,10 @@ func NewHandler() http.Handler {
 	mux.HandleFunc("/v1/xml/inspect", func(w http.ResponseWriter, r *http.Request) {
 		var input rails.XMLRequest
 		if !decode(w, r, limitSingle, &input) {
+			return
+		}
+		if profile != "" && input.Rail != profile {
+			errorResponse(w, 422, "XML inspection rail differs from this synthetic profile.")
 			return
 		}
 		response(w, 200, rails.InspectXML(input))
@@ -101,6 +113,14 @@ func NewHandler() http.Handler {
 		if len(batch) < 1 || len(batch) > 100 {
 			errorResponse(w, 422, "Batch must contain 1 to 100 fictional payments.")
 			return
+		}
+		if profile != "" {
+			for _, item := range batch {
+				if item.Rail != profile {
+					errorResponse(w, 422, "Batch contains a different synthetic service rail.")
+					return
+				}
+			}
 		}
 		results := make([]rails.ValidationResponse, len(batch))
 		workers := runtime.GOMAXPROCS(0) * 2

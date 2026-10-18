@@ -1,0 +1,16 @@
+{
+  "schemas": {
+    "urn:iso:std:iso:20022:tech:xsd:pacs.008.001.14": {
+      "file": "pacs.008.001.14.xsd",
+      "sha256": "e054014aabeb99ba0a59ddaaa9d925eb717f3c75e591551f246bddebc0764306",
+      "version": "ISO-published-pacs.008.001.14-2026-03-19",
+      "source_url": "https://www.iso20022.org/message/23500/download"
+    },
+    "urn:iso:std:iso:20022:tech:xsd:pacs.008.001.13": {
+      "file": "pacs.008.001.13.xsd",
+      "sha256": "118183330dbdded59219efac775149660d7d32527cadc218ca5d97df07f2f481",
+      "version": "ISO-published-pacs.008.001.13-2025-02-27",
+      "source_url": "https://www.iso20022.org/message-set/1208/download"
+    }
+  }
+}

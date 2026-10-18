@@ -1,0 +1,53 @@
+name: SaaS PostgreSQL RLS tenant isolation
+on:
+  push:
+    paths:
+      - 'saas/**'
+      - '.github/workflows/saas-tenant-ci.yml'
+  pull_request:
+    paths:
+      - 'saas/**'
+      - '.github/workflows/saas-tenant-ci.yml'
+permissions:
+  contents: read
+jobs:
+  postgres-real-rls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:16
+        ports: ['5432:5432']
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci-local-only-password
+          POSTGRES_DB: addressrail_test
+        options: >-
+          --health-cmd "pg_isready -U postgres -d addressrail_test"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      SAAS_TEST_ADMIN_DSN: 'postgresql://postgres:ci-local-only-password@127.0.0.1:5432/addressrail_test'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: saas/requirements.txt
+      - run: pip install -r saas/requirements.txt
+      - name: Real PostgreSQL row-level security, RS256 and tenant report tests
+        run: PYTHONPATH=. python -m pytest -q saas/tests
+      - name: Rehearse PostgreSQL encrypted-transport-free CI-only dump and restore
+        env:
+          POSTGRES_CID: ${{ job.services.postgres.id }}
+        run: |
+          set -euo pipefail
+          docker exec "$POSTGRES_CID" pg_dump -U postgres -d addressrail_test -Fc -f /tmp/saas-training.backup
+          docker exec "$POSTGRES_CID" createdb -U postgres addressrail_restore
+          docker exec "$POSTGRES_CID" pg_restore -U postgres -d addressrail_restore /tmp/saas-training.backup
+          count=$(docker exec "$POSTGRES_CID" psql -U postgres -d addressrail_restore -tAc "SELECT count(*) FROM saas_cases")
+          test "$count" -ge 2
+          rls=$(docker exec "$POSTGRES_CID" psql -U postgres -d addressrail_restore -tAc "SELECT relrowsecurity::text || ':' || relforcerowsecurity::text FROM pg_class WHERE relname='saas_cases'")
+          test "$rls" = 'true:true'
+          echo 'Ephemeral test database dump/restore and FORCE RLS verified.'
+

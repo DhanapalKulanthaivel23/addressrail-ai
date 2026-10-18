@@ -70,3 +70,23 @@ class PaymentTools:
             raise
         except (httpx.HTTPError, ValueError) as error:
             raise CoreUnavailable() from error
+
+    async def ensure_synthetic_payment(self, payment_id: str, status: str = "RJCT") -> dict:
+        """Create/reuse only a local, fictional Java/H2 payment and status event."""
+        import re
+        if (not re.fullmatch(r"PAY-[A-Za-z0-9_-]{5,72}", payment_id)
+            or status not in {"RJCT","PENDING","UNKNOWN"}):
+            raise ValueError("Only synthetic PAY-* examples and review statuses permitted")
+        try:
+            async with httpx.AsyncClient(base_url=self.base_url,timeout=4,
+                         follow_redirects=False,trust_env=False,
+                         transport=self.transport) as client:
+                resp=await client.post("/api/v1/labs/synthetic-intake",json={
+                    "paymentId":payment_id,"simulatedStatus":status,"synthetic":True})
+            resp.raise_for_status()
+            obj=Payment.model_validate(resp.json())
+            if not obj.synthetic or obj.id!=payment_id or obj.status!=status:
+                raise CoreUnavailable("Unexpected fictional fixture response")
+            return obj.model_dump()
+        except (httpx.HTTPError, ValueError) as exc:
+            raise CoreUnavailable("Local synthetic intake unavailable") from exc

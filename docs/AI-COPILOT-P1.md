@@ -140,3 +140,13 @@ To use bounded asynchronous jobs in the same localhost process, set `COPILOT_ENA
 - Jobs are **not durable**: restarting the process loses them, successful/failed jobs expire after ten minutes, and no bank/SWIFT transaction is sent.
 
 This illustrates event-driven orchestration as a training capability, **not** managed Kafka, event-sourcing, guaranteed delivery, a production API gateway or autonomous payment processing.
+
+## Genuine Gemini provider verification — explicit opt-in
+
+The default candidate model has been updated to `gemini-3.5-flash-lite` based on Google's published October 2026 model catalogue, since model 2.5 availability is limited for newly created projects. Do not assume this model is available for your specific account. Use **only synthetic case evidence**.
+
+To run the actual model-output recorder, open **GitHub → Repository → Settings → Secrets and variables → Actions**. Create a **repository secret** named `GEMINI_API_KEY` using the free-tier API key *without posting it in chat or GitHub files*. Add **repository variables** `ADDRESSRAIL_ENABLE_REAL_GEMINI_EVAL=true` and `ADDRESSRAIL_GEMINI_FREE_TIER_CONFIRMED=true` **only after** confirming the Google AI Studio project is still on the *Free Tier*, with no paid billing arrangement. Then run **Actions → Opt-in genuine Gemini copilot eval → Run workflow** with `gemini-3.5-flash-lite` and `count=3`. Review uploaded **synthetic-only** model-output artifact and structured guardrail metrics. The workflow will not execute unless both variables are enabled and the key is present.
+
+Google says free-tier prompts/outputs may be used to improve products; do not send genuine payment/customer information. Free tier is quota-limited and may vary by region/project; free-tier confirmation is an owner action and cannot be proven merely by inspecting source code. Before enabling customer data, use an approved paid enterprise arrangement with a privacy/data-use assessment, not an unrestricted free developer key.
+
+Provider docs: https://ai.google.dev/gemini-api/docs/models and https://ai.google.dev/gemini-api/docs/billing

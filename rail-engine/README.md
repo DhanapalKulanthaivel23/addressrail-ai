@@ -63,3 +63,16 @@ The `encoding/xml` tokenizer processes up to **64 KiB**, **5,000 elements** and 
 **Important:** This checks educational structure only, not the full ISO 20022 base XSD or a Swift/EPC/BoE usage guideline. Passing it does not establish completeness, payment validity, customer identity, safe retry or settlement. The synthetic marker is not reliable PII detection. Never paste actual bank data.
 
 Benchmark with `go test -run '^$' -bench '^Benchmark' ./internal/rails` and use your own measured results; raw benchmark measurements are not throughput guarantees.
+
+## Independently runnable rail-profile microservices
+
+A single tested Go binary can now run in **eleven distinct localhost OS processes**, each restricted to its own **synthetic educational** rail profile: CBPR, GPI, G4C, SCT, SCT_INST, SDD, CHAPS, FPS, BACS, T2, CLS. This gives independently deployable rule subsets without cloning the validation logic.
+
+```bash
+cd rail-engine
+RAIL_ENGINE_RAIL=CBPR RAIL_ENGINE_PORT=8110 go run ./cmd/raild
+# Another terminal:
+RAIL_ENGINE_RAIL=CHAPS RAIL_ENGINE_PORT=8111 go run ./cmd/raild
+```
+
+Each `/healthz` responds with `railProfile`; `/v1/validate`, `/v1/validate/batch` and `/v1/xml/inspect` reject a different rail (HTTP 422). `/v1/reconcile` remains scheme-agnostic event correlation. **These are not full scheme-specific SWIFT/EPC/RTGS/FPS/CLS payment processors**. GPI/G4C specifically use only teaching UETR/message-family checks, not Tracker APIs or actual Swift credentials. Processes are local-only unless explicitly deployed with appropriate security controls.

@@ -4,7 +4,7 @@
     "payment_id": "PAY-101",
     "status": "RJCT",
     "rail": "CBPR",
-    "question": "What does a CBPR+ pacs.008 rejection mean under ISO 20022?",
+    "question": "Explain the deferred Swift standards release for this synthetic CBPR+ pacs.008 rejection. Does the delay establish its cause?",
     "expected_citations": [
       "SWIFT-SR2026-DELAY"
     ],
