@@ -24,7 +24,7 @@ PYTHONPATH=ai-agents python -m uvicorn investigation.app:app --host 127.0.0.1 --
 Then call:
 
 ```bash
-curl -s -X POST documented source -H 'content-type: application/json' -d '{"payment_id":"PAY-10001"}'
+curl -s -X POST http://127.0.0.1:8092/investigate -H 'content-type: application/json' -d '{"payment_id":"PAY-10001"}'
 ```
 
 By default the deterministic investigation works with **no LLM or credentials**. The LangGraph graph uses two read-only tools, verifies synthetic-only source evidence and returns review-required conclusions; no payment mutation tools exist.
@@ -87,7 +87,7 @@ Run the offline test suite with `PYTHONPATH=ai-agents python -m pytest -q ai-age
 
 With **Quarkus Payments Core** running locally on port 8081 and the Python investigation service on port 8093, open:
 
-**documented source
+**http://127.0.0.1:8093/dashboard**
 
 Launch from the repository root:
 
@@ -105,7 +105,7 @@ Technical limitations: the catalogue is not a paginated enterprise search, filte
 
 ## Synthetic Investigation Case Management v1
 
-The existing unified dashboard at **documented source now includes a **Training case management** panel. Start Quarkus locally on port 8081 and the investigation agent on port 8093, then select a synthetic payment. You can open one synthetic case for it, add short notes, change state among `OPEN`, `IN_REVIEW`, `ESCALATED`, and `CLOSED`, assign an invented `TRAINING-*` owner label, and inspect a chronological activity list. Existing payment records, event histories and status cannot be mutated by case-management operations. Case activity is application-append-only, but not tamper-proof: H2 is an unprotected local training database.
+The existing unified dashboard at **http://127.0.0.1:8093/dashboard** now includes a **Training case management** panel. Start Quarkus locally on port 8081 and the investigation agent on port 8093, then select a synthetic payment. You can open one synthetic case for it, add short notes, change state among `OPEN`, `IN_REVIEW`, `ESCALATED`, and `CLOSED`, assign an invented `TRAINING-*` owner label, and inspect a chronological activity list. Existing payment records, event histories and status cannot be mutated by case-management operations. Case activity is application-append-only, but not tamper-proof: H2 is an unprotected local training database.
 
 **No real identities or approvals:** reviewer and owner strings are invented labels such as `TRAINING-Analyst1`; they do **not** authenticate, authorise or identify users. An `ESCALATED` or `CLOSED` case has no effect on payment processing or settlement. Do not enter names, real customer information or private evidence into training notes.
 
@@ -120,13 +120,13 @@ The Python LangGraph agent has an opt-in second deterministic check against the 
 Start `rail-engine` on `127.0.0.1:8094` and Quarkus on `127.0.0.1:8081`, then run the agent with:
 
 ```bash
-INVESTIGATION_ENABLE_GO_RULES=true GO_RULES_URL=documented source \
+INVESTIGATION_ENABLE_GO_RULES=true GO_RULES_URL=http://127.0.0.1:8094 \
   uvicorn investigation.app:app --host 127.0.0.1 --port 8093
 ```
 
 With `INVESTIGATION_ENABLE_GO_RULES=true`, the agent checks the **same fictional payment and event history** with Go before allowing optional LLM explanation. `UNKNOWN` and `PENDING` remain unknown/pending and require human reconciliation. Mismatched event IDs, timestamps, status or missing Go service lead to an `INSUFFICIENT_EVIDENCE` outcome; Go never authorises a retry or settlement. When disabled (default), the existing Python-only investigation works unchanged.
 
-`GoRulesClient` allows loopback `documented source<port>` only; requests are bounded, redirect-following is disabled, and unexpected Go contract replies are rejected. This is a local *synthetic educational* integration and not an independent trusted production status source. Never pass real customer or bank data.
+`GoRulesClient` allows loopback `http://127.0.0.1:<port>` only; requests are bounded, redirect-following is disabled, and unexpected Go contract replies are rejected. This is a local *synthetic educational* integration and not an independent trusted production status source. Never pass real customer or bank data.
 
 ### Go streaming XML subset as a Python tool
 

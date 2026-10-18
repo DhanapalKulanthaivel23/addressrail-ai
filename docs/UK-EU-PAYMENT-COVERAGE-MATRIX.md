@@ -80,6 +80,6 @@ The message explorer generates **intentionally incomplete** ISO 20022 shapes for
 - No centrally authenticated or immutable case audit record. A copied/duplicated browser tab can inherit a snapshot of session storage on some browsers, and browser-private data disappears when its session is ended. Avoid real customer data.
 - National entries are **selected examples**, not an exhaustive list of European domestic payment systems. Participation, timing, proprietary formats and standards can change and require independent operator verification.
 
-**Public routes:** Cross-Rail Intelligence Lab · Banking Studio · Guest Case Management.
+**Public routes:** [Cross-Rail Intelligence Lab](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/payment-intelligence/) · [Banking Studio](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/) · [Guest Case Management](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/open-demo/).
 
 **Source of truth for catalogue identifiers:** `web/studio/payment-intelligence/catalog.mjs`. This matrix reflects those 43 entries at the date above.

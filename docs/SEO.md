@@ -12,16 +12,16 @@ The project includes:
 
 ## Search Console
 
-1. Go to documented source
-2. Add URL prefix: `documented source`
+1. Go to https://search.google.com/search-console
+2. Add URL prefix: `https://dhanapalkulanthaivel23.github.io/addressrail-ai/`
 3. Choose HTML file verification and put the provided verification HTML in `web/` (do not place it at the repository root).
 4. Wait for the next Pages deploy, then verify ownership.
-5. Submit sitemap: `documented source`
+5. Submit sitemap: `https://dhanapalkulanthaivel23.github.io/addressrail-ai/sitemap.xml`
 6. Inspect one guide URL to request indexing if eligible; observe impressions and queries over subsequent weeks.
 
 ## Bing Webmaster Tools
 
-Use documented source to add the same GitHub Pages URL. Import the site from Search Console if supported or verify using Bing's alternative HTML file method.
+Use payment industry reference to add the same GitHub Pages URL. Import the site from Search Console if supported or verify using Bing's alternative HTML file method.
 
 ## Legitimate discoverability strategy
 
@@ -33,8 +33,8 @@ Use documented source to add the same GitHub Pages URL. Import the site from Sea
 
 ## GitHub Pages robots.txt location
 
-Google reads robots.txt only at the host root, `documented source`. This repository publishes under `/addressrail-ai/`, so its `/addressrail-ai/robots.txt` is not a host-wide crawler control file. Do not claim that file submits the sitemap. Submit the sitemap directly through the verified URL-prefix property in Search Console/Bing. If a user-site repository later serves the host root, a suitable root robots.txt can reference this sitemap; do not modify an unrelated repository for this task.
+Google reads robots.txt only at the host root, `payment industry reference`. This repository publishes under `/addressrail-ai/`, so its `/addressrail-ai/robots.txt` is not a host-wide crawler control file. Do not claim that file submits the sitemap. Submit the sitemap directly through the verified URL-prefix property in Search Console/Bing. If a user-site repository later serves the host root, a suitable root robots.txt can reference this sitemap; do not modify an unrelated repository for this task.
 
-Source: documented source
+Source: payment industry reference
 
 Verification status on 12 October 2026: Google ownership is verified and sitemap submission was accepted; its report currently shows Couldn't fetch despite the public sitemap loading in Safari. The MT103 guide indexing request was accepted into Google's priority crawl queue. Bing ownership is verified and the sitemap is Submitted / Processing with zero reported errors or warnings. These are submission confirmations, not proof of search indexing or ranking.
