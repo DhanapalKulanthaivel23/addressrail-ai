@@ -19,8 +19,15 @@ The **target payment journey** is: user uploads a synthetic MT/MX payment → id
 - `docs/product_evolution.json`: append-only public change events; historical entries are never rewritten.
 - `docs/PUBLIC_PRODUCT_STATUS.md`: this snapshot must be updated with every customer-facing design or functional change.
 - `scripts/check_public_evolution.py` and GitHub PR workflow enforce updates on modified public web/frontend/service sources.
-- Future vendor **product** release changes and Swift/ISO **scheme** release changes must stay distinct. Public descriptions may link original sources but should not copy licensed materials.
+- Demo **R1/R2/R3** feature notes are versioned separately from the ISO 20022 message namespaces and any actual network usage rules. Public descriptions must be independently written, with no outside publication links or copied source text.
 
 Original public UI layout and wording remain under user control. This documentation-only update does not touch Cloudflare, GitHub Pages configuration, the website's visitor counter or external accounts.
 
 **Full product design history and release rule-engine details are maintained privately.** The public website must not expose private implementation or confidential integration logic.
+
+
+## Offline-first branding and ownership policy
+
+**Current scope:** AddressRail-owned pages remain navigable. Outbound links to external payment providers and research publications have been replaced by descriptive labels. First-party AddressRail GitHub/learning pages and user-managed operational dashboards or worker addresses remain intact. Product feature editions are R1/R2/R3; a live bank scheme or certified provider release is not implied.
+
+The technical project retains the message-family identifiers, XML namespaces and local integration addresses necessary for the demo to function. No external deployment or signed-in account settings have been changed.

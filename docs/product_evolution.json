@@ -54,6 +54,16 @@
       "evidence": [
         "conversation:2026-10-18"
       ]
+    },
+    {
+      "id": "PUB-006",
+      "date": "2026-10-18",
+      "status": "DOCUMENTED",
+      "title": "AddressRail-owned navigation and offline payments content",
+      "description": "Removed outbound publication hyperlinks and vendor marketing references from public learning pages. Kept first-party AddressRail project pages, user-managed service consoles, synthetic payment scenarios and internal navigation.",
+      "evidence": [
+        "User approval to retain AddressRail-owned pages and signed-in service links"
+      ]
     }
   ]
 }
