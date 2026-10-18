@@ -35,3 +35,7 @@ PUB-006 records an earlier branch intent; it is retained as history. PUB-007 cor
 PUB-008 extends the evolution gate to existing backend and packaging directories. Four governance tests verify append-only history, safe statuses and missing-evidence rejection for website and backend changes.
 
 PUB-009 records the merged public synthetic Worker example packaging. Local workerd/D1 contract tests and ten dry-run bundles passed; no external deployment or live network connection occurred. These examples are separate from the private commercial core.
+
+## AR-060 integration increment (18 October 2026)
+
+PARTIAL: typed public registry, grouped navigation and reproducible metadata-check execution in the existing lab. Node regression: 106 passed; private address suite: 67 passed. No scheme certification, full MT/MX mapping, deployed API, live Gemini or complete SaaS claim. See [integration evidence and remaining work](AR-060-INTEGRATION.md).

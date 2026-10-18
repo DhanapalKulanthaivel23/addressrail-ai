@@ -91,3 +91,5 @@ button:disabled{opacity:.45;cursor:not-allowed}
  .editor-controls .inline-actions .button{width:100%}
  .intel-hero{padding:32px 22px}
 }
+
+.rail-list details{width:100%;padding:.4rem}.rail-list summary{cursor:pointer;font-weight:700;padding:.5rem}#execution-evidence pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:28rem;overflow:auto}#execution-evidence summary{cursor:pointer;padding:.75rem}
