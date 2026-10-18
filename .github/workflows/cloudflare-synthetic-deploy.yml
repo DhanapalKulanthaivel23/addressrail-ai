@@ -1,0 +1,41 @@
+name: Deploy synthetic payment Workers (manual)
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type DEPLOY_SYNTHETIC_ONLY to authorise deployment'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+concurrency:
+  group: addressrail-synthetic-cloudflare
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: ${{ inputs.confirmation == 'DEPLOY_SYNTHETIC_ONLY' && github.ref == 'refs/heads/feature/cloudflare-payment-microservices' }}
+    runs-on: ubuntu-latest
+    environment: cloudflare-synthetic
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - name: Verify synthetic contract tests
+        run: node --test tests/cloudflare*.test.mjs tests/payment-message-registry.test.mjs tests/payment-phase1.test.mjs tests/payment-rail-flows.test.mjs
+      - name: Deploy and verify live synthetic chain
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          D1_DATABASE_ID: ${{ vars.CLOUDFLARE_D1_DATABASE_ID }}
+          GATEWAY_URL: ${{ vars.CLOUDFLARE_GATEWAY_URL }}
+          AR_INTERNAL_TOKEN: ${{ secrets.AR_INTERNAL_TOKEN }}
+          AR_DEMO_API_KEY: ${{ secrets.AR_DEMO_API_KEY }}
+        run: bash scripts/cloudflare-deploy.sh
