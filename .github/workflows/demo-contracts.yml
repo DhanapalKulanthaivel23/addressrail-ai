@@ -17,5 +17,7 @@ jobs:
       - run: npm ci
       - run: npm run build:demo
       - run: git diff --exit-code -- web/studio/shared/*.mjs
+      - run: npm run build:workbench
+      - run: git diff --exit-code -- web/studio/workbench
       - run: npm run test:contracts
       - run: node --test tests/product-registry.test.mjs

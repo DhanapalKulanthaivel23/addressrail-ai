@@ -19,7 +19,7 @@ class PublicEvolutionTests(unittest.TestCase):
             with self.assertRaises(ValueError):assess(old,DATA,bad)
     def test_existing_backend_components_require_evolution_evidence(self):
         old=copy.deepcopy(DATA);old["events"]=old["events"][:-1]
-        for source in ("saas/app.py", "network-simulator/network.py",
+        for source in ("apps/workbench/main.tsx", "saas/app.py", "network-simulator/network.py",
                        "cloudflare/payment-microservices/worker.mjs",
                        "rail-engine/cmd/raild/main.go", "payments-core/src/Payment.java",
                        "ai-agents/investigation/app.py", "deploy/run-rail-services.sh"):
