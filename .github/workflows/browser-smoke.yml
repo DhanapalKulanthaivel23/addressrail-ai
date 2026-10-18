@@ -33,6 +33,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: npm ci
+      - run: npm run build:workbench
       - run: npx playwright install --with-deps chromium
       - run: |
           python3 -m http.server 8765 --directory web --bind 127.0.0.1 > /tmp/addressrail-static.log 2>&1 &
