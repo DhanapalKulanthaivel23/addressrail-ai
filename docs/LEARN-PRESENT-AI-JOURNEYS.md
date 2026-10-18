@@ -34,7 +34,7 @@ Select **New to banking**, choose *Bacs Direct Debit → Mandate missing*, advan
 - Bacs Direct Debit mandate-based collection differs from Bacs Direct Credit submission. Dates, cut-offs, reporting and responsibility vary.
 - FPS is a UK retail system; a customer-facing near-real-time response differs from underlying interbank settlement.
 - CBPR+ is cross-border messaging; gpi tracking is not a separate clearing or settlement rail.
-- For the current EPC schemes in **October 2026**, 2025 SCT and SCT Inst rulebook **v1.2** took effect on **30 September 2026**. The EPC postponed the previously announced November 2026 end date for unstructured postal addresses; no replacement deadline is asserted. Consult the current SCT rulebook and SCT Inst rulebook before introducing release-specific validations.
+- For the current EPC schemes in **October 2026**, 2025 SCT and SCT Inst rulebook **v1.2** took effect on **30 September 2026**. The EPC postponed the previously announced November 2026 end date for unstructured postal addresses; no replacement deadline is asserted. Consult the current [SCT rulebook](https://www.europeanpaymentscouncil.eu/what-we-do/epc-payment-schemes/sepa-credit-transfer-sct/sepa-credit-transfer-rulebook-and) and [SCT Inst rulebook](https://www.europeanpaymentscouncil.eu/what-we-do/epc-payment-schemes/sepa-instant-credit-transfer-sct-inst/sepa-instant-credit-transfer) before introducing release-specific validations.
 
 ## Further enhancements (not implemented yet)
 

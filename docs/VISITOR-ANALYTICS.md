@@ -62,7 +62,7 @@ The Worker should return JSON containing `totalVisits`, `last30Days` and `bySour
 - Only aggregate day/source/count values are stored. The Worker doesn't persist raw referer strings or IP addresses. Hosting providers may have their own operational logs.
 - The endpoint returns aggregate counts **publicly**. Don't use it for protected business information.
 - The browser does not collect or send payment-message contents to analytics.
-- The free Workers/D1 service has daily usage limits; Cloudflare can reject requests after the included quota. This design has no automated upgrade to a paid service. Consult current limits: cloud deployment documentation
+- The free Workers/D1 service has daily usage limits; Cloudflare can reject requests after the included quota. This design has no automated upgrade to a paid service. Consult current limits: https://developers.cloudflare.com/d1/platform/pricing/.
 - The counter is a lightweight estimate, not a certified count of unique human visitors.
 
 ## Why not Google Analytics alone?
@@ -74,7 +74,7 @@ Google Analytics 4 is also free at ordinary usage levels, and Google Search Cons
 1. Register the GitHub Pages URL as a **URL-prefix property** in Google Search Console: https://search.google.com/search-console
 2. Upload the verification HTML file to the published `web/` directory if prompted, then verify.
 3. Submit `https://dhanapalkulanthaivel23.github.io/addressrail-ai/sitemap.xml`.
-4. Set up free Bing Webmaster Tools at payment industry reference and verify the same URL-prefix site.
+4. Set up free Bing Webmaster Tools at https://www.bing.com/webmasters and verify the same URL-prefix site.
 5. Share campaign links with `utm_source=github`, `utm_source=linkedin`, etc. Identifiable sources count only when the referrer or recognised UTM source survives the browser/navigation.
 
 **Note:** SEO does not guarantee rankings or inclusion in AI-generated answers. Publishing technical guides and an accurate sitemap helps discovery, not guaranteed placement.

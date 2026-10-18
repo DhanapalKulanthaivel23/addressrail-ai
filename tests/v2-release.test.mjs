@@ -95,6 +95,6 @@ test("all four guides have review date and correct EPC postponement caveats",()=
  assert.ok(parsed.indexOf("&lt;StrtNm&gt;")<parsed.indexOf("&lt;TwnNm&gt;"));
  assert.doesNotMatch(parsed,/&lt;AdrLine&gt;/);
  const cbpr=readFileSync(paths[2],"utf8");
- assert.match(cbpr,/cross-border messaging CBPR\+.*requirements/i);
+ assert.match(cbpr,/Swift CBPR\+.*requirements/i);
  assert.match(readFileSync(paths[3],"utf8"),/Legacy \/ transition example/);
 });

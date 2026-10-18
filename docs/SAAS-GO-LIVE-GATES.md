@@ -32,11 +32,11 @@ Oracle Cloud Always Free **OCI Ampere A1** presently advertises a total equivale
 Cloudflare's free Workers can host lightweight HTTP edge functions and access controls, but **cannot host the entire always-running Kafka/JVM backend** as one Worker. Existing GitHub Pages site can remain static and public; keep private APIs behind an authenticated ingress, not a quick public tunnel.
 
 Official references: 
-- payment industry reference
-- cloud deployment documentation
-- payment industry reference
-- cross-border message guidance
-- ISO 20022 catalogue
+- https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm
+- https://developers.cloudflare.com/workers/platform/limits/
+- https://ai.google.dev/gemini-api/docs/billing
+- https://www.swift.com/products/mystandards
+- https://www.iso20022.org/iso-20022-message-definitions
 
 ## Exact owner input needed for next deployment milestone
 

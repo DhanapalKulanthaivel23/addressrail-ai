@@ -26,8 +26,8 @@ Original public UI layout and wording remain under user control. This documentat
 **Full product design history and release rule-engine details are maintained privately.** The public website must not expose private implementation or confidential integration logic.
 
 
-## Offline-first branding and ownership policy
+## Governance integration scope (18 October 2026)
 
-**Current scope:** AddressRail-owned pages remain navigable. Outbound links to external payment providers and research publications have been replaced by descriptive labels. First-party AddressRail GitHub/learning pages and user-managed operational dashboards or worker addresses remain intact. Product feature editions are R1/R2/R3; a live bank scheme or certified provider release is not implied.
+PR #29 introduces only this public-safe ledger, status, validator, governance tests and workflow. Existing website files, first-party links, public URLs, Payment Studio and Academy remain exactly as on main. Unrelated offline rebranding and its new policy test are deferred together; no existing main-branch tests are removed. No website or Cloudflare deployment is performed by this change.
 
-The technical project retains the message-family identifiers, XML namespaces and local integration addresses necessary for the demo to function. No external deployment or signed-in account settings have been changed.
+PUB-006 records an earlier branch intent; it is retained as history. PUB-007 corrects the integration scope. R1/R2/R3 are AddressRail product editions, separate from payment standards releases SR2025/SR2026.

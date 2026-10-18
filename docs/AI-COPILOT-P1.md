@@ -149,4 +149,4 @@ To run the actual model-output recorder, open **GitHub → Repository → Settin
 
 Google says free-tier prompts/outputs may be used to improve products; do not send genuine payment/customer information. Free tier is quota-limited and may vary by region/project; free-tier confirmation is an owner action and cannot be proven merely by inspecting source code. Before enabling customer data, use an approved paid enterprise arrangement with a privacy/data-use assessment, not an unrestricted free developer key.
 
-Provider docs: background reference: models and background reference: billing
+Provider docs: https://ai.google.dev/gemini-api/docs/models and https://ai.google.dev/gemini-api/docs/billing

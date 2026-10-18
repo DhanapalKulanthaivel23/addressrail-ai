@@ -64,6 +64,17 @@
       "evidence": [
         "User approval to retain AddressRail-owned pages and signed-in service links"
       ]
+    },
+    {
+      "id": "PUB-007",
+      "date": "2026-10-18",
+      "status": "DOCUMENTED",
+      "title": "Preserve first-party links and existing website during governance integration",
+      "description": "Limit PR #29 to its public evolution ledger, status, validator and workflow. Defer unrelated offline rebranding, website edits and its new offline-only policy test; preserve all existing website files, first-party links and public URLs exactly as on main. No website deployment is triggered by this documentation and governance change.",
+      "evidence": [
+        "AddressRail public PR #29",
+        "User request to preserve first-party links, Payment Studio, Academy and public URLs and not deploy to production"
+      ]
     }
   ]
 }

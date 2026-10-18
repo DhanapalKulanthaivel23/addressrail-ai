@@ -21,7 +21,7 @@ The project includes:
 
 ## Bing Webmaster Tools
 
-Use payment industry reference to add the same GitHub Pages URL. Import the site from Search Console if supported or verify using Bing's alternative HTML file method.
+Use https://www.bing.com/webmasters to add the same GitHub Pages URL. Import the site from Search Console if supported or verify using Bing's alternative HTML file method.
 
 ## Legitimate discoverability strategy
 
@@ -33,8 +33,8 @@ Use payment industry reference to add the same GitHub Pages URL. Import the site
 
 ## GitHub Pages robots.txt location
 
-Google reads robots.txt only at the host root, `payment industry reference`. This repository publishes under `/addressrail-ai/`, so its `/addressrail-ai/robots.txt` is not a host-wide crawler control file. Do not claim that file submits the sitemap. Submit the sitemap directly through the verified URL-prefix property in Search Console/Bing. If a user-site repository later serves the host root, a suitable root robots.txt can reference this sitemap; do not modify an unrelated repository for this task.
+Google reads robots.txt only at the host root, `https://dhanapalkulanthaivel23.github.io/robots.txt`. This repository publishes under `/addressrail-ai/`, so its `/addressrail-ai/robots.txt` is not a host-wide crawler control file. Do not claim that file submits the sitemap. Submit the sitemap directly through the verified URL-prefix property in Search Console/Bing. If a user-site repository later serves the host root, a suitable root robots.txt can reference this sitemap; do not modify an unrelated repository for this task.
 
-Source: payment industry reference
+Source: https://developers.google.com/crawling/docs/robots-txt/create-robots-txt
 
 Verification status on 12 October 2026: Google ownership is verified and sitemap submission was accepted; its report currently shows Couldn't fetch despite the public sitemap loading in Safari. The MT103 guide indexing request was accepted into Google's priority crawl queue. Bing ownership is verified and the sitemap is Submitted / Processing with zero reported errors or warnings. These are submission confirmations, not proof of search indexing or ranking.
