@@ -2,6 +2,7 @@
  * AR-062. Standalone, deterministic fictional watchlist and channel examples.
  * No actual sanctions determinations, financial messages, queues, files, or payments.
  */
+/** @type {ReadonlyArray<{id:string,name:string,aliases:string[],category:string}>} */
 export const FICTIONAL_WATCHLIST=Object.freeze([
  Object.freeze({id:'DEMO-ALERT-01',name:'SYNTHETIC RECEIVER LTD',aliases:['DEMO RECEIVER LIMITED'],category:'FICTIONAL_SANCTIONS_EXAMPLE'}),
  Object.freeze({id:'DEMO-REVIEW-02',name:'EXAMPLE TRADING COMPANY',aliases:['EXAMPLE TRADING CO'],category:'FICTIONAL_REVIEW_EXAMPLE'}),
