@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from datetime import datetime,timezone
+from typing import Literal
+from saas import network_bridge, iso_simulation, iso_investigation
 import hmac
 import os
 import re
@@ -32,6 +34,18 @@ class CaseIn(Strict):
     payment_ref: str = Field(min_length=9, max_length=76)
     simulated_status: str
     synthetic: bool = True
+
+class NetworkSimulationIn(Strict):
+    reference: str = Field(min_length=4,max_length=60,pattern=r"^[A-Za-z0-9_-]{4,60}$")
+    scenario: Literal["ACCEPT","REJECT","PENDING"]
+    synthetic: Literal[True] = True
+
+class IsoSimulationIn(Strict):
+    reference: str = Field(min_length=4,max_length=60,pattern=r"^[A-Za-z0-9_-]{4,60}$")
+    scenario: Literal["ACCEPT","REJECT","PENDING"]
+    iso_version: Literal["13","14"]
+    amount_minor: int = Field(ge=1,le=1000000000,strict=True)
+    synthetic: Literal[True] = True
 
 class ReportIn(Strict):
     validation_rule_ids: list[str] = Field(max_length=30)
@@ -272,3 +286,264 @@ def pending_event(job_id:uuid.UUID,identity=Depends(verify_token)):
     return {"event_id":str(row[0]),"event_type":row[1],"payload":row[2],
             "created_at":row[3].isoformat(),"delivery_status":"NOT_DISPATCHED",
             "synthetic":True,"signed":False}
+
+@app.post("/v1/tenancy/network/simulations",status_code=202)
+def start_network_simulation(body:NetworkSimulationIn,identity=Depends(verify_token)):
+    """Tenant-scoped synthetic gateway. No private source or browser service key."""
+    enabled();permits(identity,"ADMIN","INVESTIGATOR")
+    try:
+        network_bridge.network_config()
+        remote_ref=network_bridge.scoped_reference(identity["tenant"],body.reference,body.scenario)
+    except ValueError:
+        raise HTTPException(503,"Private synthetic gateway is disabled or unavailable")
+    try:
+        with session(identity) as db:
+            db.execute("""INSERT INTO saas_network_simulations
+                   (tenant_id,client_reference,scenario,network_reference)
+                   VALUES(%s,%s,%s,%s)
+                   ON CONFLICT (tenant_id,client_reference) DO NOTHING""",
+                       (identity["tenant"],body.reference,body.scenario,remote_ref))
+            row=db.execute("""SELECT scenario,remote_message_id
+                   FROM saas_network_simulations WHERE client_reference=%s""",
+                   (body.reference,)).fetchone()
+            if not row:
+                raise HTTPException(503,"Network simulation reservation unavailable")
+            if row[0]!=body.scenario:
+                raise HTTPException(409,"Reference is already reserved for another scenario")
+            existing=row[1]
+    except psycopg.Error:
+        raise HTTPException(503,"Tenant simulation storage unavailable")
+    try:
+        if existing is None:
+            remote_id,status=network_bridge.submit(identity["tenant"],body.reference,body.scenario)
+            with session(identity) as db:
+                row=db.execute("""UPDATE saas_network_simulations
+                     SET remote_message_id=%s,bridge_state='ACKNOWLEDGED'
+                     WHERE client_reference=%s AND
+                     (remote_message_id IS NULL OR remote_message_id=%s)
+                     RETURNING remote_message_id""",
+                     (remote_id,body.reference,remote_id)).fetchone()
+                if not row:
+                    raise HTTPException(409,"Conflicting private simulation correlation")
+        else:
+            status=network_bridge.status(str(existing))
+    except (ValueError,KeyError,psycopg.Error):
+        # The durable tenant reservation remains. Retrying the same reference
+        # uses the same upstream idempotency key; no false network ACK is issued.
+        raise HTTPException(503,"Private synthetic network unavailable; retry same reference")
+    return {"reference":body.reference,"scenario":body.scenario,
+            **status,"verified_scheme":False,"settlement_attested":False}
+
+@app.get("/v1/tenancy/network/simulations/{reference}")
+def get_network_simulation(reference:str,identity=Depends(verify_token)):
+    enabled()
+    try:
+        network_bridge.network_config()
+    except ValueError:
+        raise HTTPException(503,"Private synthetic gateway is disabled or unavailable")
+    if not network_bridge.REF.fullmatch(reference):
+        raise HTTPException(404,"Synthetic simulation not found")
+    try:
+        with session(identity) as db:
+            row=db.execute("""SELECT scenario,remote_message_id,bridge_state
+                 FROM saas_network_simulations WHERE client_reference=%s""",
+                 (reference,)).fetchone()
+    except psycopg.Error:
+        raise HTTPException(503,"Tenant simulation storage unavailable")
+    if not row:
+        raise HTTPException(404,"Synthetic simulation not found")
+    if row[1] is None:
+        return {"reference":reference,"scenario":row[0],"state":"SUBMITTING",
+                "synthetic":True,"settled":False,"verified_scheme":False,
+                "settlement_attested":False}
+    try:
+        status=network_bridge.status(str(row[1]))
+    except (ValueError,KeyError):
+        raise HTTPException(503,"Private synthetic status temporarily unavailable")
+    return {"reference":reference,"scenario":row[0],**status,
+            "verified_scheme":False,"settlement_attested":False}
+
+@app.post("/v1/tenancy/network/iso-pacs008",status_code=202)
+def start_iso_pacs008(body:IsoSimulationIn,identity=Depends(verify_token)):
+    """Public synthetic pacs.008 fixture -> PRIVATE, version-pinned XSD gateway."""
+    enabled();permits(identity,"ADMIN","INVESTIGATOR")
+    try:
+        network_bridge.network_config()
+        remote_ref=iso_simulation.iso_reference(identity["tenant"],body.reference,body.scenario)
+    except ValueError:
+        raise HTTPException(503,"Private ISO testing gateway is disabled or unavailable")
+    try:
+        with session(identity) as db:
+            db.execute("""INSERT INTO saas_iso_simulations
+                 (tenant_id,client_reference,scenario,iso_version,amount_minor,network_reference)
+                 VALUES(%s,%s,%s,%s,%s,%s)
+                 ON CONFLICT (tenant_id,client_reference) DO NOTHING""",
+                 (identity["tenant"],body.reference,body.scenario,
+                  body.iso_version,body.amount_minor,remote_ref))
+            row=db.execute("""SELECT scenario,iso_version,amount_minor,remote_message_id,validation_sha256
+                 FROM saas_iso_simulations WHERE client_reference=%s""",
+                 (body.reference,)).fetchone()
+            if row is None:
+                raise HTTPException(503,"Synthetic ISO reservation unavailable")
+            if row[:3]!=(body.scenario,body.iso_version,body.amount_minor):
+                raise HTTPException(409,"Reference is reserved for another fictional ISO request")
+            remote_id=row[3]
+    except psycopg.Error:
+        raise HTTPException(503,"Tenant ISO simulation storage unavailable")
+    try:
+        if remote_id is None:
+            remote_id,status,evidence=iso_simulation.submit(
+                identity["tenant"],body.reference,body.scenario,
+                body.iso_version,body.amount_minor)
+            with session(identity) as db:
+                row=db.execute("""UPDATE saas_iso_simulations
+                  SET remote_message_id=%s,validation_sha256=%s,bridge_state='ACKNOWLEDGED'
+                  WHERE client_reference=%s AND
+                    (remote_message_id IS NULL OR remote_message_id=%s)
+                  RETURNING remote_message_id""",
+                  (remote_id,evidence["schema_sha256"],body.reference,remote_id)).fetchone()
+                if row is None:
+                    raise HTTPException(409,"Conflicting synthetic ISO network correlation")
+        else:
+            if row[4]!=iso_simulation.PINNED[body.iso_version][1]:
+                raise ValueError("Stored ISO schema hash does not match pinned version")
+            status=network_bridge.status(str(remote_id))
+    except (ValueError,KeyError,TypeError,psycopg.Error):
+        # The reservation is durable. Retry the exact same request after a
+        # transient outage; upstream idempotency keeps synthetic delivery safe.
+        raise HTTPException(503,"Private ISO XSD validation/network temporarily unavailable")
+    return {"reference":body.reference,"iso_version":body.iso_version,
+            "scenario":body.scenario,"amount_minor":body.amount_minor,
+            "currency":"EUR",**status,"base_xsd_validated":True,
+            "schema_sha256":iso_simulation.PINNED[body.iso_version][1],
+            "cbpr_conformance":"NOT_ASSESSED",
+            "verified_scheme":False,"settlement_attested":False}
+
+@app.get("/v1/tenancy/network/iso-pacs008/{reference}")
+def get_iso_pacs008(reference:str,identity=Depends(verify_token)):
+    enabled()
+    try:
+        network_bridge.network_config()
+    except ValueError:
+        raise HTTPException(503,"Private ISO testing gateway is disabled or unavailable")
+    if not network_bridge.REF.fullmatch(reference):
+        raise HTTPException(404,"Synthetic ISO simulation not found")
+    try:
+        with session(identity) as db:
+            row=db.execute("""SELECT scenario,iso_version,amount_minor,
+                remote_message_id,validation_sha256 FROM saas_iso_simulations
+                WHERE client_reference=%s""",(reference,)).fetchone()
+    except psycopg.Error:
+        raise HTTPException(503,"Tenant ISO simulation storage unavailable")
+    if row is None:
+        raise HTTPException(404,"Synthetic ISO simulation not found")
+    scenario,version,amount,remote_id,stored_hash=row
+    if remote_id is None:
+        return {"reference":reference,"iso_version":version,"scenario":scenario,
+                "amount_minor":amount,"currency":"EUR","state":"SUBMITTING",
+                "base_xsd_validated":False,"cbpr_conformance":"NOT_ASSESSED",
+                "synthetic":True,"settled":False,
+                "verified_scheme":False,"settlement_attested":False}
+    if stored_hash!=iso_simulation.PINNED[version][1]:
+        raise HTTPException(503,"Pinned ISO attestation inconsistent")
+    try:
+        status=network_bridge.status(str(remote_id))
+    except (ValueError,KeyError,TypeError):
+        raise HTTPException(503,"Private synthetic ISO status temporarily unavailable")
+    return {"reference":reference,"iso_version":version,"scenario":scenario,
+            "amount_minor":amount,"currency":"EUR",**status,
+            "base_xsd_validated":True,"schema_sha256":stored_hash,
+            "cbpr_conformance":"NOT_ASSESSED",
+            "verified_scheme":False,"settlement_attested":False}
+
+
+@app.post("/v1/tenancy/network/iso-pacs008/{reference}/investigation",status_code=201)
+def investigate_iso_pacs008(reference:str,identity=Depends(verify_token)):
+    """Snapshot a FINAL, base-XSD-evidenced fictional bank response into a tenant case.
+
+    Read private status before the DB transaction; lock the tenant simulation row
+    when persisting the linked immutable case/report. Never take a tenant-supplied
+    bank status as evidence. LLMs cannot change the deterministic outcome.
+    """
+    enabled();permits(identity,"ADMIN","INVESTIGATOR")
+    if not network_bridge.REF.fullmatch(reference):
+        raise HTTPException(404,"Synthetic ISO simulation not found")
+    try:
+        network_bridge.network_config()
+    except ValueError:
+        raise HTTPException(503,"Private synthetic gateway disabled")
+    with session(identity) as db:
+        row=db.execute("""SELECT iso_version,amount_minor,remote_message_id,validation_sha256
+                FROM saas_iso_simulations WHERE client_reference=%s""",
+                (reference,)).fetchone()
+        link=db.execute("""SELECT case_id FROM saas_iso_investigation_links
+                WHERE client_reference=%s""",(reference,)).fetchone()
+    if row is None:raise HTTPException(404,"Synthetic ISO simulation not found")
+    if link:
+        return {"case_id":str(link[0]),"reference":reference,
+                "report_url":f"/v1/tenancy/cases/{link[0]}/report",
+                "created":False,"synthetic":True,"requires_human_review":True}
+    version,amount,remote_id,sha=row
+    if remote_id is None:
+        raise HTTPException(409,"Synthetic ISO payment has no validated network ACK")
+    if sha!=iso_simulation.PINNED[version][1]:
+        raise HTTPException(503,"Stored ISO schema provenance inconsistent")
+    try:
+        status=network_bridge.status(str(remote_id))
+        if status["state"]!="BANK_RESPONSE_RECEIVED":
+            raise HTTPException(409,"Simulated bank outcome is not final; investigate later")
+        case_status,report=iso_investigation.build(reference,version,amount,sha,status)
+    except (ValueError,KeyError,TypeError,OSError):
+        raise HTTPException(503,"Private network outcome or curated evidence unavailable")
+    caseid=iso_investigation.case_id(identity["tenant"],reference)
+    from psycopg.types.json import Jsonb
+    try:
+        with session(identity) as db:
+            latest=db.execute("""SELECT iso_version,amount_minor,remote_message_id,
+                       validation_sha256 FROM saas_iso_simulations
+                       WHERE client_reference=%s FOR UPDATE""",(reference,)).fetchone()
+            if latest!=row:
+                raise HTTPException(409,"Synthetic ISO evidence changed; retry investigation")
+            existing=db.execute("""SELECT case_id FROM saas_iso_investigation_links
+                         WHERE client_reference=%s""",(reference,)).fetchone()
+            if existing:
+                return {"case_id":str(existing[0]),"reference":reference,
+                        "report_url":f"/v1/tenancy/cases/{existing[0]}/report",
+                        "created":False,"synthetic":True,"requires_human_review":True}
+            created=db.execute("""INSERT INTO saas_cases
+                         (id,tenant_id,payment_ref,simulated_status,creator)
+                         VALUES(%s,%s,%s,%s,%s)
+                         ON CONFLICT (tenant_id,payment_ref) DO NOTHING
+                         RETURNING id""",(caseid,identity["tenant"],"PAY-ISO-"+reference,
+                                        case_status,identity["actor"])).fetchone()
+            if not created:
+                raise HTTPException(409,"Existing unrelated case uses this reference")
+            db.execute("""INSERT INTO saas_reports(tenant_id,case_id,payload,actor)
+                      VALUES(%s,%s,%s,%s)""",
+                      (identity["tenant"],caseid,Jsonb(report),identity["actor"]))
+            db.execute("""INSERT INTO saas_iso_investigation_links
+                      (tenant_id,client_reference,case_id) VALUES(%s,%s,%s)""",
+                      (identity["tenant"],reference,caseid))
+            for action in ("CASE_CREATED","REPORT_ATTACHED"):
+                db.execute("""INSERT INTO saas_audit
+                      (tenant_id,case_id,actor,action) VALUES(%s,%s,%s,%s)""",
+                      (identity["tenant"],caseid,identity["actor"],action))
+    except psycopg.Error:
+        raise HTTPException(503,"Tenant investigation storage unavailable")
+    return {"case_id":str(caseid),"reference":reference,
+            "report_url":f"/v1/tenancy/cases/{caseid}/report",
+            "created":True,"synthetic":True,"requires_human_review":True,
+            "bank_status":report["bank_status"],"settled":False}
+
+@app.get("/v1/tenancy/network/iso-pacs008/{reference}/investigation")
+def find_iso_investigation(reference:str,identity=Depends(verify_token)):
+    enabled()
+    if not network_bridge.REF.fullmatch(reference):
+        raise HTTPException(404,"Synthetic investigation not found")
+    with session(identity) as db:
+        row=db.execute("""SELECT case_id FROM saas_iso_investigation_links
+                   WHERE client_reference=%s""",(reference,)).fetchone()
+    if not row:raise HTTPException(404,"Synthetic investigation not found")
+    return {"case_id":str(row[0]),"reference":reference,
+            "report_url":f"/v1/tenancy/cases/{row[0]}/report",
+            "synthetic":True,"requires_human_review":True}
