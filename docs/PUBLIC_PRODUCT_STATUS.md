@@ -43,3 +43,7 @@ PARTIAL: typed public registry, grouped navigation and reproducible metadata-che
 ## AR-061 workbench increment (18 October 2026)
 
 PARTIAL product coverage with a shared React/TypeScript/Vite frontend at `studio/workbench/`. The public registry generates product navigation and tabs; executed checks drive the React Flow graph. IndexedDB stores only the last synthetic draft locally, with recovery/clear and blocked-storage fallback. Unsupported MT/MX conversions are BLOCKED. Correction approval triggers deterministic revalidation without awarding official verified status. Private engines are preserved. Full banking message processing, API deployment, retrieval and live Gemini integration remain pending.
+
+## Workbench colour correction (18 October 2026)
+
+The workbench uses white/pale-blue content, navy navigation and cyan/blue accents matching the supplied reference palette. Capability coverage remains unchanged.

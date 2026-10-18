@@ -121,6 +121,17 @@
         "tests/workbench-browser.mjs",
         ".github/workflows/demo-contracts.yml"
       ]
+    },
+    {
+      "id": "PUB-012",
+      "date": "2026-10-18",
+      "status": "PARTIAL_FEATURES",
+      "title": "Workbench reference colour correction",
+      "description": "Replace the React workbench dark content palette with white and pale-blue panels, navy text and navigation, cyan accents and blue controls to reflect the supplied architecture reference. Preserve existing workbench functionality and capability statuses.",
+      "evidence": [
+        "apps/workbench/style.css",
+        "tests/workbench-browser.mjs"
+      ]
     }
   ]
 }
