@@ -39,3 +39,7 @@ PUB-009 records the merged public synthetic Worker example packaging. Local work
 ## AR-060 integration increment (18 October 2026)
 
 PARTIAL: typed public registry, grouped navigation and reproducible metadata-check execution in the existing lab. Node regression: 106 passed; private address suite: 67 passed. No scheme certification, full MT/MX mapping, deployed API, live Gemini or complete SaaS claim. See [integration evidence and remaining work](AR-060-INTEGRATION.md).
+
+## AR-061 workbench increment (18 October 2026)
+
+PARTIAL product coverage with a shared React/TypeScript/Vite frontend at `studio/workbench/`. The public registry generates product navigation and tabs; executed checks drive the React Flow graph. IndexedDB stores only the last synthetic draft locally, with recovery/clear and blocked-storage fallback. Unsupported MT/MX conversions are BLOCKED. Correction approval triggers deterministic revalidation without awarding official verified status. Private engines are preserved. Full banking message processing, API deployment, retrieval and live Gemini integration remain pending.

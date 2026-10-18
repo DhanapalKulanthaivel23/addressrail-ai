@@ -24,5 +24,5 @@ export interface DemoResponse {
  contractVersion: 1; synthetic: true; productId: string; correlationReference: string;
  steps: ExecutionStep[]; report: unknown;
  ai: {status: 'DETERMINISTIC_FALLBACK'; model: null; retrieval: unknown[];
-      suggestedCorrections: unknown[]; revalidation: 'NOT_REQUESTED'; explanation: string};
+      suggestedCorrections: unknown[]; revalidation: 'NOT_REQUESTED' | {status:'REVALIDATED_INTERNAL_RULES'; findings:unknown[]}; explanation: string};
 }

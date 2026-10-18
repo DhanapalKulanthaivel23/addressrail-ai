@@ -14,6 +14,8 @@ on:
   pull_request:
     paths:
       - 'web/studio/**'
+      - 'apps/workbench/**'
+      - 'tests/workbench-browser.mjs'
       - 'tests/browser-smoke.mjs'
       - '.github/workflows/browser-smoke.yml'
 permissions:
@@ -38,3 +40,4 @@ jobs:
           sleep 2
       - run: node tests/browser-smoke.mjs
       - run: node tests/site-acceptance.mjs
+      - run: node tests/workbench-browser.mjs
