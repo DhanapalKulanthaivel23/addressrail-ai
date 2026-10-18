@@ -6,6 +6,13 @@ const errors=[];
 try{
  const context=await browser.newContext({acceptDownloads:true});const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
  await page.goto('http://127.0.0.1:8765/studio/workbench/');
+ const palette=await page.evaluate(()=>({
+  background:getComputedStyle(document.body).backgroundColor,
+  sidebar:getComputedStyle(document.querySelector('aside')).backgroundColor,
+  header:getComputedStyle(document.querySelector('header')).backgroundColor
+ }));
+ assert.deepEqual(palette,{background:'rgb(245, 240, 232)',sidebar:'rgb(37, 35, 33)',header:'rgb(255, 254, 250)'});
+
  const run=page.getByRole('button',{name:'Validate / simulate checks'});
  await run.click();await page.getByRole('status').filter({hasText:'execution complete'}).waitFor();
  assert.match(await page.getByLabel('Output message').inputValue(),/assessment/);
