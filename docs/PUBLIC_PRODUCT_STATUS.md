@@ -44,6 +44,14 @@ PARTIAL: typed public registry, grouped navigation and reproducible metadata-che
 
 PARTIAL product coverage with a shared React/TypeScript/Vite frontend at `studio/workbench/`. The public registry generates product navigation and tabs; executed checks drive the React Flow graph. IndexedDB stores only the last synthetic draft locally, with recovery/clear and blocked-storage fallback. Unsupported MT/MX conversions are BLOCKED. Correction approval triggers deterministic revalidation without awarding official verified status. Private engines are preserved. Full banking message processing, API deployment, retrieval and live Gemini integration remain pending.
 
-## Workbench colour correction (18 October 2026)
+## AR-062 browser screening and channel learning increment (18 October 2026)
 
-The workbench uses white/pale-blue content, navy navigation and cyan/blue accents matching the supplied reference palette. Capability coverage remains unchanged.
+PARTIAL: The existing no-login React payment workbench now includes a cross-rail AddressTune review tab, a deterministic fictional-name AML screening tab with small temporary browser-only watchlists, and educational REST/MQ/Kafka/File/SFTP response demonstrations. Screening is not real sanctions or PEP screening, name-match strength is not a statistical probability or legal conclusion, and there is no real broker, file transfer, funds movement, external banking network or live Gemini call. The private Python/Java/Go services are unchanged and not exposed on the public website. The frontend is built from source by CI and the GitHub Pages deployment workflow, rather than serving a stale prebuilt workbench when React source changes. Full message conversion, official CBPR+/SEPA rules and cloud API integration remain pending.
+
+## AR-063 — Payment Rail workbench branded as the primary UI (18 October 2026)
+
+The primary no-login public product is now documented as the [Payment Rail / Transaction Simulation Workbench](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/workbench/). Its React UI adopts the homepage's warm ivory background, dark charcoal left navigation, sky-blue action accents and copper highlights without changing payment execution logic. README starts with the workbench and accurately distinguishes browser simulations from real messaging and certification. The legacy homepage and educational routes remain accessible. No new full standards validation, live Gemini, actual MQ, SWIFT settlement or public backend deployment is claimed.
+
+## Workbench palette delivery correction (18 October 2026)
+
+Refresh committed workbench build assets from the latest AR-063 source, preserving the warm ivory, charcoal and soft-blue homepage theme and AR-062 learning tools. Set the initial page canvas and browser theme to warm ivory as well.

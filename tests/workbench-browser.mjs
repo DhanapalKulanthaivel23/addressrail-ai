@@ -6,12 +6,34 @@ const errors=[];
 try{
  const context=await browser.newContext({acceptDownloads:true});const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
  await page.goto('http://127.0.0.1:8765/studio/workbench/');
+ const palette=await page.evaluate(()=>({
+  background:getComputedStyle(document.body).backgroundColor,
+  sidebar:getComputedStyle(document.querySelector('aside')).backgroundColor,
+  header:getComputedStyle(document.querySelector('header')).backgroundColor
+ }));
+ assert.deepEqual(palette,{background:'rgb(245, 240, 232)',sidebar:'rgb(37, 35, 33)',header:'rgb(255, 254, 250)'});
+
  const run=page.getByRole('button',{name:'Validate / simulate checks'});
  await run.click();await page.getByRole('status').filter({hasText:'execution complete'}).waitFor();
  assert.match(await page.getByLabel('Output message').inputValue(),/assessment/);
  const exported=page.waitForEvent('download');await page.getByRole('button',{name:'Report',exact:true}).click();
  const report=JSON.parse(await readFile(await (await exported).path(),'utf8'));
  assert.equal(report.steps.length,2);assert.equal(report.synthetic,true);
+ await page.locator('.tool-nav').getByRole('button',{name:'AML / Sanctions / Compliance'}).click();
+ await page.getByRole('button',{name:'Screen current synthetic request'}).click();
+ assert.match(await page.getByTestId('aml-result').textContent(),/FICTIONAL_EXACT_NAME/);
+ assert.match(await page.getByTestId('aml-result').textContent(),/POTENTIAL_MATCH/);
+ await page.getByLabel('Fictional watchlist name').fill('FICTIONAL TEST CANDIDATE');
+ await page.getByRole('button',{name:'Add to temporary list'}).click();
+ assert.match(await page.locator('.learning-list').textContent(),/FICTIONAL TEST CANDIDATE/);
+ await page.locator('.tool-nav').getByRole('button',{name:'REST / MQ / Kafka / Files / SFTP'}).click();
+ await page.getByLabel('Simulated channel').selectOption('KAFKA');
+ await page.getByRole('button',{name:'Simulate channel flow'}).click();
+ assert.match(await page.getByTestId('channel-result').textContent(),/SIMULATED_ONLY/);
+ assert.match(await page.getByTestId('channel-result').textContent(),/FICTIONAL_CONSUME_ACK/);
+ await page.getByRole('button',{name:'Simulate channel flow'}).click();
+ assert.match(await page.getByTestId('channel-result').textContent(),/"duplicateInBrowserSession": true/);
+ await page.getByRole('button',{name:'Payment testing',exact:true}).click();
  await page.getByRole('button',{name:'MT → MX',exact:true}).click();
  assert.equal(JSON.parse(await page.getByLabel('Output message').inputValue()).outcome,'BLOCKED');
  await page.getByRole('button',{name:'Load error fixture'}).click();await run.click();

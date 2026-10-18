@@ -126,10 +126,38 @@
       "id": "PUB-012",
       "date": "2026-10-18",
       "status": "PARTIAL_FEATURES",
-      "title": "Workbench reference colour correction",
-      "description": "Replace the React workbench dark content palette with white and pale-blue panels, navy text and navigation, cyan accents and blue controls to reflect the supplied architecture reference. Preserve existing workbench functionality and capability statuses.",
+      "title": "AR-062 \u2014 public no-login AML and channel learning tool integration",
+      "description": "Extend the existing React workbench rather than replace it. Add cross-rail AddressTune panel, deterministic fictional-name watchlist screening with temporary in-browser entries, and labelled REST/MQ/Kafka/File/SFTP synthetic handoff demonstrations. Add unit and Playwright checks and rebuild the workbench from source in CI and the Pages release workflow. No live sanctions providers, actual brokers, Gemini API, real bank networks or complete message formats are implemented by this change.",
+      "evidence": [
+        "web/studio/shared/learning-tools.mjs",
+        "apps/workbench/learning-tools.tsx",
+        "tests/learning-tools.test.mjs",
+        "tests/workbench-browser.mjs",
+        ".github/workflows/pages.yml"
+      ]
+    },
+    {
+      "id": "PUB-013",
+      "date": "2026-10-18",
+      "status": "PARTIAL_FEATURES",
+      "title": "AR-063 \u2014 Payment Rail workbench as primary entry point with homepage-matched branding",
+      "description": "Restyle the existing React payment workbench to the established AddressRail homepage palette of warm ivory, charcoal navigation, soft-blue actions and copper accents without replacing functional tests or banking logic. Reframe the public repository README as a Payment Rail and Transaction Simulation Learning Platform, make /studio/workbench/ the primary launch URL and preserve existing educational pages. No real networks, bank settlement, live Gemini or official scheme certification.",
       "evidence": [
         "apps/workbench/style.css",
+        "README.md",
+        "docs/PUBLIC_PRODUCT_STATUS.md",
+        ".github/workflows/browser-smoke.yml"
+      ]
+    },
+    {
+      "id": "PUB-014",
+      "date": "2026-10-18",
+      "status": "PARTIAL_FEATURES",
+      "title": "Publish refreshed homepage-matched workbench assets",
+      "description": "Rebuild and commit the current AR-062/AR-063 workbench assets from the latest source so static previews and GitHub Pages both receive the warm ivory, charcoal and soft-blue theme. Set the initial page canvas and browser theme to warm ivory and preserve the newer screening and channel tools.",
+      "evidence": [
+        "apps/workbench/style.css",
+        "apps/workbench/index.html",
         "tests/workbench-browser.mjs"
       ]
     }
