@@ -75,6 +75,17 @@
         "AddressRail public PR #29",
         "User request to preserve first-party links, Payment Studio, Academy and public URLs and not deploy to production"
       ]
+    },
+    {
+      "id": "PUB-008",
+      "date": "2026-10-18",
+      "status": "TESTED_SYNTHETIC",
+      "title": "Cover existing backend components in public evolution guard",
+      "description": "The governance gate includes SaaS, network simulator, cloud-worker examples, Go rail engine, Java payments core, investigation agents and deployment packaging. Remove the obsolete invocation of the deferred offline-only branch test; retain and extend append-only and missing-evidence assertions.",
+      "evidence": [
+        "tests/test_public_evolution.py",
+        "AddressRail public PR #29"
+      ]
     }
   ]
 }

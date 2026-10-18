@@ -17,6 +17,16 @@ class PublicEvolutionTests(unittest.TestCase):
         self.assertEqual(r["new_events"],1)
         for bad in (["index.html",LEDGER],["index.html",STATE]):
             with self.assertRaises(ValueError):assess(old,DATA,bad)
+    def test_existing_backend_components_require_evolution_evidence(self):
+        old=copy.deepcopy(DATA);old["events"]=old["events"][:-1]
+        for source in ("saas/app.py", "network-simulator/network.py",
+                       "cloudflare/payment-microservices/worker.mjs",
+                       "rail-engine/cmd/raild/main.go", "payments-core/src/Payment.java",
+                       "ai-agents/investigation/app.py", "deploy/run-rail-services.sh"):
+            with self.subTest(source=source):
+                with self.assertRaises(ValueError):assess(DATA,DATA,[source])
+                self.assertEqual(assess(old,DATA,[source,LEDGER,STATE])["new_events"],1)
+
     def test_events_append_only_and_statuses_safe(self):
         old=copy.deepcopy(DATA)
         updated=copy.deepcopy(DATA)

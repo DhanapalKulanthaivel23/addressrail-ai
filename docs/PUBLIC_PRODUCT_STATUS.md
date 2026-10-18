@@ -31,3 +31,5 @@ Original public UI layout and wording remain under user control. This documentat
 PR #29 introduces only this public-safe ledger, status, validator, governance tests and workflow. Existing website files, first-party links, public URLs, Payment Studio and Academy remain exactly as on main. Unrelated offline rebranding and its new policy test are deferred together; no existing main-branch tests are removed. No website or Cloudflare deployment is performed by this change.
 
 PUB-006 records an earlier branch intent; it is retained as history. PUB-007 corrects the integration scope. R1/R2/R3 are AddressRail product editions, separate from payment standards releases SR2025/SR2026.
+
+PUB-008 extends the evolution gate to existing backend and packaging directories. Four governance tests verify append-only history, safe statuses and missing-evidence rejection for website and backend changes.

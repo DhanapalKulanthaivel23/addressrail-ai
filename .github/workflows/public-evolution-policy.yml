@@ -21,7 +21,6 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m unittest discover -s tests -p 'test_public_evolution.py' -v
-      - run: python -m unittest discover -s tests -p 'test_offline_branding.py' -v
       - run: python scripts/check_public_evolution.py
       - if: github.event_name == 'pull_request'
         env:

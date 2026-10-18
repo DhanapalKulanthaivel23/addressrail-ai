@@ -13,7 +13,9 @@ ROOT=Path(__file__).resolve().parents[1]
 LEDGER="docs/product_evolution.json"
 STATE="docs/PUBLIC_PRODUCT_STATUS.md"
 MATERIAL=("index.html","app/","src/","web/","public/","workers/","functions/",
-          "data/","assets/","css/","js/","site/","schemas/","packages/","services/")
+          "data/","assets/","css/","js/","site/","schemas/","packages/","services/",
+          "saas/","network-simulator/","cloudflare/","rail-engine/","payments-core/",
+          "ai-agents/","deploy/")
 STATES={"SYNTHETIC_DEMO","PRODUCT_DESIGN","PARTIAL_FEATURES","FEATURE_BRANCH_ONLY",
         "DOCUMENTED","TESTED_SYNTHETIC","DEPLOYED_VERIFIED","CANCELLED"}
 
