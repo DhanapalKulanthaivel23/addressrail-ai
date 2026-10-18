@@ -19,3 +19,5 @@ Strict TypeScript and Vite build pass. `tests/workbench-browser.mjs` exercises f
 Anonymous REST definitions, Postman/Newman, comprehensive message mappings, all requested platform modules, standards release schemas/rules, private-engine adapters, Gemini/RAG execution and Cloudflare deployment remain pending. Empty registry API/version/release entries are deliberate scope boundaries. No new product is declared DONE.
 
 AR-060 PR #31 merged as `15115eceeddb62aeec9b344c486265a76544c1f5`; all six PR checks and the main Pages deployment passed. The deployed engine file SHA-256 matched the reviewed source (`9d82c566f469b8f5cb6ce8aa807b05f4732e11be257472b9e8715b329636ab55`). The broader retained private suite ran 252 tests, with 27 optional integrations skipped.
+
+The append-only evolution gate also covers `apps/` source changes, so source-only frontend changes require ledger and status evidence.

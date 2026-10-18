@@ -12,7 +12,7 @@ import subprocess
 ROOT=Path(__file__).resolve().parents[1]
 LEDGER="docs/product_evolution.json"
 STATE="docs/PUBLIC_PRODUCT_STATUS.md"
-MATERIAL=("index.html","app/","src/","web/","public/","workers/","functions/",
+MATERIAL=("index.html","app/","apps/","src/","web/","public/","workers/","functions/",
           "data/","assets/","css/","js/","site/","schemas/","packages/","services/",
           "saas/","network-simulator/","cloudflare/","rail-engine/","payments-core/",
           "ai-agents/","deploy/")
