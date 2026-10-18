@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "project": "AddressRail AI public demonstration and customer-facing SaaS",
+  "scope": "PUBLIC_INFORMATION_ONLY",
+  "notice": "This is a public-safe snapshot from known conversations and repository references. Detailed payment network implementation, credentials and internal rulepacks must never be copied into public files.",
+  "events": [
+    {
+      "id": "PUB-001",
+      "date": "2026-10-12",
+      "status": "SYNTHETIC_DEMO",
+      "title": "AddressRail AI payment address quality demonstration",
+      "description": "Synthetic MT103/pacs.008 address checks and JSON report; live public demo scope is narrower than complete banking SaaS.",
+      "evidence": [
+        "conversation:2026-10-12",
+        "https://github.com/DhanapalKulanthaivel23/addressrail-ai"
+      ]
+    },
+    {
+      "id": "PUB-002",
+      "date": "2026-10-13",
+      "status": "PRODUCT_DESIGN",
+      "title": "Payment Studio and banking-intelligence SaaS direction",
+      "description": "Expanded public product plan to address intelligence, multiple rail examples, investigation support, educational content and customer SaaS ideas; not all deployed.",
+      "evidence": [
+        "conversation:2026-10-13"
+      ]
+    },
+    {
+      "id": "PUB-003",
+      "date": "2026-10-15",
+      "status": "PARTIAL_FEATURES",
+      "title": "Multiple public synthetic banking contexts and demo flows",
+      "description": "Public labs and use-case examples expanded while preserving original visual design; simulated examples are not scheme conformance tests.",
+      "evidence": [
+        "conversation:2026-10-15"
+      ]
+    },
+    {
+      "id": "PUB-004",
+      "date": "2026-10-16",
+      "status": "FEATURE_BRANCH_ONLY",
+      "title": "API-driven microservice SaaS demonstration",
+      "description": "Public repository feature PRs worked on payment rail microservices and optional cloud-worker packaging, without proving live external deployment or changing Cloudflare without credentials.",
+      "evidence": [
+        "https://github.com/DhanapalKulanthaivel23/addressrail-ai/pull/2"
+      ]
+    },
+    {
+      "id": "PUB-005",
+      "date": "2026-10-18",
+      "status": "DOCUMENTED",
+      "title": "Public-safe product change and release history",
+      "description": "Add mandatory public product ledger updates on material website, schema, service or public documentation changes. Detailed proprietary rules and connectivity stay private.",
+      "evidence": [
+        "conversation:2026-10-18"
+      ]
+    }
+  ]
+}
