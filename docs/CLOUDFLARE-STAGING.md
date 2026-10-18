@@ -1,6 +1,6 @@
 # Free Cloudflare synthetic staging preview
 
-Live preview: referenced documentation
+Live preview: https://addressrail-staging.dhanapalkav.workers.dev/
 
 Deployed through the owner's authenticated Cloudflare dashboard on 17 October 2026, from main commit `c7eaf2be03c430e5b730a0a7e4fe98538e95031f`.
 

@@ -4,8 +4,8 @@ The evaluation corpus is synthetic and authored. These results do not measure ba
 
 | Run | Source commit | Grounded | Relevant citation | Status | No unsafe claim | Human review | Rule IDs |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 39032297247 | b6a1a89 | 2/3 | 2/3 | 3/3 | 3/3 | 3/3 | 2/3 |
-| 39033237818 | c7eaf2b | 1/3 | 2/3 | 3/3 | 3/3 | 3/3 | 1/3 |
+| [39032297247](https://github.com/DhanapalKulanthaivel23/addressrail-ai/actions/runs/39032297247) | b6a1a89 | 2/3 | 2/3 | 3/3 | 3/3 | 3/3 | 2/3 |
+| [39033237818](https://github.com/DhanapalKulanthaivel23/addressrail-ai/actions/runs/39033237818) | c7eaf2b | 1/3 | 2/3 | 3/3 | 3/3 | 3/3 | 1/3 |
 
 The first run was green because it recorded responses without enforcing metric thresholds. PR #4 fixed this: any rejected sample or failed metric returns exit status 1. The second run correctly failed; its artifact was uploaded despite the failed step and inspected directly.
 

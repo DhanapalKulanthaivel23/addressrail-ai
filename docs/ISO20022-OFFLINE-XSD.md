@@ -16,4 +16,4 @@ Set `ADDRESSRAIL_XSD_DIR` to this directory. No external entity or DTD processin
 
 **Important**: ISO 20022 provides base schemas, while Swift **MyStandards** publishes network CBPR+ usage guidelines and testing. The rules are not equivalent. Current Swift usage material may require organisation account access and appropriate permission. Passing any base XSD check alone is **not Swift certification**, not a complete CBPR+ policy conformance result, and certainly not a settlement assertion. The current versioned-source RAG summaries are not sufficient replacement for official machine-testable guidelines.
 
-Official sources: referenced documentation and referenced documentation
+Official sources: ISO 20022 message catalogue and cross-border messaging overview: mystandards

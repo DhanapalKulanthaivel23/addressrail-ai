@@ -4,7 +4,7 @@ A public, independent **payment-address quality demo** for synthetic ISO 20022 `
 
 ## Try AddressRail AI online
 
-**Launch the free AddressRail AI demo**
+**[Launch the free AddressRail AI demo](https://dhanapalkulanthaivel23.github.io/addressrail-ai/)**
 
 No registration, GitHub account or installation is required. Load a synthetic MT103 or ISO 20022 pacs.008 example, inspect address-quality findings and download a JSON report. Use only synthetic or fully anonymised test data.
 
@@ -21,16 +21,16 @@ Developers who want to host their own instance can follow the [deployment guide]
 
 ## v2 entry points — learn, present and test AI
 
-- **Start Here** — eight foundational lessons, glossary and tab-private progress.
-- **SCT Inst instant exception lab** — illustrative RT1 **or** TIPS route, rejections and unknown outcomes.
-- **CHAPS liquidity investigation** — fictional BoE RTGS liquidity hold, evidence and rule IDs.
-- **Banking AI guardrails** — eight authored claim fixtures, deterministic checks; **not real recorded LLM outputs**.
+- **[Start Here](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/start/)** — eight foundational lessons, glossary and tab-private progress.
+- **[SCT Inst instant exception lab](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/sct-inst/?scenario=timeout)** — illustrative RT1 **or** TIPS route, rejections and unknown outcomes.
+- **[CHAPS liquidity investigation](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/chaps/?scenario=liquidity-hold#case-lab)** — fictional BoE RTGS liquidity hold, evidence and rule IDs.
+- **[Banking AI guardrails](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/ai-lab/)** — eight authored claim fixtures, deterministic checks; **not real recorded LLM outputs**.
 
 Release marker **v2 · 15 October 2026** is displayed on Banking Studio. The new page links use separate routes; a browser/CDN cached older /studio/ cannot be diagnosed from GitHub repository state alone. Verified deployment workflow outcome is recorded in GitHub Actions.
 
 ## Interactive banking journeys — three audiences
 
-**Open the free Learn / Present / Banking AI Journeys**
+**[Open the free Learn / Present / Banking AI Journeys](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/journeys/)**
 
 One no-login browser workspace for **banking professionals** presenting payment products, **AI specialists** explaining deterministic controls versus evidence-bounded hypothetical LLM assistance, and **beginners** studying participants, messages and settlement. It includes a clickable curated connections explorer for the 43 existing catalogue entries; **six deeper payment journeys** (CBPR+/gpi, SEPA SCT, SCT Inst, CHAPS/BoE RTGS, FPS, Bacs Direct Debit); **24 fictional scenarios**; incremental sender/receiver/message timelines; deterministic checks; a *scripted, non-LLM* AI replay; six quizzes; JSON exports and guest-case import.
 
@@ -38,7 +38,7 @@ These are educational examples, not current bank connectivity, formal scheme con
 
 ## Explore SWIFT CBPR+, gpi, g4C and UK/EU payment systems
 
-**Open the free Cross-Rail Payment Intelligence Lab**
+**[Open the free Cross-Rail Payment Intelligence Lab](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/payment-intelligence/)**
 
 A browser-only, no-login learning lab with **43 distinct payment scheme, infrastructure, overlay and network contexts**. An illustrative currency picker supports **EUR, GBP, SEK, PLN and DKK** where appropriate; domestic examples use their own currency. Covers SWIFT CBPR+, gpi, g4C; CHAPS, BoE RTGS, FPS, Bacs and other UK systems; EPC SEPA SCT, SCT Inst, SDD Core/B2B and OCT Inst; STEP2, RT1, TIPS, T2, EURO1; selected Swedish, Polish, Danish and national euro processing services; and CLS FX settlement concepts.
 
