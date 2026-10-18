@@ -1,6 +1,6 @@
 # AddressRail AI
 
-> **Repository visibility and IP:** This GitHub repository is currently **public**, including its Git history. No root open-source licence has been added. Public visibility permits viewing and platform-supported forking, but does not by itself grant a commercial reuse licence for original copyrighted code. Copyright and third-party rights depend on actual authorship and applicable agreements. The intended commercial private-core / public-demo split has **not yet been executed**. See [Commercial IP protection and migration guide](docs/COMMERCIAL-IP-PROTECTION.md).
+> **Repository visibility and IP:** This GitHub repository is currently **public**, including its Git history. No root open-source licence has been added. Public visibility permits viewing and platform-supported forking, but does not by itself grant a commercial reuse licence for original copyrighted code. Copyright and third-party rights depend on actual authorship and applicable agreements. The private `addressrail-network-core` repository now exists; this public repository and its history still contain previously published code, so the commercial private-core / public-demo separation remains partial. See [Commercial IP protection and migration guide](docs/COMMERCIAL-IP-PROTECTION.md).
 
 A public, independent **payment-address quality demo** for synthetic ISO 20022 `pacs.008` and MT103 messages.
 
