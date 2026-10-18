@@ -22,5 +22,6 @@ jobs:
       - run: node --check web/analytics.js
       - run: node --check web/comments.js
       - run: node --check analytics/worker.js
+      - run: npm ci
       - run: node --test tests/*.test.mjs
 
