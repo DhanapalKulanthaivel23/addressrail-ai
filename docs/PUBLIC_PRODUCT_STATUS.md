@@ -33,3 +33,5 @@ PR #29 introduces only this public-safe ledger, status, validator, governance te
 PUB-006 records an earlier branch intent; it is retained as history. PUB-007 corrects the integration scope. R1/R2/R3 are AddressRail product editions, separate from payment standards releases SR2025/SR2026.
 
 PUB-008 extends the evolution gate to existing backend and packaging directories. Four governance tests verify append-only history, safe statuses and missing-evidence rejection for website and backend changes.
+
+PUB-009 records the merged public synthetic Worker example packaging. Local workerd/D1 contract tests and ten dry-run bundles passed; no external deployment or live network connection occurred. These examples are separate from the private commercial core.

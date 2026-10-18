@@ -86,6 +86,17 @@
         "tests/test_public_evolution.py",
         "AddressRail public PR #29"
       ]
+    },
+    {
+      "id": "PUB-009",
+      "date": "2026-10-18",
+      "status": "TESTED_SYNTHETIC",
+      "title": "Public synthetic Worker examples integrated without deployment",
+      "description": "PR #2 adds standalone public synthetic Worker examples and D1 orchestration; 103 Node tests and ten local dry-run bundles passed. The manual deployment workflow was not invoked. Existing website, source links and API implementations are preserved; these examples do not connect to original banking networks or establish scheme conformance.",
+      "evidence": [
+        "https://github.com/DhanapalKulanthaivel23/addressrail-ai/pull/2",
+        "bff9e3dd7ed1c65b5284d7f26fee21681508b76c"
+      ]
     }
   ]
 }
