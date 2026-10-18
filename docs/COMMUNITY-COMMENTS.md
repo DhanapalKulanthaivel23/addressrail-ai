@@ -37,8 +37,8 @@ The shared backend extends the **existing** `analytics/worker.js` and its existi
 7. Confirm activation with:
 
    ```bash
-   curl 'https://addressrail-visitors.dhanapalkav.workers.dev/api/comments/config'
-   curl 'https://addressrail-visitors.dhanapalkav.workers.dev/api/comments?page=%2Fstudio%2Fchaps%2F'
+   curl 'referenced documentation'
+   curl 'referenced documentation'
    ```
 
    The first must report `enabled:true`; the second should report an array of approved comments. Test a form submission from your published GitHub Pages URL, complete Turnstile and confirm it reports **pending review**.
@@ -48,7 +48,7 @@ The shared backend extends the **existing** `analytics/worker.js` and its existi
 The public form does not expose owner moderation credentials. The admin API uses a server-held token, supplied only from your own terminal or administration system.
 
 ```bash
-export COMMENTS_API='https://addressrail-visitors.dhanapalkav.workers.dev'
+export COMMENTS_API='referenced documentation'
 read -r -s -p 'Moderation token: ' COMMENT_ADMIN_TOKEN; echo
 curl -fsS -H "Authorization: Bearer $COMMENT_ADMIN_TOKEN" \
   "$COMMENTS_API/api/comments/moderation"

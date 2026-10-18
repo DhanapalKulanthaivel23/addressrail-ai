@@ -72,7 +72,7 @@ PYTHONPATH=ai-agents python -m uvicorn investigation.app:app --host 127.0.0.1 --
 In another terminal, use the **same secret** privately, not pasted into README/chat:
 
 ```bash
-curl -fsS http://127.0.0.1:8092/api/copilot/v1/investigate \
+curl -fsS referenced documentation \
  -H "Authorization: Bearer $COPILOT_API_TOKEN" \
  -H "Content-Type: application/json" \
  -d '{"payment_id":"PAY-10001","question":"Explain CBPR+ pacs.008 rejection and missing status evidence"}'
@@ -149,4 +149,4 @@ To run the actual model-output recorder, open **GitHub → Repository → Settin
 
 Google says free-tier prompts/outputs may be used to improve products; do not send genuine payment/customer information. Free tier is quota-limited and may vary by region/project; free-tier confirmation is an owner action and cannot be proven merely by inspecting source code. Before enabling customer data, use an approved paid enterprise arrangement with a privacy/data-use assessment, not an unrestricted free developer key.
 
-Provider docs: https://ai.google.dev/gemini-api/docs/models and https://ai.google.dev/gemini-api/docs/billing
+Provider docs: referenced documentation and referenced documentation

@@ -1,6 +1,6 @@
 # AddressRail AI — Learn, Present & Explore Banking AI
 
-**Live URL:** https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/journeys/
+**Live URL:** referenced documentation
 
 ## One engine, three experiences
 
@@ -34,7 +34,7 @@ Select **New to banking**, choose *Bacs Direct Debit → Mandate missing*, advan
 - Bacs Direct Debit mandate-based collection differs from Bacs Direct Credit submission. Dates, cut-offs, reporting and responsibility vary.
 - FPS is a UK retail system; a customer-facing near-real-time response differs from underlying interbank settlement.
 - CBPR+ is cross-border messaging; gpi tracking is not a separate clearing or settlement rail.
-- For the current EPC schemes in **October 2026**, 2025 SCT and SCT Inst rulebook **v1.2** took effect on **30 September 2026**. The EPC postponed the previously announced November 2026 end date for unstructured postal addresses; no replacement deadline is asserted. Consult the current [SCT rulebook](https://www.europeanpaymentscouncil.eu/what-we-do/epc-payment-schemes/sepa-credit-transfer-sct/sepa-credit-transfer-rulebook-and) and [SCT Inst rulebook](https://www.europeanpaymentscouncil.eu/what-we-do/epc-payment-schemes/sepa-instant-credit-transfer-sct-inst/sepa-instant-credit-transfer) before introducing release-specific validations.
+- For the current EPC schemes in **October 2026**, 2025 SCT and SCT Inst rulebook **v1.2** took effect on **30 September 2026**. The EPC postponed the previously announced November 2026 end date for unstructured postal addresses; no replacement deadline is asserted. Consult the current SCT rulebook and SCT Inst rulebook before introducing release-specific validations.
 
 ## Further enhancements (not implemented yet)
 
@@ -52,8 +52,8 @@ Maintainers: GitHub Actions runs the unit suites and browser journeys after chan
 
 ## v2 guided entry points
 
-The public [Start Here](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/start/) has five beginner lessons and a glossary; [SCT Inst](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/sct-inst/?scenario=timeout) and [CHAPS](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/chaps/?scenario=liquidity-hold#case-lab) have enhanced browser-only exception workbenches.
+The public Start Here has five beginner lessons and a glossary; SCT Inst and CHAPS have enhanced browser-only exception workbenches.
 
 Professional presenters can share a `/studio/journeys/?mode=professional&rail=chaps&scenario=liquidity-hold` link. Each guided journey shows a timed three-minute presentation script and `SIM-*` (authored scenario) / `DEMO_*` (toy input-check) IDs. These **are not real payment scheme rule identifiers**.
 
-AI specialists can try the [guardrail playground](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/ai-lab/), comparing fictional payment evidence with eight authored candidate claims and deterministically rejected assertions. No live model is called. The local LangGraph optional Gemini agent remains separate.
+AI specialists can try the guardrail playground, comparing fictional payment evidence with eight authored candidate claims and deterministically rejected assertions. No live model is called. The local LangGraph optional Gemini agent remains separate.

@@ -1,6 +1,6 @@
 # AddressRail AI — public guest case demo
 
-**Live URL:** https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/open-demo/
+**Live URL:** referenced documentation
 
 Open it from any browser. Visitors can enter the case workspace **without an account, password, MFA, API key, Keycloak installation, or local server**. Give the URL to a prospective client, colleague or learner.
 

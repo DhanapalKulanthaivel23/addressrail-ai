@@ -1,8 +1,8 @@
 # AddressRail AI — Handoff to ChatGPT Work / Codex
 
 **Updated:** 12 October 2026 (UK time)  
-**Repo:** https://github.com/DhanapalKulanthaivel23/addressrail-ai  
-**Live public site:** https://dhanapalkulanthaivel23.github.io/addressrail-ai/
+**Repo:** referenced documentation  
+**Live public site:** referenced documentation
 
 ## Read this first
 
@@ -22,7 +22,7 @@ You are receiving project context through this file, not through live access to 
   - /addressrail-ai/pacs008-address-validation/
   - /addressrail-ai/cbpr-address-guide/
 - **Visitor analytics code:** `analytics/worker.js` is a Cloudflare Worker with `/api/visit` (POST) and `/api/stats` (GET), backed by a D1 binding named **`VISITS`**. Schema: `analytics/schema.sql`. Browser client: `web/analytics.js`. Dashboard is embedded in `web/index.html`.
-- **Configuration:** `web/config.js` currently points `window.ADDRESSRAIL_STATS_URL` to **https://addressrail-visitors.dhanapalkav.workers.dev** (check current file before writing). `window.ADDRESSRAIL_API_URL` remains empty because Gemini backend is not hosted.
+- **Configuration:** `web/config.js` currently points `window.ADDRESSRAIL_STATS_URL` to **referenced documentation (check current file before writing). `window.ADDRESSRAIL_API_URL` remains empty because Gemini backend is not hosted.
 - **Gemini:** optional `backend/app.py` FastAPI with server-side Gemini and Cloudflare Turnstile integration, Render deploy template `render.yaml`, tests. Gemini is **not currently publicly active**. Do not embed a Gemini API key or Cloudflare secrets in public assets.
 - **Documentation:** `docs/SEO.md`, `docs/VISITOR-ANALYTICS.md`, `docs/DEPLOY.md`, `README.md`.
 
@@ -38,7 +38,7 @@ PR #1 corrected Gemini referrals previously classified as Google and added five 
 The user created a Cloudflare account and used the **Workers & Pages** UI.
 
 1. A Worker named **`addressrail-visitors`** was created/deployed as **Hello World** at:
-   **https://addressrail-visitors.dhanapalkav.workers.dev**
+   **referenced documentation
 2. A Cloudflare D1 SQLite database named **`addressrail-visits`** was created.
 3. In the D1 SQL Console, the user ran:
    ```sql
@@ -63,11 +63,11 @@ The user created a Cloudflare account and used the **Workers & Pages** UI.
    - Database: `addressrail-visits`
    - Save/deploy and confirm binding is shown.
 3. Edit Worker code. Replace Hello World with **exact content of `analytics/worker.js`** from GitHub. Save and deploy. Alternatively deploy using Wrangler with properly configured D1 binding. Do not overwrite different production Worker apps.
-4. Verify https://addressrail-visitors.dhanapalkav.workers.dev/api/stats responds with valid JSON containing `totalVisits`, `last30Days` and `bySource` (probably zero initially). A missing binding/schema generates an error. Avoid fake counters.
-5. Visit the public GitHub Pages demo in a fresh tab; verify its network request to `/api/visit` succeeds and increments the D1 aggregate counter. Ensure CORS works for `https://dhanapalkulanthaivel23.github.io`. Verify a subsequent `/api/stats` returns counts.
+4. Verify referenced documentation responds with valid JSON containing `totalVisits`, `last30Days` and `bySource` (probably zero initially). A missing binding/schema generates an error. Avoid fake counters.
+5. Visit the public GitHub Pages demo in a fresh tab; verify its network request to `/api/visit` succeeds and increments the D1 aggregate counter. Ensure CORS works for `referenced documentation`. Verify a subsequent `/api/stats` returns counts.
 6. Check mobile layout, accessibility, referral breakdown, no payment-message contents ever transmitted to the stats service; inspect CI and successful Pages deployment.
 7. Register **URL-prefix** GitHub Pages property with free Google Search Console and Bing Webmaster Tools (manual account sign-in/ownership verification may be necessary). Sitemap:
-   https://dhanapalkulanthaivel23.github.io/addressrail-ai/sitemap.xml
+   referenced documentation
    HTML verification files belong inside `web/` because Pages publishes that directory. Never claim submission succeeded until verified in each console.
 8. Optional QA: add browser tests for analytics and Worker API (mock D1); do not undermine security for convenience. Note Cloudflare Worker public GET endpoint has no authentication and POST Origin check is a basic abuse barrier, not proof of a human.
 
@@ -97,9 +97,9 @@ The user created a Cloudflare account and used the **Workers & Pages** UI.
 
 ## Quick links
 
-- [Repository](https://github.com/DhanapalKulanthaivel23/addressrail-ai)
-- [Live demo](https://dhanapalkulanthaivel23.github.io/addressrail-ai/)
-- [Worker implementation](https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/analytics/worker.js)
-- [D1 schema](https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/analytics/schema.sql)
-- [Visitor setup guide](https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/docs/VISITOR-ANALYTICS.md)
-- [SEO guide](https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/docs/SEO.md)
+- Repository
+- Live demo
+- Worker implementation
+- D1 schema
+- Visitor setup guide
+- SEO guide
