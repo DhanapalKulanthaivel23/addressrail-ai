@@ -1,25 +1,42 @@
-# AddressRail AI
+# AddressRail AI — Payment Rail & Transaction Simulation Platform
 
-> **Repository visibility and IP:** This GitHub repository is currently **public**, including its Git history. No root open-source licence has been added. Public visibility permits viewing and platform-supported forking, but does not by itself grant a commercial reuse licence for original copyrighted code. Copyright and third-party rights depend on actual authorship and applicable agreements. The private `addressrail-network-core` repository now exists; this public repository and its history still contain previously published code, so the commercial private-core / public-demo separation remains partial. See [Commercial IP protection and migration guide](docs/COMMERCIAL-IP-PROTECTION.md).
+**AddressRail AI / AddressTune** is a free, browser-based **Payment Rail Learning Workbench** for exploring synthetic banking transactions, message validation, address quality, fictional network responses, and educational investigations across SWIFT/CBPR+, SEPA, CHAPS, BoE RTGS, T2, FPS, Bacs and related systems.
 
-A public, independent **payment-address quality demo** for synthetic ISO 20022 `pacs.008` and MT103 messages.
+### Launch the Payment Rail workbench
 
-## Try AddressRail AI online
+**🚀 [OPEN THE PAYMENT RAIL WORKBENCH — NO LOGIN REQUIRED](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/workbench/)**
 
-**[Launch the free AddressRail AI demo](https://dhanapalkulanthaivel23.github.io/addressrail-ai/)**
+This is the **main product interface**. Select a rail in the left navigation, choose a fictional scenario, inspect the request and response, run supported deterministic checks, explore AddressTune address review, investigate an illustrative AML watchlist match, or simulate REST/MQ/Kafka/file/SFTP handoffs. Every result is for learning only.
 
-No registration, GitHub account or installation is required. Load a synthetic MT103 or ISO 20022 pacs.008 example, inspect address-quality findings and download a JSON report. Use only synthetic or fully anonymised test data.
+| Explore | What the public workbench provides |
+|---|---|
+| Payment rails | Registry-driven SWIFT/CBPR+, gpi/g4C, SEPA, CHAPS, RTGS, T2, FPS, Bacs and further fictional contexts |
+| Transaction testing | Load/replay reproducible synthetic request scenarios and inspect two-stage execution evidence |
+| Message checks | Educational payment metadata/address checks; complete FIN/MX parsing and official XSD/usage rules are **not** available in the public workbench |
+| AddressTune | Conservative address-review proposals with explicit approval and deterministic recheck |
+| AML / compliance | Temporary fictional watchlists and name-match examples, **not** real sanctions clearance |
+| Channels | REST, MQ, Kafka, file and SFTP **simulations**, not live brokers or transfers |
+| AI | Explicit deterministic fallback; no verified live Gemini model in the public workbench |
 
-Developers who want to host their own instance can follow the [deployment guide](docs/DEPLOY.md).
+**[Public homepage and address analyzer](https://dhanapalkulanthaivel23.github.io/addressrail-ai/)** · **[Payment systems learning content](https://dhanapalkulanthaivel23.github.io/addressrail-ai/studio/start/)**
 
-### What it does
-- Load synthetic `pacs.008` or MT103 payment examples, or paste/upload a test message
-- Find missing structured town/country fields
-- Suggest conservative review-only repairs when the original text explicitly contains a comma-separated town and ISO country code
-- Export a JSON report without sending data to a server
-- Optionally request Gemini commentary through a separately hosted, secured backend
+### Scope, technology and limitations
 
-**Not a production system:** This is not an official Swift, ISO 20022, EPC or CBPR+ validator. MT parsing is intentionally heuristic. The demo does not transmit payments, perform sanctions screening or approve repairs.
+The public demo uses React, TypeScript, Vite and a shared registry of fictional payment contexts. It works without an account or a user-provided API key. Input must be fictional or fully anonymised. No messages are sent to SWIFT, EPC, BoE or a real financial institution; no payment is settled. A payment rail listed in the navigation may only have **partial educational support** and is not automatically scheme-compliant.
+
+The private `addressrail-network-core` repository remains separate. It contains more extensive synthetic processing and educational backend components. This public project is **not a full production SaaS, a certified MT/MX converter, an accredited sanctions-screening engine, or a source of financial compliance decisions**.
+
+### Repository visibility and intellectual property
+
+This repository and its Git history are public, with no root open-source licence currently provided. Public visibility permits viewing and platform-supported forking, but does not itself grant a commercial reuse licence for copyrighted original code. Previously published code remains in public history; private/public separation is partial. See the [commercial IP protection guide](docs/COMMERCIAL-IP-PROTECTION.md).
+
+### Developer and testing entry points
+
+- `npm ci` — install public frontend dependencies.
+- `npm run build:workbench` — compile and bundle the payment workbench from source.
+- `node --test tests/product-registry.test.mjs tests/learning-tools.test.mjs` — deterministic rail and learning-tool checks.
+- Browser smoke tests and the Pages release workflow are verified in GitHub Actions.
+- [Deployment documentation](docs/DEPLOY.md) and [public implementation status](docs/PUBLIC_PRODUCT_STATUS.md).
 
 ## v2 entry points — learn, present and test AI
 

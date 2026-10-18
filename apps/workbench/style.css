@@ -11,3 +11,49 @@
 .learning-list li{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;background:#0c1728;border:1px solid #2e445d;border-radius:7px;padding:9px}
 .learning-list li span{color:#9fb0c7;font-size:10px}
 [role="alert"]{color:#fca5a5;font-weight:600}
+
+
+/* AR-063: match the existing AddressRail AI home visual identity.
+   Warm ivory workspace, charcoal navigation, sky-blue controls, copper accents. */
+:root{font-family:"Helvetica Neue",Arial,system-ui,sans-serif;color:#262522;background:#f5f0e8;color-scheme:light}
+body,.shell,.workspace{background:#f5f0e8;color:#262522}
+aside{background:#252321;color:#f7f2e9;border-right:1px solid #443b33}
+.brand{color:#fff;font-family:Georgia,"Times New Roman",serif;font-weight:700;letter-spacing:-.7px}
+.brand b{color:#b5ddf1}.brand small{font-family:Arial,sans-serif;color:#baa996;letter-spacing:1.6px}
+.side-label{color:#baa996}
+aside summary{color:#f0e9e0}
+aside summary:hover,aside summary:focus-visible{background:#493e34}
+aside details[open] summary{color:#b5ddf1}
+.subproducts button,.tool-nav button{color:#e6dacf;background:transparent;border-color:transparent}
+.subproducts button:hover:not(:disabled),.tool-nav button:hover:not(:disabled){background:#493e34}
+.subproducts button[aria-current]{background:#493e34;color:#b5ddf1;border-left:3px solid #b5ddf1}
+.tool-nav{border-color:#584a3e}
+.side-links a{color:#c1dff0}.side-note{color:#c8bbae}
+header{background:#fffefa;border-bottom:1px solid #ded4c9;border-top:4px solid #9a5f3b;color:#6b615b}
+header a,a{color:#805032}
+h1,h2{font-family:Georgia,"Times New Roman",serif;color:#272522;font-weight:500}
+h3{color:#3c332c}
+p,.hint{color:#6b615b}
+.eyebrow{color:#955a37}
+.badge{background:#ece4d8;color:#654a34;border-color:#d4c5b5}
+.boundary{background:#fdf9f0;border:1px solid #d9c8b8;border-left:4px solid #9a5f3b;color:#57483c}
+.tabs{border-bottom:1px solid #ded4c9}
+.tabs button{color:#65594c}
+.tabs button:hover:not(:disabled){background:#eee3d8}
+.tabs button[aria-pressed=true]{background:#d8eefa;color:#17394b;border:1px solid #b6d8ec}
+.panel{background:#fffefa;border:1px solid #dfd5c9;border-radius:4px;color:#262522;box-shadow:0 4px 15px rgba(68,42,24,.035)}
+button{color:#302a24;background:#f3ede5;border:1px solid #cdbfaf;border-radius:5px}
+button:hover:not(:disabled){background:#e8ded3}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #337ba7;outline-offset:2px}
+.primary{background:#b5ddf1;border-color:#8fbfdc;color:#102b3b;font-weight:700}
+.primary:hover:not(:disabled){background:#95cde8}
+.toolbar input,.toolbar select{background:#fffefa;color:#272522;border:1px solid #cdbfaf}
+.editors textarea{background:#f9f7f4;color:#263d4b;border:1px solid #d7cabd}
+.status{background:#eef4f5;border-left:3px solid #9a5f3b;color:#374e56}
+pre{color:#334d5c}
+.graph{background:#eef5f7;border:1px solid #d9e8ee}
+.learning-list li{background:#f8f4ee;border-color:#ded4c9;color:#262522}
+.learning-list li span{color:#72675d}
+[role="alert"]{color:#a13232}
+footer{color:#776f65}
+@media(max-width:600px){aside{border-right:0;border-bottom:1px solid #443b33}}
