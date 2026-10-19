@@ -160,6 +160,19 @@
         "apps/workbench/index.html",
         "tests/workbench-browser.mjs"
       ]
+    },
+    {
+      "id": "PUB-015",
+      "date": "2026-10-18",
+      "status": "PARTIAL_FEATURES",
+      "title": "Protected opt-in Gemini review for CBPR+ and SEPA workbench",
+      "description": "Connect the existing Render Gemini service to synthetic CBPR+, SCT, SCT Inst, SDD Core and SDD B2B workbench checks. Preserve synthetic consent, Turnstile and quotas; forward only bounded rail/stage/finding-code evidence. Display provider/model provenance separately from deterministic fallback, no retrieval citations when retrieval is absent, and human review. Browser provider tests use mocks; live deployment and genuine provider verification must be checked separately.",
+      "evidence": [
+        "apps/workbench/gemini.tsx",
+        "backend/app.py",
+        "tests/test_api.py",
+        "tests/workbench-gemini-browser.mjs"
+      ]
     }
   ]
 }
