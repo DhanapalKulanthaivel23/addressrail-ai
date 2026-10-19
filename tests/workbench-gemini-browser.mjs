@@ -6,13 +6,18 @@ try{
  const context=await browser.newContext();const page=await context.newPage();let requests=0,mode='success',last;
  await page.route('https://addressrail-ai.onrender.com/api/config',route=>route.fulfill({json:{aiEnabled:true,turnstileSiteKey:'test-site'}}));
  await page.route('https://challenges.cloudflare.com/turnstile/**',route=>route.fulfill({contentType:'application/javascript',body:`window.turnstile={render:(el,o)=>{setTimeout(()=>o.callback('mock-human'),0);return 'test-widget'},remove:()=>{},reset:()=>{}};`}));
+ const source={id:'WB-EXECUTION',topic:'Synthetic execution scope',url:'https://www.iso20022.org/iso-20022-message-definitions',summary:'Educational context only.',reviewed:'2026-10-19',score:0.5};
  let release;
  await page.route('https://addressrail-ai.onrender.com/api/ai-explain',async route=>{
   requests++;last=route.request().postDataJSON();
   if(mode==='delayed')await new Promise(resolve=>{release=resolve});
   if(mode==='quota')return route.fulfill({status:429,json:{detail:'Public demo AI quota reached.'}});
   if(mode==='malformed')return route.fulfill({json:{mode:'fallback',model:null}});
-  return route.fulfill({json:{mode:'gemini',model:'mock-gemini-model',advice:{summary:'Review fictional checks',actions:['Review manually'],cautions:['No scheme validation']}}});
+  if(mode==='fallback')return route.fulfill({json:{mode:'deterministic_fallback',model:null,citationIds:[],retrieval:[source],advice:{summary:'Rejected unsupported provider claim.',actions:['Review manually'],cautions:['Human review required.']}}});
+  if(mode==='bad-source')return route.fulfill({json:{mode:'gemini',model:'mock',retrieval:[{...source,url:'javascript:alert(1)'}],advice:{summary:'Review',actions:[],cautions:[]}}});
+  return route.fulfill({json:{mode:'gemini',model:'mock-gemini-model',humanReviewRequired:true,framework:'LangGraph',promptVersion:'workbench-review-v2',knowledgeVersion:'mock-knowledge',
+   citationIds:['WB-EXECUTION'],retrieval:[source],toolTrace:[{tool:'explain_findings',readOnly:true},{tool:'retrieve_sources',readOnly:true}],
+   advice:{summary:'Review fictional checks',actions:['Review manually'],cautions:['No scheme validation']}}});
  });
  await page.goto((process.env.WORKBENCH_URL || 'http://127.0.0.1:8765/studio/workbench/'));
  const run=page.getByRole('button',{name:'Validate / simulate checks'});
@@ -35,14 +40,22 @@ try{
   assert.equal(last.analysis.rail,id);assert.equal(last.turnstile_token,'mock-human');assert.equal(last.confirm_synthetic,true);
   assert.deepEqual(Object.keys(last.analysis).sort(),['finding_codes','product','rail','stages','synthetic']);
   assert.match(await provenance.textContent(),/GEMINI · provider: Google · model: mock-gemini-model/);
-  assert.match(await provenance.textContent(),/no RAG citations/);
+  assert.match(await page.getByTestId('rag-sources').textContent(),/Cited by Gemini/);
+  assert.equal(await page.getByTestId('rag-sources').getByRole('link').getAttribute('href'),source.url);
+  await page.getByText('How this explanation was produced',{exact:true}).click();
+  assert.match(await page.locator('.gemini-panel').textContent(),/LangGraph/);
+  await page.getByRole('button',{name:'Mark explanation reviewed',exact:true}).click();
+  assert.equal(await page.getByRole('button',{name:'Explanation reviewed in this view'}).isDisabled(),true);
  }
- for(const failure of ['quota','malformed']){
+ for(const failure of ['quota','malformed','fallback','bad-source']){
   await consent.uncheck();await consent.check();mode=failure;
   await page.waitForFunction(()=>!Array.from(document.querySelectorAll('button')).find(b=>b.textContent==='Ask Gemini')?.disabled);
   await ask.click();await page.getByText(/Local deterministic fallback retained/).waitFor();
   assert.match(await provenance.textContent(),/DETERMINISTIC_FALLBACK/);
   assert.doesNotMatch(await provenance.textContent(),/Review fictional checks/);
+  assert.doesNotMatch(await provenance.textContent(),/Cited by Gemini/);
+  if(failure==='fallback')assert.match(await page.getByTestId('rag-sources').textContent(),/Retrieved context only/);
+  if(failure==='bad-source')assert.equal(await page.getByTestId('rag-sources').count(),0);
  }
  await consent.uncheck();await consent.check();mode='delayed';
  await page.waitForFunction(()=>!Array.from(document.querySelectorAll('button')).find(b=>b.textContent==='Ask Gemini')?.disabled);

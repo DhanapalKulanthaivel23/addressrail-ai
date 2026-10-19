@@ -173,6 +173,21 @@
         "tests/test_api.py",
         "tests/workbench-gemini-browser.mjs"
       ]
+    },
+    {
+      "id": "PUB-016",
+      "date": "2026-10-19",
+      "status": "PARTIAL_FEATURES",
+      "title": "Grounded workbench AI with bounded LangGraph review",
+      "description": "Extend the protected Gemini workbench with rail-scoped curated lexical retrieval, linked source provenance, a bounded LangGraph workflow and two typed read-only tools, versioned prompts and constrained output, independent citation/finding/safety checks, offline and opt-in live evaluation harnesses, and local human-review acknowledgement. No autonomous payment actions, official validation, semantic-accuracy guarantee or production fairness claim. Deployment and genuine provider success require separate verification.",
+      "evidence": [
+        "backend/workbench_ai.py",
+        "backend/workbench_knowledge.json",
+        "backend/evaluate_workbench.py",
+        "tests/test_workbench_ai.py",
+        "tests/workbench-gemini-browser.mjs",
+        "docs/WORKBENCH-AI-SYSTEM-CARD.md"
+      ]
     }
   ]
 }

@@ -14,14 +14,22 @@ function challenge(){
  }).catch(error=>{script=undefined;throw error});
  return script;
 }
-type Advice={mode:'gemini';model:string;advice:{summary:string;actions:string[];cautions:string[]}};
+type Source={id:string;topic:string;url:string;summary:string;reviewed:string;score:number};
+type Advice={mode:'gemini'|'deterministic_fallback';model:string|null;advice:{summary:string;actions:string[];cautions:string[]};
+ retrieval?:Source[];citationIds?:string[];framework?:string;promptVersion?:string;knowledgeVersion?:string;traceId?:string;
+ fallbackReason?:string|null;toolTrace?:unknown[];evaluation?:unknown;humanReviewRequired?:boolean};
+function safeSource(source:Source){
+ try{const url=new URL(source.url);return url.protocol==='https:'&&!url.username&&!url.password&&['github.com','www.iso20022.org','www.europeanpaymentscouncil.eu','www.swift.com'].includes(url.hostname)
+  &&[source.id,source.topic,source.summary,source.reviewed].every(v=>typeof v==='string');}catch{return false}
+}
 export function GeminiWorkbench({execution}:{execution:DemoResponse|null}){
  const [consent,setConsent]=useState(false),[enabled,setEnabled]=useState(false),[token,setToken]=useState(''),[busy,setBusy]=useState(false);
  const [message,setMessage]=useState('Optional: send only the rail, executed stages and finding codes to Gemini.'),[result,setResult]=useState<Advice|null>(null);
+ const [reviewed,setReviewed]=useState(false);
  const element=useRef<HTMLDivElement>(null),widget=useRef<string|null>(null),generation=useRef(0);
  const supported=!!execution&&SUPPORTED.includes(execution.productId);
  useEffect(()=>{
-  generation.current++;setConsent(false);setEnabled(false);setToken('');setBusy(false);setResult(null);
+  generation.current++;setConsent(false);setEnabled(false);setToken('');setBusy(false);setResult(null);setReviewed(false);
   setMessage('Optional: send only the rail, executed stages and finding codes to Gemini.');
   return()=>{generation.current++};
  },[execution]);
@@ -44,7 +52,7 @@ export function GeminiWorkbench({execution}:{execution:DemoResponse|null}){
  },[supported,consent,execution]);
  async function ask(){
   if(!execution||!supported||!consent||!enabled||!token||busy)return;
-  const version=generation.current;setBusy(true);setResult(null);setMessage('Asking Gemini…');
+  const version=generation.current;setBusy(true);setResult(null);setReviewed(false);setMessage('Asking Gemini…');
   try{
    const report=execution.report as {issues:{code:string}[]};
    const response=await fetch(BACKEND+'/api/ai-explain',{method:'POST',headers:{'Content-Type':'application/json'},signal:AbortSignal.timeout(35000),
@@ -52,24 +60,37 @@ export function GeminiWorkbench({execution}:{execution:DemoResponse|null}){
      stages:execution.steps.map(s=>s.id),finding_codes:report.issues.map(i=>i.code)}})});
    const data=await response.json();
    if(!response.ok)throw Error(typeof data.detail==='string'?data.detail:'Gemini unavailable.');
-   if(data.mode!=='gemini'||typeof data.model!=='string'||!data.model||typeof data.advice?.summary!=='string'||!data.advice.summary.trim()||
+   if(!['gemini','deterministic_fallback'].includes(data.mode)||(data.mode==='gemini'&&(typeof data.model!=='string'||!data.model))||typeof data.advice?.summary!=='string'||!data.advice.summary.trim()||
     !Array.isArray(data.advice.actions)||!data.advice.actions.every((v:unknown)=>typeof v==='string')||!Array.isArray(data.advice.cautions)||!data.advice.cautions.every((v:unknown)=>typeof v==='string'))throw Error('No valid Gemini provider response was returned.');
-   if(generation.current===version){setResult(data);setMessage('Gemini response received. Human review required.');}
+   if(data.retrieval!==undefined&&(!Array.isArray(data.retrieval)||!data.retrieval.every(safeSource)))throw Error('Invalid retrieved source metadata.');
+   if(data.citationIds!==undefined&&(!Array.isArray(data.citationIds)||!data.citationIds.every((id:unknown)=>typeof id==='string'&&data.retrieval?.some((s:Source)=>s.id===id))))throw Error('Unsupported citation returned.');
+   if(generation.current===version){setResult(data);setMessage(data.mode==='gemini'?'Gemini response received. Human review required.':'Local deterministic fallback retained; Gemini output was unavailable or rejected by evidence checks.');}
   }catch(error){if(generation.current===version)setMessage((error instanceof Error?error.message:'Gemini unavailable.')+' Local deterministic fallback retained; no Gemini explanation is available.');}
   finally{if(generation.current===version){setBusy(false);setToken('');if(widget.current!==null)window.turnstile?.reset(widget.current)}}
  }
  if(!supported)return <p>Run a synthetic CBPR+ or SEPA payment first to enable optional Gemini.</p>;
  return <div className="gemini-panel">
   <h3>Optional Gemini review</h3>
-  <p>Only the rail, executed stages and finding codes are sent to the protected Render service. Payment messages, names, accounts and addresses are excluded.</p>
-  <label><input type="checkbox" checked={consent} onChange={e=>{generation.current++;setBusy(false);setResult(null);setConsent(e.target.checked)}}/> I confirm this is synthetic test data and consent to sending this limited evidence to Gemini.</label>
+  <p>Send only the rail, executed stages and finding codes. The protected service retrieves curated educational context and checks Gemini’s explanation against that evidence. Payment messages, names, accounts and addresses are excluded.</p>
+  <label><input type="checkbox" checked={consent} onChange={e=>{generation.current++;setBusy(false);setResult(null);setReviewed(false);setConsent(e.target.checked)}}/> I confirm this is synthetic test data and consent to sending this limited evidence to Gemini.</label>
   <div ref={element} aria-label="Human verification"/>
   <button className="primary" disabled={!consent||!enabled||!token||busy} onClick={()=>void ask()}>{busy?'Asking Gemini…':'Ask Gemini'}</button>
   <p aria-live="polite">{message}</p>
-  <div data-testid="gemini-provenance"><strong>{result?'GEMINI · provider: Google · model: '+result.model:'DETERMINISTIC_FALLBACK · model: null · no Gemini response'}</strong>
-   <p>Retrieval: [] — no knowledge retrieval was performed; no RAG citations are available.</p>
+  <div data-testid="gemini-provenance"><strong>{result?.mode==='gemini'?'GEMINI · provider: Google · model: '+result.model:'DETERMINISTIC_FALLBACK · model: null · no Gemini response'}</strong>
+   {!result?.retrieval?.length?<p>Retrieval: [] — no retrieved sources are available; no RAG citations are shown.</p>:<>
+    <h4>Retrieved educational context</h4><p>These are curated summaries, not full rulebooks or proof about this payment. Relevance ranking is not confidence in correctness.</p>
+    <ul data-testid="rag-sources">{result.retrieval.map(source=><li key={source.id}><a href={source.url} target="_blank" rel="noopener noreferrer">{source.topic}</a> · {source.id} · reviewed {source.reviewed}
+     {result.mode==='gemini'&&result.citationIds?.includes(source.id)?' · Cited by Gemini':' · Retrieved context only'}<p>{source.summary}</p></li>)}</ul>
+   </>}
    {result&&<><p>{result.advice.summary}</p><h4>Suggested review actions</h4><ul>{result.advice.actions.map((s,i)=><li key={i}>{s}</li>)}</ul><h4>Cautions</h4><ul>{result.advice.cautions.map((s,i)=><li key={i}>{s}</li>)}</ul></>}
   </div>
+  {result&&<><details><summary>How this explanation was produced</summary><p>{result.framework??'Direct provider'} · {result.promptVersion??'legacy prompt'} · {result.knowledgeVersion??'no knowledge version'}</p>
+   <p>Tools are selected by a fixed read-only workflow. Gemini cannot choose arbitrary tools, change a payment, or fetch a website.</p>
+   <pre>{JSON.stringify({traceId:result.traceId,tools:result.toolTrace,evaluation:result.evaluation,fallbackReason:result.fallbackReason},null,2)}</pre>
+   <p>Automated checks cannot guarantee factual accuracy. No protected-group or real bank accuracy evaluation is claimed.</p></details>
+   <button onClick={()=>setReviewed(true)} disabled={reviewed}>{reviewed?'Explanation reviewed in this view':'Mark explanation reviewed'}</button>
+   <p>{reviewed?'Review acknowledgement is local to this view; it is not payment approval.':'Awaiting human review. Verify sources and original evidence before relying on this explanation.'}</p>
+  </>}
   <p>Human review required. Advisory only; this does not validate a scheme, authorise a payment, or apply any corrections. Deterministic execution evidence below remains separate.</p>
  </div>;
 }

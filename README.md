@@ -66,3 +66,7 @@ See the [complete 43-context UK/EU payment coverage matrix](docs/UK-EU-PAYMENT-C
 **Not official XSD/MIG or scheme conformance, live tracking, sanctions screening or settlement.** Every case stays in your own browser tab and is not sent to a shared backend.
 
 [Coverage and safety documentation](docs/PAYMENT_INTELLIGENCE.md)
+
+### Grounded optional AI review
+
+The CBPR+ and SEPA workbench includes opt-in Gemini review with curated retrieval, source citations, a bounded LangGraph workflow, two read-only tools and evidence checks. Human review remains required. See the [AI system card](docs/WORKBENCH-AI-SYSTEM-CARD.md) for data handling, evaluations and limitations.

@@ -1,0 +1,37 @@
+name: Opt-in genuine workbench AI evaluation
+on:
+  workflow_dispatch:
+    inputs:
+      count:
+        description: '1-3 synthetic live provider calls; no retries'
+        default: '3'
+        required: true
+permissions:
+  contents: read
+jobs:
+  live-workbench-eval:
+    if: ${{ vars.ADDRESSRAIL_ENABLE_REAL_GEMINI_EVAL == 'true' && vars.ADDRESSRAIL_GEMINI_FREE_TIER_CONFIRMED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      # Same allowlisted model as the existing opt-in investigation evaluation.
+      GEMINI_MODEL: gemini-3.5-flash-lite
+      EVAL_COUNT: ${{ inputs.count }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - name: Bounded synthetic live evaluation
+        run: |
+          test -n "$GEMINI_API_KEY"
+          case "$EVAL_COUNT" in 1|2|3) ;; *) exit 1 ;; esac
+          python -m backend.evaluate_workbench --live --confirm-live-provider-cost --limit "$EVAL_COUNT" --output /tmp/workbench-live-evaluation.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: workbench-genuine-provider-evaluation
+          path: /tmp/workbench-live-evaluation.json
+          retention-days: 3
