@@ -14,6 +14,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
+from backend.workbench_ai import run_review, build_prompt, response_schema, Evidence
+
 app = FastAPI(title="AddressRail AI", version="0.2.0", docs_url="/api/docs")
 origins = [s.strip() for s in os.getenv("ALLOWED_ORIGINS", "http://localhost:8080").split(",") if s.strip()]
 app.add_middleware(
@@ -56,7 +58,8 @@ async def config():
     ready = ai_ready()
     return JSONResponse(
         {"aiEnabled": ready, "turnstileSiteKey": os.getenv("TURNSTILE_SITE_KEY", "") if ready else "",
-         "model": os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite") if ready else None},
+         "model": os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite") if ready else None,
+         "workbenchAiVersion": 2, "workbenchFramework": "LangGraph"},
         headers={"Cache-Control": "no-store"},
     )
 
@@ -75,6 +78,10 @@ def make_excerpt(analysis: dict[str, Any]) -> list[dict[str, Any]]:
         # Allow only bounded rule identifiers; never forward raw payment fields or prose.
         if len(codes) > 40 or any(not isinstance(c, str) or not re.fullmatch(r"[A-Z][A-Z0-9_]{0,63}", c) for c in codes):
             raise HTTPException(422, "Invalid workbench finding codes.")
+        try:
+            Evidence(rail=rail, stages=stages, finding_codes=codes).checked()
+        except ValueError as ex:
+            raise HTTPException(422, "Unsupported educational finding codes.") from ex
         return [{"context": "synthetic payment workbench", "rail": rail,
                  "stages": stages, "finding_codes": codes,
                  "validation_scope": "internal educational metadata checks only"}]
@@ -197,5 +204,32 @@ async def explain(payload: ExplainRequest, request: Request):
     host = request.client.host if request.client else "unknown"
     await verify_turnstile(payload.turnstile_token, host)
     consume_quota(host)
-    response = await ask_gemini(excerpt)
+    if payload.analysis.get("product") == "AddressRail Workbench":
+        response = await run_review(excerpt, ask_workbench_gemini)
+    else:
+        response = await ask_gemini(excerpt)
     return JSONResponse(response, headers={"Cache-Control": "no-store"})
+
+
+async def ask_workbench_gemini(context: dict) -> dict:
+    """One schema-constrained provider call. The graph validates it independently."""
+    model = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite")
+    if not _MODEL_PATTERN.fullmatch(model):
+        raise ValueError("Invalid model configuration")
+    async with httpx.AsyncClient(timeout=25) as client:
+        response = await client.post(
+            f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+            headers={"x-goog-api-key": os.environ["GEMINI_API_KEY"]},
+            json={"contents": [{"parts": [{"text": build_prompt(context)}]}],
+                  "generationConfig": {"responseMimeType": "application/json", "temperature": 0.1,
+                                       "maxOutputTokens": 1500, "responseJsonSchema": response_schema(context)}},
+        )
+        response.raise_for_status()
+        candidate = response.json()["candidates"][0]
+        if candidate.get("finishReason") != "STOP":
+            raise ValueError("Incomplete provider output")
+        parts = candidate["content"]["parts"]
+        text = "".join(p.get("text", "") for p in parts if not p.get("thought"))
+        if len(text) > 10000:
+            raise ValueError("Oversized provider output")
+        return {"mode": "gemini", "model": model, "review": json.loads(text)}

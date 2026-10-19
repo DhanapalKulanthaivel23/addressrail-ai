@@ -18,6 +18,12 @@ jobs:
           node-version: '22'
       - run: pip install -r requirements.txt
       - run: python -m pytest -q
+      - run: python -m backend.evaluate_workbench --output /tmp/workbench-ai-evaluation.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: workbench-ai-offline-evaluation
+          path: /tmp/workbench-ai-evaluation.json
+          retention-days: 7
       - run: node --check web/app.js
       - run: node --check web/analytics.js
       - run: node --check web/comments.js

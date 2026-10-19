@@ -16,6 +16,7 @@ on:
       - 'web/studio/**'
       - 'apps/workbench/**'
       - 'tests/workbench-browser.mjs'
+      - 'tests/workbench-gemini-browser.mjs'
       - 'tests/browser-smoke.mjs'
       - '.github/workflows/browser-smoke.yml'
 permissions:

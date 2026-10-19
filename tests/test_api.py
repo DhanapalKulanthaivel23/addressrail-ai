@@ -136,15 +136,18 @@ def test_workbench_protected_provider_and_quota(monkeypatch):
     assert client.post('/api/ai-explain', json=payload).status_code == 403
     async def verified(token, host):
         assert token == 'test-human'
-    async def generated(excerpt):
-        assert excerpt[0]['rail'] == 'sdd-b2b'
-        return {'mode': 'gemini', 'model': 'test-model', 'retrieval': [], 'humanReviewRequired': True,
-                'advice': {'summary': 'Review synthetic evidence', 'actions': [], 'cautions': []}}
+    async def generated(context):
+        assert context['evidence']['rail'] == 'sdd-b2b'
+        return {'mode': 'gemini', 'model': 'test-model', 'review': {
+                'summary': 'Review synthetic evidence', 'actions': [], 'cautions': ['Human review required.'],
+                'citation_ids': [context['retrieval'][0]['id']], 'finding_codes': [],
+                'human_review_required': True, 'scope': 'SYNTHETIC_EDUCATIONAL_ONLY'}}
     monkeypatch.setattr(module, 'verify_turnstile', verified)
-    monkeypatch.setattr(module, 'ask_gemini', generated)
+    monkeypatch.setattr(module, 'ask_workbench_gemini', generated)
     payload['turnstile_token'] = 'test-human'
     response = client.post('/api/ai-explain', json=payload)
     assert response.status_code == 200
     assert response.json()['mode'] == 'gemini'
-    assert response.json()['retrieval'] == []
+    assert response.json()['retrieval']
+    assert response.json()['framework'] == 'LangGraph'
     assert client.post('/api/ai-explain', json=payload).status_code == 429
