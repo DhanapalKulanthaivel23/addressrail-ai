@@ -65,11 +65,12 @@ async def config():
 
 
 def make_excerpt(analysis: dict[str, Any]) -> list[dict[str, Any]]:
-    if analysis.get("product") == "AddressRail Workbench":
+    if analysis.get("product") in ("AddressRail Workbench", "AddressRail Message Validator"):
         if len(json.dumps(analysis, ensure_ascii=False)) > 25000:
             raise HTTPException(413, "Workbench report is too large.")
         rail = analysis.get("rail")
-        if analysis.get("synthetic") is not True or rail not in RAILS:
+        is_message=analysis.get("product") == "AddressRail Message Validator"
+        if analysis.get("synthetic") is not True or rail not in RAILS or (is_message and rail not in ("mt", "mx")) or (not is_message and rail in ("mt", "mx")):
             raise HTTPException(422, "Supported synthetic workbench report required.")
         codes = analysis.get("finding_codes")
         stages = analysis.get("stages")
@@ -82,7 +83,7 @@ def make_excerpt(analysis: dict[str, Any]) -> list[dict[str, Any]]:
             Evidence(rail=rail, stages=stages, finding_codes=codes).checked()
         except ValueError as ex:
             raise HTTPException(422, "Unsupported educational finding codes.") from ex
-        return [{"context": "synthetic payment workbench", "rail": rail,
+        return [{"context": "synthetic MT/MX message review" if is_message else "synthetic payment workbench", "rail": rail,
                  "stages": stages, "finding_codes": codes,
                  "validation_scope": "internal educational metadata checks only"}]
     if analysis.get("product") != "AddressRail AI" or not isinstance(analysis.get("parties"), list):
