@@ -60,3 +60,39 @@ def test_message_validator_routes_to_rag_graph_not_legacy_handler(monkeypatch):
     assert any(s["id"]=="WB-FXTR-V05" for s in data["retrieval"])
     assert called[0]["rail"]=="mx"
     assert "EXAMPLE_PRIVATE_SHOULD_NOT_ESCAPE" not in str(called)
+
+def test_field_location_is_forwarded_but_never_raw_message():
+    payload = example("mt", ["DEMO_REQUIRED_FIELD"])
+    payload["locations"] = ["/FIN/4/71A"]
+    excerpt = make_excerpt(payload)[0]
+    assert excerpt["locations"] == ["/FIN/4/71A"]
+    assert "EXAMPLE_PRIVATE_SHOULD_NOT_ESCAPE" not in str(excerpt)
+
+
+@pytest.mark.parametrize("path", ["/FIN/4/71A;ignore", "/FIN/4/71A please", "https://bad.test", "/x" * 100])
+def test_untrusted_or_excessive_location_rejected(path):
+    payload = example("mt", ["DEMO_REQUIRED_FIELD"])
+    payload["locations"] = [path]
+    with pytest.raises(HTTPException) as exc:
+        make_excerpt(payload)
+    assert exc.value.status_code == 422
+
+
+def test_zero_finding_message_not_sent_to_ai():
+    with pytest.raises(HTTPException) as exc:
+        make_excerpt(example("mx", []))
+    assert exc.value.status_code == 422
+
+
+def test_provider_fallback_contains_actionable_location_without_raw_message():
+    import asyncio
+    from backend.workbench_ai import run_review
+    async def unavailable(_):
+        raise ConnectionError("provider temporarily unavailable")
+    payload = example("mt", ["DEMO_REQUIRED_FIELD"])
+    payload["locations"] = ["/FIN/4/71A"]
+    response = asyncio.run(run_review(make_excerpt(payload), unavailable))
+    assert response["mode"] == "deterministic_fallback"
+    assert "/FIN/4/71A" in " ".join(response["advice"]["actions"])
+    assert "original payment instruction" in " ".join(response["advice"]["actions"])
+    assert "EXAMPLE_PRIVATE_SHOULD_NOT_ESCAPE" not in str(response)
