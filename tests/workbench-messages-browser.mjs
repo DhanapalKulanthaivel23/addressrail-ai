@@ -30,8 +30,6 @@ try{
  assert.match(mtIssues,/23B/); assert.match(mtIssues,/71A/);
  assert.match(mtIssues,/Suggested fix:/);
  await page.getByRole('button',{name:/ISO 20022 MX messages/}).click();
-
- await page.getByRole('button',{name:/ISO 20022 MX messages/}).click();
  await page.getByRole('button',{name:'Load MX example'}).click();
  await page.getByRole('button',{name:'Check MX message'}).click();
  assert.match(await page.getByTestId('raw-issues').textContent(),/Invalid bank identifier/);
