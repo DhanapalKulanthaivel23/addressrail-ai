@@ -1,0 +1,25 @@
+name: ISO 20022 version catalogue
+on:
+  pull_request:
+    paths:
+      - 'schemas/**'
+      - 'tests/test_iso_versioned_catalogue.py'
+      - '.github/workflows/iso-version-catalogue.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'schemas/**'
+      - 'tests/test_iso_versioned_catalogue.py'
+      - '.github/workflows/iso-version-catalogue.yml'
+permissions:
+  contents: read
+jobs:
+  catalogue-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate exact registered ISO versions
+        run: python -m unittest discover -s tests -p 'test_iso_versioned_catalogue.py' -v
