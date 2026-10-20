@@ -3,7 +3,7 @@
 const MAX_FIELD=100;
 function item(label,value){
   const cleaned=(value||'').trim().replace(/[\r\n\t]+/g,' ').slice(0,MAX_FIELD);
-  return cleaned?{label,value:cleaned}:null;
+  return {label,value:cleaned};
 }
 function finField(body,tag){
   const match=body.match(new RegExp('^:'+tag+':([^\\r\\n]+)', 'm'));
@@ -25,7 +25,7 @@ export function summarizeMessage(format,raw,identifier,Parser=globalThis.DOMPars
   }else if(format==='MX'&&typeof Parser==='function'){
     try{
       const document=new Parser().parseFromString(raw,'application/xml');
-      if(document.getElementsByTagName('parsererror').length)return items.filter(Boolean);
+      if(document.getElementsByTagName('parsererror').length)return items.filter(field=>field.value.length>0);
       const get=(tag)=>document.getElementsByTagNameNS('*',tag)[0];
       const value=(tag)=>get(tag)?.textContent||'';
       items.push(item('Message ID',value('MsgId')||value('PmtInfId')||(identifier.startsWith('camt.')?value('Id'):'')));
@@ -38,5 +38,5 @@ export function summarizeMessage(format,raw,identifier,Parser=globalThis.DOMPars
       items.push(item('Date',value('IntrBkSttlmDt')||value('CreDtTm')||value('TradDt')));
     }catch{ /* The caller already ran local parsing checks; never invent fields. */ }
   }
-  return items.filter(Boolean);
+  return items.filter(field=>field.value.length>0);
 }
