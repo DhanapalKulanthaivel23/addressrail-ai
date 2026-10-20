@@ -27,6 +27,12 @@ try{
  await page.getByRole('button',{name:'Load MX example'}).click();
  await page.getByRole('button',{name:'Check MX message'}).click();
  assert.match(await page.getByTestId('raw-issues').textContent(),/Invalid bank identifier/);
+ const details=await page.getByTestId('raw-issues').textContent();
+ assert.match(details,/Where:/);assert.match(details,/Why:/);assert.match(details,/Suggested fix:/);
+ assert.match(details,/Document\/FIToFICstmrCdtTrf/);
+ assert.equal(await page.getByRole('button',{name:'Explain errors & suggest fixes'}).count(),1);
+ assert.equal(await page.getByText(/Optional Gemini review/).count(),0);
+
  await page.getByRole('button',{name:'Apply fix & recheck'}).click();
  assert.ok((await page.getByLabel('MX message input').inputValue()).includes('<BICFI>BANKGB2LXXX</BICFI>'));
  assert.match(await page.getByTestId('raw-validation-status').textContent(),/No errors found by available checks/);
