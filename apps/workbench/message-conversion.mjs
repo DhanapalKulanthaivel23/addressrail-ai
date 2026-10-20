@@ -71,8 +71,10 @@ function mtToMx(raw){
  let other='';
  if(parsed.type==='MT103'){
   other+=partiesFromFin('50K',field('50K'),diagnostics);
-  other+=partiesFromFin('59',field('59')||field('59A')||field('59F'),diagnostics);
+  other+=partiesFromFin('59',field('59'),diagnostics);
   for(const tag of ['50K','59'])if(field(tag))mapped.push({from:'MT/'+tag,to:tag==='50K'?'Dbtr / DbtrAcct':'Cdtr / CdtrAcct'});
+  if(!field('50K'))diagnostics.push(warning('50a','Ordering customer source field is missing or uses an unimplemented option A/F; do not infer the debtor.'));
+  if(!field('59'))diagnostics.push(warning('59a','Beneficiary source field is missing or uses an unimplemented option A/F; do not infer the creditor.'));
   const charges={SHA:'SHAR',OUR:'DEBT',BEN:'CRED'}[field('71A')];
   if(charges){other+=xml('ChrgBr',charges);mapped.push({from:'MT/71A',to:'CdtTrfTxInf/ChrgBr'})}
   else diagnostics.push(warning('71A','Charges bearer absent or unsupported.'));
@@ -134,6 +136,8 @@ function mxToMt(raw,Parser){
   const who=value(select(person,'Nm',ns));
   const addr=select(person,'PstlAdr',ns);
   const lines=Array.from(addr?.children||[]).filter(x=>x.localName==='AdrLine').map(value).filter(Boolean);
+  if(addr&&Array.from(addr.children).some(x=>x.localName!=='AdrLine'))
+    diagnostics.push(warning(personName+'/PstlAdr','Structured address fields may not map to FIN AdrLine; review original address for data loss.'));
   const account=value(path(tx,accountNode+'/Id/Othr/Id',ns))||value(path(tx,accountNode+'/Id/IBAN',ns));
   const parts=[...(account?['/'+account]:[]),...(who?[who]:[]),...lines];
   if(!parts.length){diagnostics.push(warning(tag,'Party details not present.'));return}
