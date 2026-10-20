@@ -19,7 +19,7 @@ export function reviewRawMessage(format,raw,Parser=globalThis.DOMParser){
       const end=raw.lastIndexOf('-}');
       if(end<block4){
         issues.push(finding('DEMO_MT_ENVELOPE','/FIN/4','Missing FIN block-4 -} terminator.'));
-        if(/(?m)^:[0-9]{2}[A-Z]?:/.test(raw.slice(block4+3))&&!raw.includes('-}')){
+        if(/^:[0-9]{2}[A-Z]?:/m.test(raw.slice(block4+3))&&!raw.includes('-}')){
           proposal={description:'Append missing FIN block-4 terminator (no field values invented).',corrected:raw.replace(/\s*$/,'')+'\n-}'};
         }
       }else{
