@@ -120,7 +120,7 @@ function mxToMt(raw,Parser){
  const ref=value(path(tx,'PmtId/InstrId',ns))||value(path(g,'MsgId',ns));
  if(ref){addFin(fields,'20',ref,diagnostics,'PmtId/InstrId');mapped.push({from:'PmtId/InstrId or GrpHdr/MsgId',to:'MT/20'})}
  else diagnostics.push(warning('20','Missing sender reference.'));
- if(mt==='MT103'){fields.push(':23B:CRED');diagnostics.push(warning('23B','CRED is a default preview bank-operation code, not confirmed by source. Remove or review before use.'))}
+ if(mt==='MT103'){diagnostics.push(warning('23B','Bank operation code is not supplied by the MX source; do not invent one.'))}
  else {const related=value(path(tx,'PmtId/EndToEndId',ns));if(related)addFin(fields,'21',related,diagnostics,'PmtId/EndToEndId');else diagnostics.push(warning('21','Related reference is unavailable.'))}
  const amountNode=path(tx,'IntrBkSttlmAmt',ns);
  const amount=value(amountNode),currency=amountNode?.getAttribute('Ccy')||'';
