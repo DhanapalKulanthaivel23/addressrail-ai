@@ -29,7 +29,7 @@ export function MessageGateway({openSandbox}:{openSandbox:()=>void}){
      <FileText size={29}/><strong>SWIFT MT messages</strong><span>FIN blocks, tagged fields and safe format fixes</span><em>MT103 · MT202 · other three-digit MT identifiers</em>
     </button>
     <button className={'gateway-choice '+(format==='MX'?'chosen':'')} onClick={()=>choose('MX')} aria-pressed={format==='MX'}>
-     <FileCode2 size={29}/><strong>ISO 20022 MX messages</strong><span>XML structure, message namespace and BIC checks</span><em>pain.* · pacs.* · camt.*</em>
+     <FileCode2 size={29}/><strong>ISO 20022 MX messages</strong><span>XML structure, message namespace and selected BIC checks</span><em>pain.* · pacs.* · camt.* · fxtr.* · other ISO families</em>
     </button>
    </div>
    <div className="boundary"><ShieldCheck size={20}/>Only synthetic data. Basic syntax checks are available; full SWIFT FIN rules, version-specific XSDs and payment-scheme validation are not yet connected to this screen. No payment is transmitted or corrected automatically.</div>
@@ -37,7 +37,7 @@ export function MessageGateway({openSandbox}:{openSandbox:()=>void}){
     <div className="gateway-review-title"><button onClick={()=>{setFormat(null);setReport(null);setMessage('')}}><ArrowLeft size={16}/> Choose format</button><h2>{format==='MT'?'MT error correction & AI review':'MX error correction & AI review'}</h2></div>
     <div className="gateway-editor">
      <label className="panel" htmlFor="raw-message-input">{format} message input
-      <textarea id="raw-message-input" aria-label={format+' message input'} value={message} onChange={e=>edit(e.target.value)} placeholder={format==='MT'?'Paste complete FIN MT blocks...':'Paste ISO 20022 Document XML...'} spellCheck={false} maxLength={65536}/>
+      <textarea id="raw-message-input" aria-label={format+' message input'} value={message} onChange={e=>edit(e.target.value)} placeholder={format==='MT'?'Paste complete FIN MT blocks...':'Paste ISO 20022 Document XML (pain, pacs, camt, fxtr...)...'} spellCheck={false} maxLength={65536}/>
      </label>
      <div className="panel gateway-results">
       <h3>Validation results</h3>
@@ -45,7 +45,7 @@ export function MessageGateway({openSandbox}:{openSandbox:()=>void}){
        <p data-testid="raw-validation-status"><strong>{report.identifier}</strong> · {report.issues.length?'Review required':'No local syntax finding'}</p>
        <p className="hint">Evidence level: LOCAL_SYNTAX_SUBSET_ONLY. XSD: not assessed. Scheme validity: not assessed.</p>
        {report.issues.length?<ul data-testid="raw-issues">{report.issues.map((issue,i)=><li key={i}><strong>{issue.code}</strong> · {issue.path}<p>{issue.detail}</p></li>)}</ul>:<p><CheckCircle2 size={16}/> Limited checks found no issue. This is not a valid payment certification.</p>}
-       {report.proposal?<><h3>Reviewable correction</h3><p>{report.proposal.description}</p><pre data-testid="correction-preview">{report.proposal.corrected}</pre><button className="primary" onClick={fix}>Apply reviewed correction & recheck</button></>:<p><AlertTriangle size={16}/> No safe automatic correction available. Missing payment data, malformed XML and unsupported fields require manual review.</p>}
+       {report.proposal?<><h3>Reviewable correction</h3><p>{report.proposal.description}</p><pre data-testid="correction-preview">{report.proposal.corrected}</pre><button className="primary" onClick={fix}>Apply reviewed correction & recheck</button></>:<p><AlertTriangle size={16}/> No safe automatic correction available. Missing trade/payment details, schema mismatches and unsupported fields require manual review.</p>}
        {approved&&<p role="status">Correction applied and rechecked locally.</p>}
       </>}
      </div>
