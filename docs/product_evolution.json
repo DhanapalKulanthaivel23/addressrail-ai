@@ -299,6 +299,19 @@
         "tests/raw-payment-field-rules.test.mjs",
         "tests/test_message_rag_gateway.py"
       ]
+    },
+    {
+      "id": "PUB-025",
+      "date": "2026-10-20",
+      "status": "FEATURE_BRANCH_ONLY",
+      "title": "Concise success screen with message facts and no generic AI narrative",
+      "description": "For MT/MX local format checks that return no findings, display a concise checks-passed state and message fields extracted only from the supplied content (type, reference, available amount, currency and date). Do not ask a model or display generic advice, recommendation lists or policy narration on clean local checks. Existing targeted errors keep their path, reason and fix guidance. No claim of full official FIN/XSD, scheme validity, settlement or payment authorisation is implied by passing the installed subset checks.",
+      "evidence": [
+        "apps/workbench/message-summary.mjs",
+        "apps/workbench/message-gateway.tsx",
+        "tests/message-success-summary.test.mjs",
+        "tests/workbench-messages-browser.mjs"
+      ]
     }
   ]
 }
