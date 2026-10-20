@@ -18,10 +18,9 @@ const pretty=(v:unknown)=>JSON.stringify(v,null,2);
 const icons={swift:Globe2,sepa:Euro,uk:PoundSterling,other:Layers};
 function download(value:string,name:string){const url=URL.createObjectURL(new Blob([value],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function App(){
- const [entry,setEntry]=useState<'gateway'|'sandbox'>('gateway');
  const [productId,setProduct]=useState('cbpr'),[scenario,setScenario]=useState('baseline');
  const [input,setInput]=useState(()=>pretty(generateFixture('cbpr'))),[execution,setExecution]=useState<DemoResponse|null>(null);
- const [tab,setTab]=useState('Payment testing'),[selected,setSelected]=useState<ExecutionStep|null>(null);
+ const [tab,setTab]=useState('MT / MX validator'),[selected,setSelected]=useState<ExecutionStep|null>(null);
  const [notice,setNotice]=useState('Ready. Synthetic records only.'),[storage,setStorage]=useState('Local session not saved');
  const [output,setOutput]=useState(''),[ready,setReady]=useState(false);
  const product=getProduct(productId);
@@ -60,17 +59,17 @@ function App(){
  const nodes:Node[]=execution?.steps.map((step,i)=>({id:step.id,position:{x:40+i*310,y:70},data:{label:step.id+' · '+step.result},style:{width:240,borderColor:'#06b6d4'}}))??[];
  const edges:Edge[]=execution?.steps.slice(1).map((step,i)=>({id:'edge-'+i,source:execution.steps[i].id,target:step.id,label:step.messageType,markerEnd:{type:MarkerType.ArrowClosed},data:{step},animated:false}))??[];
  const report=execution?.report as {issues?:unknown[];proposals?:unknown[]}|undefined;
- if(entry==='gateway')return <MessageGateway openSandbox={()=>setEntry('sandbox')}/>;
  return <div className="shell">
   <aside><a className="brand" href="../"><Landmark size={28}/><span>AddressRail <b>AI</b><small>PAYMENT LEARNING PLATFORM</small></span></a>
+   <button className="message-nav" aria-current={tab==='MT / MX validator'?'page':undefined} onClick={()=>setTab('MT / MX validator')}><Layers size={19}/> MT / MX Message Validator <ChevronRight size={16}/></button>
    <div className="side-label">PRODUCTS</div>
    {PRODUCT_GROUPS.map(group=>{const Icon=icons[group.id as keyof typeof icons];return <details key={group.id} open={group.children.includes(productId)||undefined}><summary><Icon size={18}/>{group.name}<ChevronRight size={15}/></summary><div className="subproducts">{group.children.map(id=><button key={id} aria-current={id===productId?'page':undefined} onClick={()=>reset(id)}>{getProduct(id).name}</button>)}</div></details>})}
    <div className="tool-nav"><div className="side-label">PLATFORM TOOLS</div><button onClick={()=>setTab('AddressTune / Correction')}>AddressTune / Correction</button><button onClick={()=>setTab('AML / Compliance')}>AML / Sanctions / Compliance</button><button onClick={()=>setTab('MQ & File transport')}>REST / MQ / Kafka / Files / SFTP</button></div>
    <div className="side-links"><a href="../../">AddressTune · existing lab ↗</a><a href="../open-demo/">Investigation and guest cases ↗</a><a href="../payment-intelligence/">Cross-rail intelligence ↗</a><a href="../ai-lab/">AI learning lab ↗</a></div>
    <p className="side-note">Fictional payments. Optional protected Gemini explanations. No funds movement or account required.</p>
   </aside>
-  <div className="workspace"><header><button onClick={()=>setEntry('gateway')}>MT / MX message validator</button><span><span className="dot"/> PUBLIC SYNTHETIC SANDBOX</span><a href="../">Banking Studio ↗</a></header>
-   <main><div className="heading"><div><p className="eyebrow">PAYMENT WORKBENCH / {product.parentProduct.toUpperCase()}</p><h1>{product.name}</h1><p>Inspect a fictional payment, follow the execution, and review its evidence.</p></div><span className="badge">{product.implementation.status}</span></div>
+  <div className="workspace"><header><span><span className="dot"/> PUBLIC SYNTHETIC SANDBOX</span><a href="../">Banking Studio ↗</a></header>
+   <main>{tab==='MT / MX validator'?<MessageGateway embedded openSandbox={()=>setTab('Payment testing')}/>:<><div className="heading"><div><p className="eyebrow">PAYMENT WORKBENCH / {product.parentProduct.toUpperCase()}</p><h1>{product.name}</h1><p>Inspect a fictional payment, follow the execution, and review its evidence.</p></div><span className="badge">{product.implementation.status}</span></div>
     <div className="boundary"><ShieldCheck size={19}/><span>Internal educational checks only. Official schema and scheme validation are not configured. Enter synthetic data only.</span></div>
     <nav className="tabs" aria-label="Product views">{[...product.tabs,...PLATFORM_TABS].map(name=><button key={name} aria-pressed={tab===name} onClick={()=>setTab(name)}>{name}</button>)}</nav>
     <section hidden={tab!=='Payment testing'}>
@@ -90,6 +89,7 @@ function App(){
     <section hidden={tab!=='AML / Compliance'}><ScreeningWorkbench input={input}/></section>
     <section hidden={tab!=='MQ & File transport'}><ChannelsWorkbench input={input}/></section>
     <p className="status" role="status">{notice}</p><footer><span>{storage}</span><button onClick={()=>{void sessionData('clear').then(()=>setStorage('Saved synthetic session cleared')).catch(()=>setStorage('Storage unavailable'))}}><Trash2 size={14}/>Clear saved session</button><span>No secrets or provider keys in the browser.</span></footer>
+   </>}
    </main>
   </div>
  </div>
