@@ -83,7 +83,7 @@ def make_excerpt(analysis: dict[str, Any]) -> list[dict[str, Any]]:
         if (not isinstance(locations, list) or len(locations) > 40
                 or (locations and len(locations) != len(codes))
                 or any(not isinstance(path, str) or len(path) > 160
-                       or not re.fullmatch(r"/[A-Za-z0-9/\\[\\]]{0,159}", path)
+                       or not re.fullmatch(r"/[A-Za-z0-9/\[\]]{0,159}", path)
                        for path in locations)):
             raise HTTPException(422, "Invalid field location metadata.")
         try:
