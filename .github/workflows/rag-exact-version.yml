@@ -1,0 +1,23 @@
+name: RAG exact version retrieval
+on:
+  pull_request:
+    paths:
+      - 'ai-agents/investigation/rag.py'
+      - 'ai-agents/investigation/tests/test_rag_exact_version.py'
+      - '.github/workflows/rag-exact-version.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ai-agents/investigation/rag.py'
+      - 'ai-agents/investigation/tests/test_rag_exact_version.py'
+permissions:
+  contents: read
+jobs:
+  rag-version-filter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: PYTHONPATH=ai-agents python -m unittest discover -s ai-agents/investigation/tests -p 'test_rag_exact_version.py' -v

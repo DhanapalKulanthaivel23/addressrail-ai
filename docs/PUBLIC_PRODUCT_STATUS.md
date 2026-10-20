@@ -78,3 +78,7 @@ The private R1/R2/R3 knowledge archive **does not move into the public repo and 
 ## PUB-018 — Fail-closed ISO message version catalogue (20 October 2026)
 
 A public feature branch adds explicit registration of installed ISO base XSDs `pacs.008.001.13` and `pacs.008.001.14`, with tests and a dedicated CI check. Other `pain.*`, `pacs.*` and `camt.*` versions remain unregistered until independently sourced and checksum-pinned; no SWIFT MT full syntax check or scheme conformance is claimed. This is version inventory groundwork, not a complete standards implementation or certification, and does not copy private network rules into the public repository. Merge and deployment remain conditional on passing CI.
+
+## PUB-019 — Exact RAG source-version filter (20 October 2026)
+
+The investigation TF-IDF knowledge store now supports an optional **exact** source metadata version filter, while retaining existing effective-date/rail filters. Synthetic regression fixtures distinguish SR2025 and SR2026 source versions, reject invalid filters and avoid treating an effective year as scheme applicability. This internal retrieval feature does not yet wire a scheme version selector into every UI/API call or constitute live Gemini, embeddings, complete licensed standards ingestion or official banking rule validation. Merge remains contingent on CI.
