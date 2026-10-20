@@ -30,7 +30,7 @@ function postalFromLines(lines,overrides={}){
  const issues=[];
  if(!town)issues.push('Town name needs confirmation.');
  if(!country)issues.push('Country needs confirmation.');
- let mode=street&&building&&parts.length===0?'structured':'hybrid';
+ let mode=street&&parts.length===0?'structured':'hybrid';
  const linesLeft=parts;
  if(linesLeft.length>2||linesLeft.some(x=>x.length>70)){
   issues.push('Address lines exceed the hybrid format limit of two lines, 70 characters each.');
@@ -45,10 +45,11 @@ function postalFromLines(lines,overrides={}){
 }
 function fromFin(raw){
  const block=raw.includes('{4:')?raw.slice(raw.indexOf('{4:')+3).split('-}')[0]:raw;
- const fields=[...block.matchAll(/^:(50K|59|59F):/gm)];
+ const fields=[...block.matchAll(/^:([0-9]{2}[A-Z]?):/gm)];
  const results=[];
  for(let i=0;i<fields.length;i++){
   const f=fields[i],following=fields[i+1]?.index??block.length;
+  if(!['50K','59','59F'].includes(f[1]))continue;
   const value=block.slice(f.index+f[0].length,following).trim();
   const pieces=value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
   if(pieces[0]?.startsWith('/'))pieces.shift();
@@ -74,7 +75,7 @@ function fromXml(raw,Parser){
     const addressLines=[...adr.children].filter(x=>x.localName==='AdrLine').map(x=>x.textContent?.trim()||'').filter(Boolean);
     const lines=[...addressLines];
     const extraStreet=[get('BldgNb'),get('StrtNm')].filter(Boolean).join(' ');
-    if(extraStreet&&!addressLines.length)lines.push(extraStreet);
+    // Existing StrtNm/BlgNb already remain in structured fields; do not duplicate as AdrLine.
     sources.push({party:partyName,name:[...p.children].find(x=>x.localName==='Nm')?.textContent?.trim()||'',
       lines,overrides:{town:get('TwnNm'),country:get('Ctry'),postcode:get('PstCd'),
                     street:addressLines.length?'':get('StrtNm'),building:addressLines.length?'':get('BldgNb')}});
