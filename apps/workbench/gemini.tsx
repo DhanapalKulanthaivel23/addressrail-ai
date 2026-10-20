@@ -68,7 +68,7 @@ export function GeminiWorkbench({execution,rawReport=null}:{execution:DemoRespon
    if(data.retrieval!==undefined&&(!Array.isArray(data.retrieval)||!data.retrieval.every(safeSource)))throw Error('Invalid retrieved source metadata.');
    if(data.citationIds!==undefined&&(!Array.isArray(data.citationIds)||!data.citationIds.every((id:unknown)=>typeof id==='string'&&data.retrieval?.some((s:Source)=>s.id===id))))throw Error('Unsupported citation returned.');
    if(generation.current===version){setResult(data);setMessage(data.mode==='gemini'?'Gemini response received. Human review required.':'Local deterministic fallback retained; Gemini output was unavailable or rejected by evidence checks.');}
-  }catch(error){if(generation.current===version)setMessage((error instanceof Error&&error.name==='TimeoutError'?'Gemini request timed out. Check whether the backend is online or the provider is responding.':error instanceof Error?error.message:'Gemini unavailable.')+' Local deterministic findings remain available; this was not a successful Gemini response.');}
+  }catch(error){if(generation.current===version)setMessage((error instanceof Error&&error.name==='TimeoutError'?'Gemini request timed out. Check whether the backend is online or the provider is responding.':error instanceof Error?error.message:'Gemini unavailable.')+' Local deterministic fallback retained; this was not a successful Gemini response.');}
   finally{if(generation.current===version){setBusy(false);setToken('');if(widget.current!==null)window.turnstile?.reset(widget.current)}}
  }
  if(!supported)return <p>Run a synthetic payment in this registered context first to enable optional Gemini.</p>;
