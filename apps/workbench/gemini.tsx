@@ -83,7 +83,7 @@ export function GeminiWorkbench({execution,rawReport=null}:{execution:DemoRespon
    <p>{result.advice.summary}</p>
    {result.advice.actions.length>0&&<><h4>Suggested fixes</h4><ul>{result.advice.actions.map((action,i)=><li key={i}>{action}</li>)}</ul></>}
    {result.advice.cautions.length>0&&<><h4>Consider before applying</h4><ul>{result.advice.cautions.map((caution,i)=><li key={i}>{caution}</li>)}</ul></>}
-   {result.retrieval?.length>0&&<details><summary>Supporting references</summary><ul>{result.retrieval.filter(safeSource).map(source=><li key={source.id}><a href={source.url} target="_blank" rel="noopener noreferrer">{source.topic}</a></li>)}</ul></details>}
+   {(result.retrieval?.length??0)>0&&<details><summary>Supporting references</summary><ul>{(result.retrieval??[]).filter(safeSource).map(source=><li key={source.id}><a href={source.url} target="_blank" rel="noopener noreferrer">{source.topic}</a></li>)}</ul></details>}
    <p className="hint">Review suggested changes before applying them to a message.</p>
   </div>}
  </div>;
