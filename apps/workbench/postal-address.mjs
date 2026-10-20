@@ -23,7 +23,7 @@ function postalFromLines(lines,overrides={}){
   const matched=[...cities].find(([name])=>upper===name||upper.endsWith(' '+name));
   if(!town&&matched){town=matched[1];const rest=parts[i].slice(0,parts[i].length-matched[0].length).trim();if(rest)parts[i]=rest;else parts.splice(i,1)}
  }
- if(!street&&parts.length===1){
+ if(!street&&!overrides.preferHybrid&&parts.length===1){
   const match=/^(\d{1,5}[A-Z]?)\s+(.{3,68})$/i.exec(parts[0]);
   if(match){building=building||match[1];street=match[2];parts.pop()}
  }
@@ -78,7 +78,7 @@ function fromXml(raw,Parser){
     // Existing StrtNm/BlgNb already remain in structured fields; do not duplicate as AdrLine.
     sources.push({party:partyName,name:[...p.children].find(x=>x.localName==='Nm')?.textContent?.trim()||'',
       lines,overrides:{town:get('TwnNm'),country:get('Ctry'),postcode:get('PstCd'),
-                    street:addressLines.length?'':get('StrtNm'),building:addressLines.length?'':get('BldgNb')}});
+                    street:addressLines.length?'':get('StrtNm'),building:addressLines.length?'':get('BldgNb'),preferHybrid:addressLines.length>0}});
    }
   }
   return {sources};
