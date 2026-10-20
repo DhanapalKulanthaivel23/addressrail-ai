@@ -2,6 +2,7 @@ import React,{useMemo,useState} from 'react';
 import {FileCode2,FileText,ArrowLeft,Play,CheckCircle2} from 'lucide-react';
 import {GeminiWorkbench} from './gemini';
 import {reviewRawMessage,MT_EXAMPLE,MX_EXAMPLE} from './raw-review.mjs';
+import {summarizeMessage} from './message-summary.mjs';
 
 type Format='MT'|'MX';
 type Issue={code:string;path:string;detail:string};
@@ -65,13 +66,16 @@ export function MessageGateway({openSandbox,embedded=false}:{openSandbox:()=>voi
      <div className="panel gateway-results" aria-live="polite">
       <h3>Errors &amp; suggested fixes</h3>
       {!report?<p>Run checks to review the message.</p>:<>
-       <p data-testid="raw-validation-status"><strong>{report.identifier==='UNKNOWN'?'Message type not identified':report.identifier}</strong> · {report.issues.length?report.issues.length+' error'+(report.issues.length===1?'':'s'):'No issues in checked fields · full validation not available'}</p>
+       <p data-testid="raw-validation-status"><strong>{report.identifier==='UNKNOWN'?'Message type not identified':report.identifier}</strong> · {report.issues.length?report.issues.length+' error'+(report.issues.length===1?'':'s'):'Checks passed'}</p>
        {report.issues.length?<ul className="review-issues" data-testid="raw-issues">{report.issues.map((issue,i)=><li key={i} className="review-issue">
          <strong>{issueTitle(issue)}</strong>
          <div><b>Where:</b> <code>{issue.path}</code></div>
          <div><b>Why:</b> {issue.detail}</div>
          <div><b>Suggested fix:</b> {fixAdvice(issue,report.proposal)}</div>
-       </li>)}</ul>:<p className="review-success"><CheckCircle2 size={16}/> No issues in the checked fields. This does not confirm the entire message is valid.</p>}
+       </li>)}</ul>:<div className="review-success" role="status"><CheckCircle2 size={18}/> Success — checks passed</div>}}
+       {!report.issues.length&&<dl className="message-summary" data-testid="message-summary">
+        {summarizeMessage(format,message,report.identifier).map(field=><div key={field.label}><dt>{field.label}</dt><dd>{field.value}</dd></div>)}
+       </dl>}
        {report.proposal&&<div className="review-proposal"><details><summary>Preview correction</summary><p>{report.proposal.description}</p><pre data-testid="correction-preview">{report.proposal.corrected}</pre></details><button className="primary" onClick={fix}>Apply fix &amp; recheck</button></div>}
        {approved&&<p role="status">Correction applied and checked again.</p>}
       </>}
