@@ -104,3 +104,29 @@ aside .message-nav:hover:not(:disabled),aside .message-nav[aria-current="page"]{
 .message-gateway.embedded h1{font-size:clamp(28px,3vw,40px)}
 .message-gateway.embedded .gateway-choices{margin-top:20px}
 @media(max-width:600px){aside .message-nav{margin:0 0 15px;width:100%;max-width:360px}}
+
+/* Focused customer-facing MT/MX review: errors, precise location, cause and fix. */
+.message-gateway.embedded .gateway-main{max-width:none;padding:0}
+.message-gateway .gateway-choices{margin-top:18px}
+.message-gateway .gateway-choice{min-height:142px;padding:20px;gap:9px}
+.message-gateway .gateway-choice strong{font-size:21px}
+.message-gateway .gateway-review{margin-top:26px}
+.message-gateway .gateway-results h3{margin-top:0}
+.review-issues{list-style:none;margin:14px 0;padding:0!important;max-height:440px!important;overflow:auto}
+.review-issue{padding:13px 0;border-bottom:1px solid #e1d8ce;line-height:1.65}
+.review-issue>strong{display:block;font-size:14px;color:#803e30;margin-bottom:6px}
+.review-issue>div{margin:4px 0;color:#453f39}
+.review-issue b{color:#302b27}
+.review-issue code{font-size:11px;overflow-wrap:anywhere;color:#365c6d}
+.review-proposal{display:flex;align-items:flex-start;flex-direction:column;gap:12px;margin-top:18px}
+.review-proposal details{width:100%;padding:8px 0}
+.review-proposal summary{font-weight:600}
+.review-success{display:flex;align-items:center;gap:8px;color:#356b50}
+.ai-review-compact{display:grid;justify-items:start;gap:13px;font-size:13px}
+.ai-review-compact .ai-consent{display:flex;align-items:start;gap:8px;line-height:1.5}
+.ai-review-compact .ai-consent input{margin-top:3px}
+.ai-review-compact>p[role="status"]{margin:0}
+.ai-answer{border-top:1px solid #ded4c9;padding-top:12px;width:100%}
+.ai-answer h3,.ai-answer h4{margin:10px 0}
+.ai-answer ul{padding-left:20px}
+@media(max-width:760px){.message-gateway .gateway-choice{min-height:120px}.message-gateway .gateway-choices{grid-template-columns:1fr}.review-issues{max-height:none!important}}

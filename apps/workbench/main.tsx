@@ -66,9 +66,9 @@ function App(){
    {PRODUCT_GROUPS.map(group=>{const Icon=icons[group.id as keyof typeof icons];return <details key={group.id} open={group.children.includes(productId)||undefined}><summary><Icon size={18}/>{group.name}<ChevronRight size={15}/></summary><div className="subproducts">{group.children.map(id=><button key={id} aria-current={id===productId?'page':undefined} onClick={()=>reset(id)}>{getProduct(id).name}</button>)}</div></details>})}
    <div className="tool-nav"><div className="side-label">PLATFORM TOOLS</div><button onClick={()=>setTab('AddressTune / Correction')}>AddressTune / Correction</button><button onClick={()=>setTab('AML / Compliance')}>AML / Sanctions / Compliance</button><button onClick={()=>setTab('MQ & File transport')}>REST / MQ / Kafka / Files / SFTP</button></div>
    <div className="side-links"><a href="../../">AddressTune · existing lab ↗</a><a href="../open-demo/">Investigation and guest cases ↗</a><a href="../payment-intelligence/">Cross-rail intelligence ↗</a><a href="../ai-lab/">AI learning lab ↗</a></div>
-   <p className="side-note">Fictional payments. Optional protected Gemini explanations. No funds movement or account required.</p>
+   <p className="side-note">Review message errors and suggested corrections.</p>
   </aside>
-  <div className="workspace"><header><span><span className="dot"/> PUBLIC SYNTHETIC SANDBOX</span><a href="../">Banking Studio ↗</a></header>
+  <div className="workspace"><header><span><span className="dot"/> PAYMENT WORKBENCH</span><a href="../">Banking Studio ↗</a></header>
    <main>{tab==='MT / MX validator'?<MessageGateway embedded openSandbox={()=>setTab('Payment testing')}/>:<><div className="heading"><div><p className="eyebrow">PAYMENT WORKBENCH / {product.parentProduct.toUpperCase()}</p><h1>{product.name}</h1><p>Inspect a fictional payment, follow the execution, and review its evidence.</p></div><span className="badge">{product.implementation.status}</span></div>
     <div className="boundary"><ShieldCheck size={19}/><span>Internal educational checks only. Official schema and scheme validation are not configured. Enter synthetic data only.</span></div>
     <nav className="tabs" aria-label="Product views">{[...product.tabs,...PLATFORM_TABS].map(name=><button key={name} aria-pressed={tab===name} onClick={()=>setTab(name)}>{name}</button>)}</nav>

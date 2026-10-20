@@ -3,6 +3,17 @@ export const MT_EXAMPLE='{1:F01BANKGB2LAXXX}{2:I103BANKDEFFXXXXN}{4:\n:20:AR-DEM
 export const MX_EXAMPLE='<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.14"><FIToFICstmrCdtTrf><GrpHdr><MsgId>AR-DEMO-008</MsgId></GrpHdr><CdtTrfTxInf><PmtId><EndToEndId>AR-DEMO-008</EndToEndId></PmtId><DbtrAgt><FinInstnId><BICFI>bankgb2lxxx</BICFI></FinInstnId></DbtrAgt></CdtTrfTxInf></FIToFICstmrCdtTrf></Document>';
 const MAX_BYTES=65536;
 function finding(code,path,detail){return {code,path,detail}}
+function elementPath(element){
+  const segments=[];
+  for(let node=element;node&&node.nodeType===1;node=node.parentElement){
+    let index=1;
+    for(let previous=node.previousElementSibling;previous;previous=previous.previousElementSibling){
+      if(previous.localName===node.localName)index++;
+    }
+    segments.unshift(node.localName+(index>1?'['+index+']':''));
+  }
+  return '/'+segments.join('/');
+}
 export function reviewRawMessage(format,raw,Parser=globalThis.DOMParser){
   if(!['MT','MX'].includes(format))throw Error('Select MT or MX.');
   const issues=[];
@@ -68,7 +79,7 @@ export function reviewRawMessage(format,raw,Parser=globalThis.DOMParser){
           for(const bic of bics){
             const value=(bic.textContent||'').trim();
             if(!/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(value)){
-              issues.push(finding('DEMO_BIC_FORMAT','/Document/.../'+bic.localName,'BIC must have 8 or 11 uppercase characters with a valid basic structure.'));
+              issues.push(finding('DEMO_BIC_FORMAT',elementPath(bic),'BIC must have 8 or 11 uppercase characters with a valid basic structure.'));
               const upper=value.toUpperCase();
               const text=(bic.textContent||'');
               const opening='<'+bic.localName+'>';
