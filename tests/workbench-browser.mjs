@@ -6,6 +6,7 @@ const errors=[];
 try{
  const context=await browser.newContext({acceptDownloads:true});const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
  await page.goto((process.env.WORKBENCH_URL || 'http://127.0.0.1:8765/studio/workbench/'));
+ await page.getByRole('button',{name:'Open existing payment workbench'}).click();
  const palette=await page.evaluate(()=>({
   background:getComputedStyle(document.body).backgroundColor,
   sidebar:getComputedStyle(document.querySelector('aside')).backgroundColor,
@@ -51,7 +52,7 @@ try{
  assert.match(await page.getByTestId('step-detail').textContent(),/RECEIVED/);
  await page.locator('.react-flow__edge-interaction').click({force:true});
  assert.match(await page.getByTestId('step-detail').textContent(),/CHECKED/);
- await page.reload();await page.getByText('Recovered synthetic draft from IndexedDB').waitFor();
+ await page.reload();await page.getByRole('button',{name:'Open existing payment workbench'}).click();await page.getByText('Recovered synthetic draft from IndexedDB').waitFor();
  assert.equal(JSON.parse(await page.getByLabel('Input message').inputValue()).creditor.address.town,'Paris');
  await page.getByRole('button',{name:'Clear saved session'}).click();await page.getByText('Saved synthetic session cleared').waitFor();
  await page.locator('summary').filter({hasText:'SEPA'}).click();
@@ -67,6 +68,7 @@ try{
  await page.setViewportSize({width:1440,height:1000});await page.screenshot({path:'/tmp/addressrail-workbench-desktop.png',fullPage:true});
  const isolated=await browser.newContext();await isolated.addInitScript(()=>{Object.defineProperty(window,'indexedDB',{get(){throw Error('blocked')}})});
  const blocked=await isolated.newPage();await blocked.goto((process.env.WORKBENCH_URL || 'http://127.0.0.1:8765/studio/workbench/'));
+ await blocked.getByRole('button',{name:'Open existing payment workbench'}).click();
  await blocked.getByRole('button',{name:'Validate / simulate checks'}).click();
  await blocked.getByRole('status').filter({hasText:'execution complete'}).waitFor();
  assert.equal(errors.length,0,errors.join('\n'));
