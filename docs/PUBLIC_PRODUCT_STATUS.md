@@ -82,3 +82,9 @@ A public feature branch adds explicit registration of installed ISO base XSDs `p
 ## PUB-019 — Exact RAG source-version filter (20 October 2026)
 
 The investigation TF-IDF knowledge store now supports an optional **exact** source metadata version filter, while retaining existing effective-date/rail filters. Synthetic regression fixtures distinguish SR2025 and SR2026 source versions, reject invalid filters and avoid treating an effective year as scheme applicability. This internal retrieval feature does not yet wire a scheme version selector into every UI/API call or constitute live Gemini, embeddings, complete licensed standards ingestion or official banking rule validation. Merge remains contingent on CI.
+
+## PUB-020 — MT/MX-first workbench (20 October 2026)
+
+The first Workbench screen now offers **SWIFT FIN MT** and **ISO 20022 MX** message review. Pasted text remains in the browser. The bounded format checker handles FIN block/tag presence, basic MT103 reference/amount syntax, XML well-formedness, pain/pacs/camt namespace recognition and basic BIC shape. Safe suggested repairs (missing MT terminator or casing an existing BIC) are previewed and applied only after a user click, with local revalidation. No payment facts are invented. The protected RAG/Gemini option sends only allowlisted format and finding codes through Turnstile/consent; it never receives pasted raw message content. Existing JSON simulation remains reachable through the secondary Workbench link.
+
+**Known gaps:** not arbitrary-message correction; no comprehensive licensed FIN field rules, on-page pinned ISO XSD engine, scheme profile checks or certified business outcomes. Other syntactic or semantic errors may require manual intervention. Live Gemini access remains conditional on configuration, quota and user consent; mock CI is not a live-provider accuracy claim. This is an educational synthetic-only interface.
