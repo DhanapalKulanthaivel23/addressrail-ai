@@ -1,0 +1,28 @@
+name: MT MX protected RAG gateway
+on:
+  pull_request:
+    paths:
+      - 'backend/app.py'
+      - 'backend/workbench_ai.py'
+      - 'backend/workbench_knowledge.json'
+      - 'tests/test_message_rag_gateway.py'
+      - '.github/workflows/mt-mx-rag-gateway.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'backend/app.py'
+      - 'backend/workbench_ai.py'
+      - 'backend/workbench_knowledge.json'
+      - 'tests/test_message_rag_gateway.py'
+permissions:
+  contents: read
+jobs:
+  message-rag-security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - run: python -m pytest tests/test_message_rag_gateway.py -q

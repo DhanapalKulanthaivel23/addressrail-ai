@@ -1,0 +1,34 @@
+import assert from 'node:assert/strict';
+import {chromium} from 'playwright';
+const browser=await chromium.launch({headless:true});
+try{
+ const page=await browser.newPage();
+ const errors=[];page.on('pageerror',error=>errors.push(error.message));
+ await page.goto(process.env.WORKBENCH_URL||'http://127.0.0.1:8765/studio/workbench/');
+ await page.getByRole('button',{name:/SWIFT MT messages/}).click();
+ await page.getByRole('button',{name:'Load MT synthetic sample'}).click();
+ await page.getByRole('button',{name:'Run MT checks'}).click();
+ assert.match(await page.getByTestId('raw-validation-status').textContent(),/MT103/);
+ assert.match(await page.getByText(/NOT XSD or scheme validated/).first().textContent(),/NOT XSD/);
+ const input=page.getByLabel('MT message input');
+ await input.fill((await input.inputValue()).replace(/-}$/, ''));
+ await page.getByRole('button',{name:'Run MT checks'}).click();
+ assert.match(await page.getByTestId('raw-issues').textContent(),/DEMO_MT_ENVELOPE/);
+ await page.getByRole('button',{name:'Apply reviewed correction & recheck'}).click();
+ assert.match(await page.getByTestId('raw-validation-status').textContent(),/No local syntax finding/);
+ await page.getByRole('button',{name:/ISO 20022 MX messages/}).click();
+ await page.getByRole('button',{name:'Load MX synthetic sample'}).click();
+ await page.getByRole('button',{name:'Run MX checks'}).click();
+ assert.match(await page.getByTestId('raw-issues').textContent(),/DEMO_BIC_FORMAT/);
+ await page.getByRole('button',{name:'Apply reviewed correction & recheck'}).click();
+ assert.ok((await page.getByLabel('MX message input').inputValue()).includes('<BICFI>BANKGB2LXXX</BICFI>'));
+ assert.match(await page.getByTestId('raw-validation-status').textContent(),/No local syntax finding/);
+ await page.getByLabel('MX message input').fill('<!DOCTYPE Document><Document/>');
+ await page.getByRole('button',{name:'Run MX checks'}).click();
+ assert.match(await page.getByTestId('raw-issues').textContent(),/DEMO_XML_STRUCTURE/);
+ await page.getByRole('checkbox').count().then(count=>assert.equal(count,1));
+ await page.setViewportSize({width:375,height:812});
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+ assert.deepEqual(errors,[]);
+ console.log('MT/MX GATEWAY PASS: choice, samples, error repair, MX correction, malicious XML rejection and mobile');
+}finally{await browser.close()}

@@ -1,5 +1,5 @@
 {
-  "version": "workbench-knowledge-2026-10-20-v2",
+  "version": "workbench-knowledge-2026-10-20-v3",
   "reviewed": "2026-10-19",
   "records": [
     {
@@ -452,6 +452,28 @@
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies CLS FX settlement (GBP/EUR legs) as FX settlement infrastructure (Cross-border). Cross-currency payment-versus-payment risk reduction; not an SCT or CHAPS retail scheme. Listed illustrative messages: FX PvP / funding events. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
+    }
+  ],
+  "message_records": [
+    {
+      "id": "WB-MT-REVIEW",
+      "rails": [
+        "mt"
+      ],
+      "topic": "SWIFT FIN MT message syntax tagged field envelope validation correction",
+      "url": "https://www.swift.com/standards",
+      "reviewed": "2026-10-20",
+      "summary": "SWIFT FIN MT messages use defined message types and field-specific formats. Generic block and field discovery, even after repairing a missing terminator, is not complete FIN syntax or CBPR scheme validation. Never invent a reference, account, agent or settlement fact. Reviewed source guidance and human approval are required."
+    },
+    {
+      "id": "WB-MX-REVIEW",
+      "rails": [
+        "mx"
+      ],
+      "topic": "ISO 20022 pain pacs camt XML schema namespace BIC message validation",
+      "url": "https://www.iso20022.org/iso-20022-message-definitions",
+      "reviewed": "2026-10-20",
+      "summary": "The ISO 20022 catalogue contains exact-version XML message definitions and base schemas for pain, pacs and camt families. Well-formed XML and namespace recognition do not demonstrate base XSD or scheme-specific conformance. Uppercasing an existing BIC can repair a basic syntax presentation issue, but does not verify the institution or other payment fields."
     }
   ]
 }

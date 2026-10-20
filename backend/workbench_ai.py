@@ -18,6 +18,7 @@ from langsmith import tracing_context
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 PROMPT_VERSION = "workbench-review-v2"
+MESSAGE_RAILS = ("mt", "mx")
 # Rail IDs are defined by the vetted, public-safe knowledge catalogue.
 # Product IDs not represented here are rejected rather than misclassified.
 RAILS = tuple(dict.fromkeys(
@@ -27,6 +28,8 @@ RAILS = tuple(dict.fromkeys(
 ))
 # Original summaries of this repository's educational checks, not scheme rule IDs.
 RULES = {
+    "DEMO_MT_ENVELOPE": "An illustrated FIN header or text-block delimiter is missing or malformed; verify the original message against authorised FIN standards.",
+    "DEMO_XML_STRUCTURE": "The ISO Document XML has structural, namespace or well-formedness errors; base XSD and scheme validation have not run.",
     "DEMO_SCENARIO_NOT_APPLICABLE": "Selected fault is not modelled for this learning context.",
     "DEMO_MISSING_REFERENCE": "Illustrative message metadata is incomplete.",
     "DEMO_CURRENCY": "Currency is outside the selected teaching context.",
@@ -53,7 +56,7 @@ class Evidence(BaseModel):
     finding_codes: list[str] = Field(max_length=40)
 
     def checked(self):
-        if self.rail not in RAILS or self.stages != ["RECEIVED", "CHECKED"] or any(c not in RULES for c in self.finding_codes):
+        if self.rail not in (*RAILS, *MESSAGE_RAILS) or self.stages != ["RECEIVED", "CHECKED"] or any(c not in RULES for c in self.finding_codes):
             raise ValueError("Unsupported execution evidence")
         return self
 
@@ -78,10 +81,10 @@ def catalogue():
     data = json.loads(Path(__file__).with_name("workbench_knowledge.json").read_text())
     allowed = {"github.com", "www.iso20022.org", "www.europeanpaymentscouncil.eu", "www.swift.com"}
     ids = set()
-    for r in data["records"]:
+    for r in [*data["records"], *data.get("message_records", [])]:
         url = urlparse(r["url"])
         if (r["id"] in ids or url.scheme != "https" or url.hostname not in allowed
-                or url.username or url.password or not set(r["rails"]) <= set(RAILS)
+                or url.username or url.password or not set(r["rails"]) <= set((*RAILS,*MESSAGE_RAILS))
                 or len(r["summary"]) > 900):
             raise ValueError("Invalid curated source")
         ids.add(r["id"])
@@ -91,7 +94,7 @@ def catalogue():
 @tool
 def explain_findings(rail: str, finding_codes: list[str]) -> list[dict[str, str]]:
     """Read definitions of known educational finding codes; never change payment data."""
-    if rail not in RAILS or len(finding_codes) > 40 or any(c not in RULES for c in finding_codes):
+    if rail not in (*RAILS,*MESSAGE_RAILS) or len(finding_codes) > 40 or any(c not in RULES for c in finding_codes):
         raise ValueError("Unsupported finding tool arguments")
     return [{"code": c, "definition": RULES[c]} for c in dict.fromkeys(finding_codes)]
 
@@ -99,10 +102,10 @@ def explain_findings(rail: str, finding_codes: list[str]) -> list[dict[str, str]
 @tool
 def retrieve_sources(rail: str, finding_codes: list[str]) -> list[dict[str, Any]]:
     """Search a rail-filtered local curated corpus using lexical TF-IDF; no network access."""
-    if rail not in RAILS or len(finding_codes) > 40 or any(c not in RULES for c in finding_codes):
+    if rail not in (*RAILS,*MESSAGE_RAILS) or len(finding_codes) > 40 or any(c not in RULES for c in finding_codes):
         raise ValueError("Unsupported retrieval tool arguments")
     data = catalogue()
-    records = [r for r in data["records"] if rail in r["rails"]]
+    records = [r for r in [*data["records"], *data.get("message_records", [])] if rail in r["rails"]]
     query = words(rail + " synthetic execution findings " + " ".join(RULES[c] for c in finding_codes))
     corpus = [words(r["topic"] + " " + r["summary"]) for r in records]
     df = Counter(t for doc in corpus for t in doc)
