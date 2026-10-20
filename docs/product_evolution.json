@@ -211,7 +211,22 @@
       "status": "FEATURE_BRANCH_ONLY",
       "title": "Explicit ISO base-XSD version registration groundwork",
       "description": "Introduce a fail-closed, provenance-pinned public catalogue that registers exactly installed ISO base-XSD message versions and explicitly rejects unsupported pain, pacs and camt variants. Include isolated CI regression tests. This does not add new XSDs, MT parsing or authoritative Swift/rail scheme policy checks; private rules and proprietary sources remain in the private repository.",
-      "evidence": ["schemas/iso20022/versioned_catalogue.py", "tests/test_iso_versioned_catalogue.py", ".github/workflows/iso-version-catalogue.yml"]
+      "evidence": [
+        "schemas/iso20022/versioned_catalogue.py",
+        "tests/test_iso_versioned_catalogue.py",
+        ".github/workflows/iso-version-catalogue.yml"
+      ]
+    },
+    {
+      "id": "PUB-019",
+      "date": "2026-10-20",
+      "status": "FEATURE_BRANCH_ONLY",
+      "title": "Exact source-version retrieval filter for RAG",
+      "description": "Add optional exact-match source-version filtering to investigation TF-IDF retrieval, while preserving effective-date checks and fail-closed invalid filter handling. Test SR2025 and SR2026 metadata isolation with synthetic records. No embedding model, licensed rulebook ingestion, live Gemini certification or payment authority.",
+      "evidence": [
+        "ai-agents/investigation/rag.py",
+        "ai-agents/investigation/tests/test_rag_exact_version.py"
+      ]
     }
   ]
 }
