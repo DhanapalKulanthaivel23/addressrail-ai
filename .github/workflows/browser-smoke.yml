@@ -20,6 +20,7 @@ on:
       - 'tests/workbench-messages-browser.mjs'
       - 'tests/raw-message-review.test.mjs'
       - 'tests/raw-payment-field-rules.test.mjs'
+      - 'tests/message-success-summary.test.mjs'
       - 'tests/browser-smoke.mjs'
       - '.github/workflows/browser-smoke.yml'
 permissions:
@@ -46,6 +47,6 @@ jobs:
       - run: node tests/browser-smoke.mjs
       - run: node tests/site-acceptance.mjs
       - run: node tests/workbench-browser.mjs
-      - run: node --test tests/raw-message-review.test.mjs tests/raw-payment-field-rules.test.mjs
+      - run: node --test tests/raw-message-review.test.mjs tests/raw-payment-field-rules.test.mjs tests/message-success-summary.test.mjs
       - run: node tests/workbench-messages-browser.mjs
       - run: node tests/workbench-gemini-browser.mjs
