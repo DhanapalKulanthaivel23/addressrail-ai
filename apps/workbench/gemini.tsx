@@ -71,6 +71,22 @@ export function GeminiWorkbench({execution,rawReport=null}:{execution:DemoRespon
   }catch(error){if(generation.current===version)setMessage((error instanceof Error&&error.name==='TimeoutError'?'Gemini request timed out. Check whether the backend is online or the provider is responding.':error instanceof Error?error.message:'Gemini unavailable.')+' Local deterministic fallback retained; this was not a successful Gemini response.');}
   finally{if(generation.current===version){setBusy(false);setToken('');if(widget.current!==null)window.turnstile?.reset(widget.current)}}
  }
+ if(rawReport)return <div className="ai-review-compact">
+  <label className="ai-consent"><input type="checkbox" checked={consent} onChange={e=>{generation.current++;setBusy(false);setResult(null);setReviewed(false);setConsent(e.target.checked)}}/>
+   I agree to send error codes (not message contents) to an external AI service.
+  </label>
+  <div ref={element} aria-label="Human verification"/>
+  <button className="primary" disabled={!consent||!enabled||!token||busy} onClick={()=>void ask()}>{busy?'Reviewing errors…':'Explain errors & suggest fixes'}</button>
+  {consent&&<p role="status" aria-live="polite">{busy?'Preparing explanation…':message.replace(/Gemini/gi,'AI service').replace(/Local deterministic fallback retained[^.]*\./g,'AI response not available.').replace(/provider/gi,'AI service')}</p>}
+  {result&&<div className="ai-answer">
+   <h3>{result.mode==='gemini'?'AI recommendations':'Available review guidance'}</h3>
+   <p>{result.advice.summary}</p>
+   {result.advice.actions.length>0&&<><h4>Suggested fixes</h4><ul>{result.advice.actions.map((action,i)=><li key={i}>{action}</li>)}</ul></>}
+   {result.advice.cautions.length>0&&<><h4>Consider before applying</h4><ul>{result.advice.cautions.map((caution,i)=><li key={i}>{caution}</li>)}</ul></>}
+   {result.retrieval?.length>0&&<details><summary>Supporting references</summary><ul>{result.retrieval.filter(safeSource).map(source=><li key={source.id}><a href={source.url} target="_blank" rel="noopener noreferrer">{source.topic}</a></li>)}</ul></details>}
+   <p className="hint">Review suggested changes before applying them to a message.</p>
+  </div>}
+ </div>;
  if(!supported)return <p>Run a synthetic payment in this registered context first to enable optional Gemini.</p>;
  return <div className="gemini-panel">
   <h3>Optional Gemini review</h3>
