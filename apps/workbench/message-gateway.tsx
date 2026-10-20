@@ -3,8 +3,11 @@ import {FileCode2,FileText,ArrowLeft,Play,CheckCircle2} from 'lucide-react';
 import {GeminiWorkbench} from './gemini';
 import {reviewRawMessage,MT_EXAMPLE,MX_EXAMPLE} from './raw-review.mjs';
 import {summarizeMessage} from './message-summary.mjs';
+import {convertMessage} from './message-conversion.mjs';
 
 type Format='MT'|'MX';
+type Conversion={ok:boolean;format?:Format;identifier?:string;output?:string;complete?:boolean;reason?:string;
+ mapped?:{from:string;to:string}[];diagnostics?:{field:string;reason:string}[]};
 type Issue={code:string;path:string;detail:string};
 type Report={format:Format;identifier:string;issues:Issue[];proposal:{description:string;corrected:string}|null;validated:boolean;scope:string;schemaValidated:boolean;schemeValidated:boolean};
 
@@ -41,9 +44,27 @@ export function MessageGateway({openSandbox,embedded=false}:{openSandbox:()=>voi
  const [message,setMessage]=useState('');
  const [report,setReport]=useState<Report|null>(null);
  const [approved,setApproved]=useState(false);
+ const [conversion,setConversion]=useState<Conversion|null>(null);
+ const [sourceSnapshot,setSourceSnapshot]=useState<{format:Format;message:string}|null>(null);
  const rawReport=useMemo(()=>report&&report.issues.length?{format:report.format,issues:report.issues}:null,[report]);
- function choose(next:Format){setFormat(next);setMessage('');setReport(null);setApproved(false);}
- function edit(value:string){setMessage(value);setReport(null);setApproved(false);}
+ function choose(next:Format){setFormat(next);setMessage('');setReport(null);setApproved(false);setConversion(null);setSourceSnapshot(null);}
+ function edit(value:string){setMessage(value);setReport(null);setApproved(false);setConversion(null);setSourceSnapshot(null);}
+ function convert(){
+  if(!format)return;
+  const supplied=message.trim()?message:(format==='MT'?MT_EXAMPLE:MX_EXAMPLE);
+  const result=convertMessage(format,supplied) as Conversion;
+  if(!result.ok||!result.output||!result.format){setConversion(result);setReport(null);return}
+  setSourceSnapshot({format,message:supplied});
+  setConversion({...result,diagnostics:message.trim()?result.diagnostics:[{field:'Example',reason:'Used a sample message because the input was empty.'},...(result.diagnostics??[])]});
+  setFormat(result.format);setMessage(result.output);
+  setReport(reviewRawMessage(result.format,result.output) as Report);
+  setApproved(false);
+ }
+ function restore(){
+  if(!sourceSnapshot)return;
+  setFormat(sourceSnapshot.format);setMessage(sourceSnapshot.message);
+  setReport(null);setApproved(false);setConversion(null);setSourceSnapshot(null);
+ }
  function run(text=message){if(!format)return;setReport(reviewRawMessage(format,text) as Report);setApproved(false);}
  function fix(){if(!format||!report?.proposal)return;const corrected=report.proposal.corrected;setMessage(corrected);setReport(reviewRawMessage(format,corrected) as Report);setApproved(true);}
  const body=<>
@@ -82,10 +103,25 @@ export function MessageGateway({openSandbox,embedded=false}:{openSandbox:()=>voi
      </div>
     </div>
     <div className="actions gateway-actions">
+     <button className="primary" onClick={convert}>Convert to {format==='MT'?'MX':'MT'}</button>
      <button onClick={()=>edit(format==='MT'?MT_EXAMPLE:MX_EXAMPLE)}>Load {format} example</button>
      <button onClick={()=>edit(format==='MT'?MT_EXAMPLE.replace(/^:71A:.*$/m,'').replace(/^:23B:.*$/m,''):MX_EXAMPLE.replace('<PmtId>','<BadPaymentId>').replace('</PmtId>','</BadPaymentId>'))}>Try example with errors</button>
      <button className="primary" onClick={()=>run()} disabled={!message.trim()}><Play size={16}/> Check {format} message</button>
     </div>
+    {conversion&&<section className="panel conversion-result" aria-label="Conversion review" data-testid="conversion-result">
+      {conversion.ok?<><strong>Converted to {conversion.identifier} draft</strong><span> · {conversion.mapped?.length??0} mapped fields</span>
+       <p>{conversion.reason}</p>
+       <div className="actions">
+        {sourceSnapshot&&<button onClick={restore}>Restore original {sourceSnapshot.format}</button>}
+       </div>
+       {(conversion.diagnostics?.length??0)>0&&<details><summary>Review {conversion.diagnostics?.length} conversion gaps or assumptions</summary>
+        <ul>{conversion.diagnostics?.map((d,i)=><li key={i}><b>{d.field}</b>: {d.reason}</li>)}</ul>
+       </details>}
+       {(conversion.mapped?.length??0)>0&&<details><summary>View field mappings</summary>
+        <ul>{conversion.mapped?.map((m,i)=><li key={i}>{m.from} → {m.to}</li>)}</ul>
+       </details>}
+      </>:<p role="alert">{conversion.reason||'No conversion mapping is available.'}</p>}
+     </section>}
     {rawReport&&<section className="panel" aria-label="AI error explanation"><h2>AI explanation &amp; recommendations</h2>
       <GeminiWorkbench execution={null} rawReport={rawReport}/>
      </section>}
