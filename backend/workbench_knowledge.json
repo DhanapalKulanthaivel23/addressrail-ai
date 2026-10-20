@@ -452,7 +452,9 @@
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies CLS FX settlement (GBP/EUR legs) as FX settlement infrastructure (Cross-border). Cross-currency payment-versus-payment risk reduction; not an SCT or CHAPS retail scheme. Listed illustrative messages: FX PvP / funding events. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
-    },
+    }
+  ],
+  "message_records": [
     {
       "id": "WB-MT-REVIEW",
       "rails": [
