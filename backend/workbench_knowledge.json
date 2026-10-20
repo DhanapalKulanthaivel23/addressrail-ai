@@ -78,7 +78,7 @@
       "rails": [
         "gpi"
       ],
-      "topic": "SWIFT gpi Tracker Global tracking overlay TRACKING educational payment context",
+      "topic": "gpi SWIFT gpi Tracker Global tracking overlay TRACKING educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies SWIFT gpi Tracker as tracking overlay (Global). Cross-border payment tracking and confirmations; not a settlement rail. Listed illustrative messages: UETR / payment tracker status. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -88,7 +88,7 @@
       "rails": [
         "g4c"
       ],
-      "topic": "SWIFT gpi for Corporates (g4C) Global corporate overlay TRACKING educational payment context",
+      "topic": "g4c SWIFT gpi for Corporates (g4C) Global corporate overlay TRACKING educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies SWIFT gpi for Corporates (g4C) as corporate overlay (Global). Corporate treasury-facing bank-agnostic payment visibility, not a scheme. Listed illustrative messages: Pay and trace / inbound tracking. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -98,7 +98,7 @@
       "rails": [
         "swift-fin"
       ],
-      "topic": "SWIFT FIN MT (legacy learning) Global messaging network MT educational payment context",
+      "topic": "swift-fin SWIFT FIN MT (legacy learning) Global messaging network MT educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies SWIFT FIN MT (legacy learning) as messaging network (Global). Historical/transition teaching only. MT/MX use depends on current release and message scope. Listed illustrative messages: MT103 / MT202(COV) / MT199. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -108,7 +108,7 @@
       "rails": [
         "swift-go"
       ],
-      "topic": "SWIFT Go Global cross-border service TRACKING educational payment context",
+      "topic": "swift-go SWIFT Go Global cross-border service TRACKING educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies SWIFT Go as cross-border service (Global). Service for cross-border payment experience; not a new clearing/settlement system. Listed illustrative messages: Payment initiation / tracking. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -118,7 +118,7 @@
       "rails": [
         "swift-fileact"
       ],
-      "topic": "SWIFT FileAct Global file-transfer network FILE educational payment context",
+      "topic": "swift-fileact SWIFT FileAct Global file-transfer network FILE educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies SWIFT FileAct as file-transfer network (Global). Secure file transport concepts; payload and rail depend on participants. Listed illustrative messages: File transfer / acknowledgements. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -128,7 +128,7 @@
       "rails": [
         "chaps"
       ],
-      "topic": "CHAPS UK payment system ISO educational payment context",
+      "topic": "chaps CHAPS UK payment system ISO educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies CHAPS as payment system (UK). Sterling high-value/time-critical payments; gross-settled in BoE RTGS. Listed illustrative messages: pacs.008 / pacs.009 / pacs.002. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -138,7 +138,7 @@
       "rails": [
         "boe-rtgs"
       ],
-      "topic": "Bank of England RTGS UK settlement infrastructure ISO educational payment context",
+      "topic": "boe-rtgs Bank of England RTGS UK settlement infrastructure ISO educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies Bank of England RTGS as settlement infrastructure (UK). Central-bank sterling gross settlement for CHAPS plus net settlement services for retail systems. Listed illustrative messages: Settlement/liquidity events. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -148,7 +148,7 @@
       "rails": [
         "fps"
       ],
-      "topic": "Faster Payments Service (FPS) UK retail payment system UK_RETAIL educational payment context",
+      "topic": "fps Faster Payments Service (FPS) UK retail payment system UK_RETAIL educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies Faster Payments Service (FPS) as retail payment system (UK). Near-real-time UK retail payments; scheme processing is distinct from net interbank settlement. Listed illustrative messages: Faster Payments retail messages. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -158,7 +158,7 @@
       "rails": [
         "bacs-credit"
       ],
-      "topic": "Bacs Direct Credit UK retail credit scheme UK_RETAIL educational payment context",
+      "topic": "bacs-credit Bacs Direct Credit UK retail credit scheme UK_RETAIL educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies Bacs Direct Credit as retail credit scheme (UK). Batch salary and credit payments across the Bacs processing cycle. Listed illustrative messages: Standard 18 / submission reports. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -168,7 +168,7 @@
       "rails": [
         "bacs-debit"
       ],
-      "topic": "Bacs Direct Debit UK retail direct debit scheme UK_RETAIL educational payment context",
+      "topic": "bacs-debit Bacs Direct Debit UK retail direct debit scheme UK_RETAIL educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies Bacs Direct Debit as retail direct debit scheme (UK). UK mandate-based pull payments and collection exceptions. Listed illustrative messages: Mandate / collection / returns. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -178,7 +178,7 @@
       "rails": [
         "ics"
       ],
-      "topic": "Image Clearing System (ICS) UK cheque clearing system UK_RETAIL educational payment context",
+      "topic": "ics Image Clearing System (ICS) UK cheque clearing system UK_RETAIL educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies Image Clearing System (ICS) as cheque clearing system (UK). UK cheque-image clearing; not an ISO 20022 credit transfer scheme. Listed illustrative messages: Cheque image / clearing returns. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -188,7 +188,7 @@
       "rails": [
         "cop"
       ],
-      "topic": "Confirmation of Payee (CoP) UK name-check overlay OVERLAY educational payment context",
+      "topic": "cop Confirmation of Payee (CoP) UK name-check overlay OVERLAY educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies Confirmation of Payee (CoP) as name-check overlay (UK). Payee name-checking service, not a guarantee of payment or settlement. Listed illustrative messages: Payee matching response. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -198,7 +198,7 @@
       "rails": [
         "link"
       ],
-      "topic": "LINK ATM network UK ATM payment system UK_RETAIL educational payment context",
+      "topic": "link LINK ATM network UK ATM payment system UK_RETAIL educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies LINK ATM network as ATM payment system (UK). UK cash access/payment network; distinct from CHAPS and Faster Payments. Listed illustrative messages: ATM transaction / network settlement. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -208,7 +208,7 @@
       "rails": [
         "pexa"
       ],
-      "topic": "PEXA / UK property payments UK property settlement service UK_RETAIL educational payment context",
+      "topic": "pexa PEXA / UK property payments UK property settlement service UK_RETAIL educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies PEXA / UK property payments as property settlement service (UK). Payment-related property settlement orchestration, not a general retail credit scheme. Listed illustrative messages: Property settlement instruction. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -218,7 +218,7 @@
       "rails": [
         "oct-inst"
       ],
-      "topic": "One-Leg Out Instant Credit Transfer (OCT Inst) EU/SEPA EPC payment scheme ISO educational payment context",
+      "topic": "oct-inst One-Leg Out Instant Credit Transfer (OCT Inst) EU/SEPA EPC payment scheme ISO educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies One-Leg Out Instant Credit Transfer (OCT Inst) as EPC payment scheme (EU/SEPA). Euro leg of international instant credit transfers; not standard SCT Inst. Listed illustrative messages: pacs.008 / pacs.002. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -228,7 +228,7 @@
       "rails": [
         "vop"
       ],
-      "topic": "Verification of Payee (VoP) EU/SEPA payee-check scheme OVERLAY educational payment context",
+      "topic": "vop Verification of Payee (VoP) EU/SEPA payee-check scheme OVERLAY educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies Verification of Payee (VoP) as payee-check scheme (EU/SEPA). Payee-name/account verification concept; not payment settlement. Listed illustrative messages: Payee verification result. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -238,7 +238,7 @@
       "rails": [
         "srtp"
       ],
-      "topic": "SEPA Request-to-Pay (SRTP) EU/SEPA request overlay OVERLAY educational payment context",
+      "topic": "srtp SEPA Request-to-Pay (SRTP) EU/SEPA request overlay OVERLAY educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies SEPA Request-to-Pay (SRTP) as request overlay (EU/SEPA). A request-to-pay experience distinct from executing a credit transfer. Listed illustrative messages: Request / response. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -248,7 +248,7 @@
       "rails": [
         "step2"
       ],
-      "topic": "STEP2 SCT EU/SEPA clearing/settlement mechanism ISO educational payment context",
+      "topic": "step2 STEP2 SCT EU/SEPA clearing/settlement mechanism ISO educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies STEP2 SCT as clearing/settlement mechanism (EU/SEPA). EBA CLEARING pan-European SCT processing; not the EPC scheme itself. Listed illustrative messages: pacs.008 / pacs.002. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -258,7 +258,7 @@
       "rails": [
         "step2-sdd"
       ],
-      "topic": "STEP2 SDD EU/SEPA clearing/settlement mechanism ISO educational payment context",
+      "topic": "step2-sdd STEP2 SDD EU/SEPA clearing/settlement mechanism ISO educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies STEP2 SDD as clearing/settlement mechanism (EU/SEPA). EBA CLEARING SDD processing for Core and B2B; distinct scheme rules. Listed illustrative messages: pacs.003 / pacs.002. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -268,7 +268,7 @@
       "rails": [
         "rt1"
       ],
-      "topic": "RT1 EU/SEPA instant payment infrastructure ISO educational payment context",
+      "topic": "rt1 RT1 EU/SEPA instant payment infrastructure ISO educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies RT1 as instant payment infrastructure (EU/SEPA). EBA CLEARING real-time payment infrastructure; one SCT Inst route. Listed illustrative messages: pacs.008 / pacs.002. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -278,7 +278,7 @@
       "rails": [
         "tips"
       ],
-      "topic": "TARGET Instant Payment Settlement (TIPS) EU/SEPA central-bank settlement infrastructure ISO educational payment context",
+      "topic": "tips TARGET Instant Payment Settlement (TIPS) EU/SEPA central-bank settlement infrastructure ISO educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies TARGET Instant Payment Settlement (TIPS) as central-bank settlement infrastructure (EU/SEPA). Eurosystem 24/7 instant settlement service; distinct from RT1 and T2. Listed illustrative messages: pacs.008 / pacs.002. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -288,7 +288,7 @@
       "rails": [
         "t2"
       ],
-      "topic": "T2 (Eurosystem RTGS) EU/SEPA central-bank RTGS infrastructure ISO educational payment context",
+      "topic": "t2 T2 (Eurosystem RTGS) EU/SEPA central-bank RTGS infrastructure ISO educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies T2 (Eurosystem RTGS) as central-bank RTGS infrastructure (EU/SEPA). Large-value central-bank-money gross settlement; not TARGET2, its predecessor. Listed illustrative messages: pacs.008 / pacs.009 / camt.*. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -298,7 +298,7 @@
       "rails": [
         "t2s"
       ],
-      "topic": "TARGET2-Securities (T2S) EU/SEPA securities settlement infrastructure ISO educational payment context",
+      "topic": "t2s TARGET2-Securities (T2S) EU/SEPA securities settlement infrastructure ISO educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies TARGET2-Securities (T2S) as securities settlement infrastructure (EU/SEPA). Delivery-versus-payment securities platform, not a retail credit transfer rail. Listed illustrative messages: securities cash settlement events. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -308,7 +308,7 @@
       "rails": [
         "euro1"
       ],
-      "topic": "EURO1 EU/SEPA large-value payment system ISO educational payment context",
+      "topic": "euro1 EURO1 EU/SEPA large-value payment system ISO educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies EURO1 as large-value payment system (EU/SEPA). Private-sector high-value euro payment system; distinguish from Eurosystem T2. Listed illustrative messages: Large-value payment events. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -318,7 +318,7 @@
       "rails": [
         "fr-stet"
       ],
-      "topic": "STET / French clearing EU national national processing context NATIONAL educational payment context",
+      "topic": "fr-stet STET / French clearing EU national national processing context NATIONAL educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies STET / French clearing as national processing context (EU national). National clearing context; not a new EPC payment scheme. Listed illustrative messages: French SEPA payment processing. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -328,7 +328,7 @@
       "rails": [
         "es-snce"
       ],
-      "topic": "SNCE / Spain EU national national clearing context NATIONAL educational payment context",
+      "topic": "es-snce SNCE / Spain EU national national clearing context NATIONAL educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies SNCE / Spain as national clearing context (EU national). National infrastructure context and SEPA routing; check current operator guidance. Listed illustrative messages: Spanish SEPA clearing concepts. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -338,7 +338,7 @@
       "rails": [
         "it-bicomp"
       ],
-      "topic": "BI-COMP / Italy EU national national clearing context NATIONAL educational payment context",
+      "topic": "it-bicomp BI-COMP / Italy EU national national clearing context NATIONAL educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies BI-COMP / Italy as national clearing context (EU national). Italian retail clearing context; not an independent Europe-wide EPC scheme. Listed illustrative messages: Italian retail payments processing. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -348,7 +348,7 @@
       "rails": [
         "nl-csm"
       ],
-      "topic": "Equens / Netherlands EU national national clearing context NATIONAL educational payment context",
+      "topic": "nl-csm Equens / Netherlands EU national national clearing context NATIONAL educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies Equens / Netherlands as national clearing context (EU national). Dutch domestic clearing context; refer to current provider coverage. Listed illustrative messages: Dutch SEPA processing. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -358,7 +358,7 @@
       "rails": [
         "lt-centrolink"
       ],
-      "topic": "CENTROlink / Lithuania EU national national clearing context NATIONAL educational payment context",
+      "topic": "lt-centrolink CENTROlink / Lithuania EU national national clearing context NATIONAL educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies CENTROlink / Lithuania as national clearing context (EU national). National PSP access/clearing services; not a separate EPC scheme. Listed illustrative messages: SEPA routing and settlement services. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -368,7 +368,7 @@
       "rails": [
         "de-sepa-clearer"
       ],
-      "topic": "RPS SEPA-Clearer / Germany EU national national clearing infrastructure NATIONAL educational payment context",
+      "topic": "de-sepa-clearer RPS SEPA-Clearer / Germany EU national national clearing infrastructure NATIONAL educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies RPS SEPA-Clearer / Germany as national clearing infrastructure (EU national). German retail clearing infrastructure for EPC scheme payments, not a separate scheme. Listed illustrative messages: SCT / SDD SEPA processing. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -378,7 +378,7 @@
       "rails": [
         "se-rix-inst"
       ],
-      "topic": "RIX-INST / Sweden EU national central-bank instant settlement infrastructure NATIONAL educational payment context",
+      "topic": "se-rix-inst RIX-INST / Sweden EU national central-bank instant settlement infrastructure NATIONAL educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies RIX-INST / Sweden as central-bank instant settlement infrastructure (EU national). Swedish-krona instant central-bank settlement; not the euro SCT Inst scheme. Listed illustrative messages: NCT Inst / instant settlement events. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -388,7 +388,7 @@
       "rails": [
         "se-rix-rtgs"
       ],
-      "topic": "RIX-RTGS / Sweden EU national central-bank RTGS infrastructure NATIONAL educational payment context",
+      "topic": "se-rix-rtgs RIX-RTGS / Sweden EU national central-bank RTGS infrastructure NATIONAL educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies RIX-RTGS / Sweden as central-bank RTGS infrastructure (EU national). Large-value settlement in Swedish kronor, distinct from Sweden's RIX-INST. Listed illustrative messages: Swedish high-value settlement events. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -398,7 +398,7 @@
       "rails": [
         "se-swish"
       ],
-      "topic": "Swish / Sweden EU national instant payment initiation overlay NATIONAL educational payment context",
+      "topic": "se-swish Swish / Sweden EU national instant payment initiation overlay NATIONAL educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies Swish / Sweden as instant payment initiation overlay (EU national). Swedish customer-facing mobile payment service; interbank settlement can occur via RIX-INST. Listed illustrative messages: Mobile instant payment / status. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -408,7 +408,7 @@
       "rails": [
         "pl-elixir"
       ],
-      "topic": "Elixir / Poland EU national national retail clearing system NATIONAL educational payment context",
+      "topic": "pl-elixir Elixir / Poland EU national national retail clearing system NATIONAL educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies Elixir / Poland as national retail clearing system (EU national). Polish-zloty clearing system; distinguish from euro SEPA processing. Listed illustrative messages: PLN clearing / credit or debit events. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -418,7 +418,7 @@
       "rails": [
         "pl-express-elixir"
       ],
-      "topic": "Express Elixir / Poland EU national national instant clearing system NATIONAL educational payment context",
+      "topic": "pl-express-elixir Express Elixir / Poland EU national national instant clearing system NATIONAL educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies Express Elixir / Poland as national instant clearing system (EU national). Polish-zloty instant payments infrastructure; distinct from euro SCT Inst. Listed illustrative messages: PLN instant transfer / status. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -428,7 +428,7 @@
       "rails": [
         "dk-retail-clearing"
       ],
-      "topic": "Retail clearing / Denmark EU national national retail clearing systems NATIONAL educational payment context",
+      "topic": "dk-retail-clearing Retail clearing / Denmark EU national national retail clearing systems NATIONAL educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies Retail clearing / Denmark as national retail clearing systems (EU national). Danish retail clearing arrangements; net settlement is not the same as payer-bank confirmation. Listed illustrative messages: Danish account transfers / direct debit / clearing. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -438,7 +438,7 @@
       "rails": [
         "dk-tips"
       ],
-      "topic": "TIPS instant settlement / Denmark EU national central-bank instant settlement infrastructure NATIONAL educational payment context",
+      "topic": "dk-tips TIPS instant settlement / Denmark EU national central-bank instant settlement infrastructure NATIONAL educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies TIPS instant settlement / Denmark as central-bank instant settlement infrastructure (EU national). Illustrative DKK participation in TIPS; distinguish it from euro SCT Inst rulebooks. Listed illustrative messages: Danish-krona instant settlement events. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
@@ -448,7 +448,7 @@
       "rails": [
         "cls"
       ],
-      "topic": "CLS FX settlement (GBP/EUR legs) Cross-border FX settlement infrastructure TRACKING educational payment context",
+      "topic": "cls CLS FX settlement (GBP/EUR legs) Cross-border FX settlement infrastructure TRACKING educational payment context",
       "url": "https://github.com/DhanapalKulanthaivel23/addressrail-ai/blob/main/web/studio/payment-intelligence/catalog.mjs",
       "reviewed": "2026-10-20",
       "summary": "AddressRail classifies CLS FX settlement (GBP/EUR legs) as FX settlement infrastructure (Cross-border). Cross-currency payment-versus-payment risk reduction; not an SCT or CHAPS retail scheme. Listed illustrative messages: FX PvP / funding events. This is a public educational description, not official scheme rules, SWIFT MT/MX validation, confirmed settlement or a banking authorisation."
