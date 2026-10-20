@@ -2,7 +2,7 @@
 import pytest
 from fastapi import HTTPException
 from backend.app import make_excerpt
-from backend.workbench_ai import RAILS, retrieve_sources
+from backend.workbench_ai import MESSAGE_RAILS, retrieve_sources
 
 def example(rail, codes):
     return dict(product="AddressRail Message Validator", synthetic=True,
@@ -11,7 +11,7 @@ def example(rail, codes):
 
 @pytest.mark.parametrize("rail,code", [("mt","DEMO_MT_ENVELOPE"),("mx","DEMO_XML_STRUCTURE"),("mx","DEMO_BIC_FORMAT")])
 def test_only_known_findings_reach_rag(rail,code):
-    assert rail in RAILS
+    assert rail in MESSAGE_RAILS
     excerpt=make_excerpt(example(rail,[code]))
     assert len(excerpt)==1
     assert "EXAMPLE_PRIVATE_SHOULD_NOT_ESCAPE" not in str(excerpt)
