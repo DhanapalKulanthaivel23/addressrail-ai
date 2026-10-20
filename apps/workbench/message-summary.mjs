@@ -28,7 +28,7 @@ export function summarizeMessage(format,raw,identifier,Parser=globalThis.DOMPars
       if(document.getElementsByTagName('parsererror').length)return items.filter(Boolean);
       const get=(tag)=>document.getElementsByTagNameNS('*',tag)[0];
       const value=(tag)=>get(tag)?.textContent||'';
-      items.push(item('Message ID',value('MsgId')||value('PmtInfId')||value('Id')));
+      items.push(item('Message ID',value('MsgId')||value('PmtInfId')||(identifier.startsWith('camt.')?value('Id'):'')));
       items.push(item('Payment reference',value('EndToEndId')||value('InstrId')||value('TxId')));
       const amount=get('IntrBkSttlmAmt')||get('InstdAmt')||get('ForexAmt');
       if(amount){
