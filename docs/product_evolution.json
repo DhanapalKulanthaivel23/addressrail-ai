@@ -312,6 +312,24 @@
         "tests/message-success-summary.test.mjs",
         "tests/workbench-messages-browser.mjs"
       ]
+    },
+    {
+      "id": "PUB-026",
+      "date": "2026-10-20",
+      "status": "FEATURE_BRANCH_ONLY",
+      "title": "MT/MX translation preview and postal address structuring tool in one Workbench",
+      "description": "Add a Convert to MX/MT action before load-sample buttons in the existing Workbench. Support bounded MT103↔pacs.008.001.13/.14 and MT202↔pacs.009.001.11/.12 draft field mappings, with mandatory explicit gaps and source restoration. Missing input on Convert uses a documented sample; unsupported pairs fail closed. Add a third Postal Address Converter choice between MT and MX with input and ISO 20022 PstlAdr XML output. From free text or supported MT/MX postal elements, map only explicit/recognised town, country, street, building and postcode, highlight incomplete hybrid or structured previews, escape input and never fabricate payment or routing details. Swift Registered Payment Applications are self-attested postal address tools, not general MT/MX conversion certificates; no product-specific implementation copied or official scheme/XSD conformance implied.",
+      "evidence": [
+        "apps/workbench/message-conversion.mjs",
+        "apps/workbench/postal-address.mjs",
+        "apps/workbench/message-gateway.tsx",
+        "tests/mt-mx-conversion.test.mjs",
+        "tests/postal-address.test.mjs",
+        "tests/workbench-conversion-browser.mjs",
+        "tests/workbench-postal-browser.mjs",
+        "https://www.swift.com/pt/node/310622",
+        "https://www.swift.com/standards/iso-20022/removal-unstructured-address"
+      ]
     }
   ]
 }

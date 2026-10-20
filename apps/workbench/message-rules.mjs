@@ -4,7 +4,7 @@ const MT_RULES={
  MT202:[['20','Transaction reference',/^20$/],['21','Related reference',/^21$/],['32A','Value date, currency and amount',/^32A$/],['58a','Beneficiary institution',/^58[AD]$/]]
 };
 export const KNOWN_MT=Object.keys(MT_RULES);
-export const KNOWN_MX=['pacs.008.001.13','pacs.008.001.14','pain.001.001.09','camt.053.001.14','fxtr.014.001.05'];
+export const KNOWN_MX=['pacs.008.001.13','pacs.008.001.14','pacs.009.001.11','pacs.009.001.12','pain.001.001.09','camt.053.001.14','fxtr.014.001.05'];
 
 export function mtBusinessIssues(identifier,body){
  const issues=[];
@@ -32,11 +32,14 @@ export function mtBusinessIssues(identifier,body){
 const REQUIRED={
  'pacs.008.001.13':[['GrpHdr','Group header'],['GrpHdr/MsgId','Message identification'],['GrpHdr/NbOfTxs','Number of transactions'],['GrpHdr/SttlmInf','Settlement information'],['CdtTrfTxInf','Credit transfer'],['CdtTrfTxInf/PmtId','Payment identification'],['CdtTrfTxInf/IntrBkSttlmAmt','Interbank settlement amount'],['CdtTrfTxInf/Dbtr','Debtor'],['CdtTrfTxInf/Cdtr','Creditor']],
  'pacs.008.001.14':[['GrpHdr','Group header'],['GrpHdr/MsgId','Message identification'],['GrpHdr/NbOfTxs','Number of transactions'],['GrpHdr/SttlmInf','Settlement information'],['CdtTrfTxInf','Credit transfer'],['CdtTrfTxInf/PmtId','Payment identification'],['CdtTrfTxInf/IntrBkSttlmAmt','Interbank settlement amount'],['CdtTrfTxInf/Dbtr','Debtor'],['CdtTrfTxInf/Cdtr','Creditor']],
+ 'pacs.009.001.11':[['GrpHdr','Group header'],['GrpHdr/MsgId','Message identification'],['GrpHdr/NbOfTxs','Number of transactions'],['GrpHdr/SttlmInf','Settlement information'],['CdtTrfTxInf','Credit transfer'],['CdtTrfTxInf/PmtId','Payment identification'],['CdtTrfTxInf/IntrBkSttlmAmt','Settlement amount'],['CdtTrfTxInf/Dbtr','Debtor institution'],['CdtTrfTxInf/Cdtr','Creditor institution']],
+ 'pacs.009.001.12':[['GrpHdr','Group header'],['GrpHdr/MsgId','Message identification'],['GrpHdr/NbOfTxs','Number of transactions'],['GrpHdr/SttlmInf','Settlement information'],['CdtTrfTxInf','Credit transfer'],['CdtTrfTxInf/PmtId','Payment identification'],['CdtTrfTxInf/IntrBkSttlmAmt','Settlement amount'],['CdtTrfTxInf/Dbtr','Debtor institution'],['CdtTrfTxInf/Cdtr','Creditor institution']],
  'pain.001.001.09':[['GrpHdr','Group header'],['GrpHdr/MsgId','Message identification'],['GrpHdr/NbOfTxs','Number of transactions'],['GrpHdr/InitgPty','Initiating party'],['PmtInf','Payment information'],['PmtInf/PmtInfId','Payment information reference'],['PmtInf/PmtMtd','Payment method'],['PmtInf/CdtTrfTxInf','Credit transfer instruction']],
  'camt.053.001.14':[['GrpHdr','Group header'],['GrpHdr/MsgId','Message identification'],['Stmt','Account statement'],['Stmt/Id','Statement identifier']]
 };
 const ROOT={
  'pacs.008.001.13':'FIToFICstmrCdtTrf','pacs.008.001.14':'FIToFICstmrCdtTrf',
+ 'pacs.009.001.11':'FICdtTrf','pacs.009.001.12':'FICdtTrf',
  'pain.001.001.09':'CstmrCdtTrfInitn','camt.053.001.14':'BkToCstmrStmt'
 };
 export function mxBusinessIssues(identifier,document){
