@@ -25,17 +25,17 @@ function safeSource(source:Source){
  try{const url=new URL(source.url);return url.protocol==='https:'&&!url.username&&!url.password&&['github.com','www.iso20022.org','www.europeanpaymentscouncil.eu','www.swift.com'].includes(url.hostname)
   &&[source.id,source.topic,source.summary,source.reviewed].every(v=>typeof v==='string');}catch{return false}
 }
-export function GeminiWorkbench({execution}:{execution:DemoResponse|null}){
+export function GeminiWorkbench({execution,rawReport=null}:{execution:DemoResponse|null;rawReport?:{format:'MT'|'MX';issues:{code:string}[]}|null}){
  const [consent,setConsent]=useState(false),[enabled,setEnabled]=useState(false),[token,setToken]=useState(''),[busy,setBusy]=useState(false);
  const [message,setMessage]=useState('Optional: send only the rail, executed stages and finding codes to Gemini.'),[result,setResult]=useState<Advice|null>(null);
  const [reviewed,setReviewed]=useState(false);
  const element=useRef<HTMLDivElement>(null),widget=useRef<string|null>(null),generation=useRef(0);
- const supported=!!execution&&SUPPORTED.includes(execution.productId);
+ const supported=!!rawReport||!!execution&&SUPPORTED.includes(execution.productId);
  useEffect(()=>{
   generation.current++;setConsent(false);setEnabled(false);setToken('');setBusy(false);setResult(null);setReviewed(false);
   setMessage('Optional: send only the rail, executed stages and finding codes to Gemini.');
   return()=>{generation.current++};
- },[execution]);
+ },[execution,rawReport]);
  useEffect(()=>{
   if(!supported||!consent)return;
   let active=true;const controller=new AbortController();
@@ -52,15 +52,15 @@ export function GeminiWorkbench({execution}:{execution:DemoResponse|null}){
    }catch{if(active)setMessage('Gemini unavailable. Local deterministic results remain available; no live AI was used.');}
   })();
   return()=>{active=false;controller.abort();setToken('');setEnabled(false);if(widget.current!==null){window.turnstile?.remove(widget.current);widget.current=null}};
- },[supported,consent,execution]);
+ },[supported,consent,execution,rawReport]);
  async function ask(){
-  if(!execution||!supported||!consent||!enabled||!token||busy)return;
+  if((!execution&&!rawReport)||!supported||!consent||!enabled||!token||busy)return;
   const version=generation.current;setBusy(true);setResult(null);setReviewed(false);setMessage('Asking Gemini…');
   try{
-   const report=execution.report as {issues:{code:string}[]};
+   const analysis=rawReport?{product:'AddressRail Message Validator',synthetic:true,rail:rawReport.format.toLowerCase(),stages:['RECEIVED','CHECKED'],finding_codes:rawReport.issues.map(i=>i.code)}:
+    {product:'AddressRail Workbench',synthetic:true,rail:execution!.productId,stages:execution!.steps.map(s=>s.id),finding_codes:((execution!.report) as {issues:{code:string}[]}).issues.map(i=>i.code)};
    const response=await fetch(BACKEND+'/api/ai-explain',{method:'POST',headers:{'Content-Type':'application/json'},signal:AbortSignal.timeout(35000),
-    body:JSON.stringify({confirm_synthetic:true,turnstile_token:token,analysis:{product:'AddressRail Workbench',synthetic:true,rail:execution.productId,
-     stages:execution.steps.map(s=>s.id),finding_codes:report.issues.map(i=>i.code)}})});
+    body:JSON.stringify({confirm_synthetic:true,turnstile_token:token,analysis})});
    const data=await response.json();
    if(!response.ok)throw Error(typeof data.detail==='string'?data.detail:'Gemini unavailable.');
    if(!['gemini','deterministic_fallback'].includes(data.mode)||(data.mode==='gemini'&&(typeof data.model!=='string'||!data.model))||typeof data.advice?.summary!=='string'||!data.advice.summary.trim()||
@@ -74,7 +74,7 @@ export function GeminiWorkbench({execution}:{execution:DemoResponse|null}){
  if(!supported)return <p>Run a synthetic payment in this registered context first to enable optional Gemini.</p>;
  return <div className="gemini-panel">
   <h3>Optional Gemini review</h3>
-  <p>Send only the rail, executed stages and finding codes. The protected service retrieves curated educational context and checks Gemini’s explanation against that evidence. Payment messages, names, accounts and addresses are excluded.</p>
+  <p>Send only the format/rail, executed review stages and finding codes. The protected service retrieves curated educational context and checks Gemini’s explanation against that evidence. Payment messages, names, accounts and addresses are excluded.</p>
   <label><input type="checkbox" checked={consent} onChange={e=>{generation.current++;setBusy(false);setResult(null);setReviewed(false);setConsent(e.target.checked)}}/> I confirm this is synthetic test data and consent to sending this limited evidence to Gemini.</label>
   <div ref={element} aria-label="Human verification"/>
   <button className="primary" disabled={!consent||!enabled||!token||busy} onClick={()=>void ask()}>{busy?'Asking Gemini…':'Ask Gemini'}</button>
