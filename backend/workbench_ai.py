@@ -253,10 +253,28 @@ async def run_review(excerpt: list[dict], generate: Callable[[dict], Awaitable[d
                       "citationIds": review.citation_ids}
         except (ValidationError, ValueError, KeyError, TypeError):
             reason = "PROVIDER_UNAVAILABLE" if not generated else "OUTPUT_REJECTED"
+            findings = state["context"]["finding_definitions"]
+            locations = state["context"]["evidence"].get("locations", [])
+            tips = {
+                "DEMO_REQUIRED_FIELD": "Supply the missing field using only the original payment instruction.",
+                "DEMO_UNSUPPORTED_MESSAGE": "Obtain the exact message version schema or FIN release rules before accepting this message.",
+                "DEMO_AMOUNT": "Verify the source date, currency and amount formatting.",
+                "DEMO_MT_ENVELOPE": "Review FIN headers, text block and terminator.",
+                "DEMO_XML_STRUCTURE": "Compare the reported XML location with the exact version's schema.",
+                "DEMO_BIC_FORMAT": "Verify the bank identifier length and original institution details.",
+                "DEMO_MISSING_REFERENCE": "Find the reference in the source instruction; never create one.",
+            }
+            actions = [
+                (str(locations[i]) + ": " if i < len(locations) else item["code"] + ": ")
+                + tips.get(item["code"], "Review the reported field against the original record.")
+                for i, item in enumerate(findings[:6])
+            ]
             result = {"mode": "deterministic_fallback", "provider": None, "model": None, "citationIds": [],
-                      "advice": {"summary": "Gemini advice is unavailable or did not pass evidence checks.",
-                                 "actions": ["Review the deterministic findings and original synthetic evidence manually."],
-                                 "cautions": ["No settlement, scheme compliance or payment authorisation is established."]}}
+                      "advice": {"summary": (str(len(findings)) + " specific message finding(s) require review. "
+                                            "Use the listed field locations and original transaction evidence."
+                                            if findings else "No findings were supplied; no message-level conclusions can be drawn."),
+                                 "actions": actions or ["Review the available evidence."],
+                                 "cautions": ["Suggested repairs do not establish schema or payment-scheme conformance."]}}
         result.update(retrieval=state["context"]["retrieval"], humanReviewRequired=True,
                       promptVersion=PROMPT_VERSION, knowledgeVersion=catalogue()["version"],
                       traceId=trace_id, framework="LangGraph", toolSelection="fixed_read_only_workflow",
