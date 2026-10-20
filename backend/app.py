@@ -14,7 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-from backend.workbench_ai import run_review, build_prompt, response_schema, Evidence, RAILS
+from backend.workbench_ai import run_review, build_prompt, response_schema, Evidence, RAILS, MESSAGE_RAILS
 
 app = FastAPI(title="AddressRail AI", version="0.2.0", docs_url="/api/docs")
 origins = [s.strip() for s in os.getenv("ALLOWED_ORIGINS", "http://localhost:8080").split(",") if s.strip()]
@@ -70,7 +70,7 @@ def make_excerpt(analysis: dict[str, Any]) -> list[dict[str, Any]]:
             raise HTTPException(413, "Workbench report is too large.")
         rail = analysis.get("rail")
         is_message=analysis.get("product") == "AddressRail Message Validator"
-        if analysis.get("synthetic") is not True or rail not in RAILS or (is_message and rail not in ("mt", "mx")) or (not is_message and rail in ("mt", "mx")):
+        if analysis.get("synthetic") is not True or rail not in (*RAILS, *MESSAGE_RAILS) or (is_message and rail not in MESSAGE_RAILS) or (not is_message and rail in MESSAGE_RAILS):
             raise HTTPException(422, "Supported synthetic workbench report required.")
         codes = analysis.get("finding_codes")
         stages = analysis.get("stages")
