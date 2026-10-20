@@ -227,6 +227,22 @@
         "ai-agents/investigation/rag.py",
         "ai-agents/investigation/tests/test_rag_exact_version.py"
       ]
+    },
+    {
+      "id": "PUB-020",
+      "date": "2026-10-20",
+      "status": "FEATURE_BRANCH_ONLY",
+      "title": "MT/MX first-screen message validator with review-only correction and bounded Gemini/RAG explanations",
+      "description": "Public Workbench starts with SWIFT MT and ISO MX selection. Users may paste synthetic FIN or ISO pain/pacs/camt text, inspect bounded browser-only syntax findings, explicitly approve safe evidence-preserving text corrections, and optionally obtain RAG/Gemini explanations via the existing protected API using finding codes only. This is not arbitrary-message repair, installed XSD execution, comprehensive FIN field validation or certified scheme conformance.",
+      "evidence": [
+        "apps/workbench/message-gateway.tsx",
+        "apps/workbench/raw-review.mjs",
+        "apps/workbench/gemini.tsx",
+        "backend/workbench_ai.py",
+        "backend/app.py",
+        "tests/workbench-messages-browser.mjs",
+        "tests/test_message_rag_gateway.py"
+      ]
     }
   ]
 }
