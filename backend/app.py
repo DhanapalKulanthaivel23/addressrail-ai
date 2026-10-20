@@ -59,7 +59,7 @@ async def config():
     return JSONResponse(
         {"aiEnabled": ready, "turnstileSiteKey": os.getenv("TURNSTILE_SITE_KEY", "") if ready else "",
          "model": os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite") if ready else None,
-         "workbenchAiVersion": 2, "workbenchFramework": "LangGraph"},
+         "workbenchAiVersion": 3, "workbenchFramework": "LangGraph"},
         headers={"Cache-Control": "no-store"},
     )
 
