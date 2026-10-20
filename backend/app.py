@@ -79,12 +79,20 @@ def make_excerpt(analysis: dict[str, Any]) -> list[dict[str, Any]]:
         # Allow only bounded rule identifiers; never forward raw payment fields or prose.
         if len(codes) > 40 or any(not isinstance(c, str) or not re.fullmatch(r"[A-Z][A-Z0-9_]{0,63}", c) for c in codes):
             raise HTTPException(422, "Invalid workbench finding codes.")
+        locations = analysis.get("locations", []) if is_message else []
+        if (not isinstance(locations, list) or len(locations) > 40
+                or (locations and len(locations) != len(codes))
+                or any(not isinstance(path, str) or len(path) > 160
+                       or not re.fullmatch(r"/[A-Za-z0-9/\\[\\]]{0,159}", path)
+                       for path in locations)):
+            raise HTTPException(422, "Invalid field location metadata.")
         try:
             Evidence(rail=rail, stages=stages, finding_codes=codes).checked()
         except ValueError as ex:
             raise HTTPException(422, "Unsupported educational finding codes.") from ex
         return [{"context": "synthetic MT/MX message review" if is_message else "synthetic payment workbench", "rail": rail,
                  "stages": stages, "finding_codes": codes,
+                 **({"locations": locations} if locations else {}),
                  "validation_scope": "internal educational metadata checks only"}]
     if analysis.get("product") != "AddressRail AI" or not isinstance(analysis.get("parties"), list):
         raise HTTPException(422, "An AddressRail AI address-analysis report is required.")
