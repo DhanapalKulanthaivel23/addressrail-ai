@@ -20,6 +20,7 @@ try{
    advice:{summary:'Review fictional checks',actions:['Review manually'],cautions:['No scheme validation']}}});
  });
  await page.goto((process.env.WORKBENCH_URL || 'http://127.0.0.1:8765/studio/workbench/'));
+ await page.getByRole('button',{name:'Open existing payment workbench'}).click();
  const run=page.getByRole('button',{name:'Validate / simulate checks'});
  const ask=page.getByRole('button',{name:'Ask Gemini',exact:true});
  const provenance=page.getByTestId('gemini-provenance');
