@@ -79,7 +79,7 @@ export function MessageGateway({openSandbox,embedded=false}:{openSandbox:()=>voi
     </div>
     <div className="actions gateway-actions">
      <button onClick={()=>edit(format==='MT'?MT_EXAMPLE:MX_EXAMPLE)}>Load {format} example</button>
-     <button onClick={()=>edit(format==='MT'?MT_EXAMPLE.replace(':71A:SHA\\n','').replace(':23B:CRED\\n',''):MX_EXAMPLE.replace('<PmtId>','<BadPaymentId>'))}>Try example with errors</button>
+     <button onClick={()=>edit(format==='MT'?MT_EXAMPLE.replace(/^:71A:.*$/m,'').replace(/^:23B:.*$/m,''):MX_EXAMPLE.replace('<PmtId>','<BadPaymentId>').replace('</PmtId>','</BadPaymentId>'))}>Try example with errors</button>
      <button className="primary" onClick={()=>run()} disabled={!message.trim()}><Play size={16}/> Check {format} message</button>
     </div>
     {rawReport&&<section className="panel" aria-label="AI error explanation"><h2>AI explanation &amp; recommendations</h2>
