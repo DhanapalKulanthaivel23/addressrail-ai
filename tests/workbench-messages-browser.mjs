@@ -22,7 +22,13 @@ try{
  await page.getByRole('button',{name:'Check MT message'}).click();
  assert.match(await page.getByTestId('raw-issues').textContent(),/FIN message structure error/);
  await page.getByRole('button',{name:'Apply fix & recheck'}).click();
- assert.match(await page.getByTestId('raw-validation-status').textContent(),/No errors found by available checks/);
+ assert.match(await page.getByTestId('raw-validation-status').textContent(),/No issues in checked fields/);
+ assert.equal(await page.getByRole('button',{name:'Explain errors & suggest fixes'}).count(),0,'No generic AI response for zero findings');
+ await page.getByRole('button',{name:'Try example with errors'}).click();
+ await page.getByRole('button',{name:'Check MT message'}).click();
+ const mtIssues=await page.getByTestId('raw-issues').textContent();
+ assert.match(mtIssues,/23B/); assert.match(mtIssues,/71A/);
+ assert.match(mtIssues,/Suggested fix:/);
  await page.getByRole('button',{name:/ISO 20022 MX messages/}).click();
  await page.getByRole('button',{name:'Load MX example'}).click();
  await page.getByRole('button',{name:'Check MX message'}).click();
@@ -35,7 +41,12 @@ try{
 
  await page.getByRole('button',{name:'Apply fix & recheck'}).click();
  assert.ok((await page.getByLabel('MX message input').inputValue()).includes('<BICFI>BANKGB2LXXX</BICFI>'));
- assert.match(await page.getByTestId('raw-validation-status').textContent(),/No errors found by available checks/);
+ assert.match(await page.getByTestId('raw-issues').textContent(),/GrpHdr/);
+ assert.match(await page.getByTestId('raw-issues').textContent(),/IntrBkSttlmAmt/);
+
+ await page.getByLabel('MX message input').fill('<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.009.001.99"><FIToFICstmrCdtTrf/></Document>');
+ await page.getByRole('button',{name:'Check MX message'}).click();
+ assert.match(await page.getByTestId('raw-issues').textContent(),/Message rules not available/);
  await page.getByLabel('MX message input').fill('<!DOCTYPE Document><Document/>');
  await page.getByRole('button',{name:'Check MX message'}).click();
  assert.match(await page.getByTestId('raw-issues').textContent(),/Unsafe XML declaration/);

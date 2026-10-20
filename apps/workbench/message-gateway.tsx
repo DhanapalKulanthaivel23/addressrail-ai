@@ -10,6 +10,8 @@ type Report={format:Format;identifier:string;issues:Issue[];proposal:{descriptio
 /** Clear, actionable copy: never present a successful subset check as ISO/FIN certification. */
 function issueTitle(issue:Issue):string{
  if(issue.code==='DEMO_BIC_FORMAT')return 'Invalid bank identifier (BIC)';
+ if(issue.code==='DEMO_REQUIRED_FIELD')return 'Required field is missing or incorrect';
+ if(issue.code==='DEMO_UNSUPPORTED_MESSAGE')return 'Message rules not available';
  if(issue.code==='DEMO_MT_ENVELOPE')return 'FIN message structure error';
  if(issue.code==='DEMO_AMOUNT')return 'Invalid amount format';
  if(issue.code==='DEMO_MISSING_REFERENCE')return 'Missing required information';
@@ -21,6 +23,8 @@ function issueTitle(issue:Issue):string{
  return 'Message structure error';
 }
 function fixAdvice(issue:Issue,proposal:Report['proposal']):string{
+ if(issue.code==='DEMO_REQUIRED_FIELD')return 'Add or correct the field using the original transaction evidence; never generate payment details.';
+ if(issue.code==='DEMO_UNSUPPORTED_MESSAGE')return 'Select the exact version and authorised schema or rules before treating this message as valid.';
  if(issue.code==='DEMO_BIC_FORMAT')return proposal?'Convert the existing BIC to uppercase and recheck.':'Verify the BIC against the source; it should contain 8 or 11 valid characters.';
  if(issue.detail.startsWith('Required FX V05 section'))return 'Supply this section from the original trade instructions using the exact FX message definition.';
  if(issue.detail.startsWith('Unexpected FX V05'))return 'Reorganise the trade message according to the exact FX schema; retain the original trade data.';
@@ -36,7 +40,7 @@ export function MessageGateway({openSandbox,embedded=false}:{openSandbox:()=>voi
  const [message,setMessage]=useState('');
  const [report,setReport]=useState<Report|null>(null);
  const [approved,setApproved]=useState(false);
- const rawReport=useMemo(()=>report?{format:report.format,issues:report.issues}:null,[report]);
+ const rawReport=useMemo(()=>report&&report.issues.length?{format:report.format,issues:report.issues}:null,[report]);
  function choose(next:Format){setFormat(next);setMessage('');setReport(null);setApproved(false);}
  function edit(value:string){setMessage(value);setReport(null);setApproved(false);}
  function run(text=message){if(!format)return;setReport(reviewRawMessage(format,text) as Report);setApproved(false);}
@@ -61,13 +65,13 @@ export function MessageGateway({openSandbox,embedded=false}:{openSandbox:()=>voi
      <div className="panel gateway-results" aria-live="polite">
       <h3>Errors &amp; suggested fixes</h3>
       {!report?<p>Run checks to review the message.</p>:<>
-       <p data-testid="raw-validation-status"><strong>{report.identifier==='UNKNOWN'?'Message type not identified':report.identifier}</strong> · {report.issues.length?report.issues.length+' error'+(report.issues.length===1?'':'s'):'No errors found by available checks'}</p>
+       <p data-testid="raw-validation-status"><strong>{report.identifier==='UNKNOWN'?'Message type not identified':report.identifier}</strong> · {report.issues.length?report.issues.length+' error'+(report.issues.length===1?'':'s'):'No issues in checked fields · full validation not available'}</p>
        {report.issues.length?<ul className="review-issues" data-testid="raw-issues">{report.issues.map((issue,i)=><li key={i} className="review-issue">
          <strong>{issueTitle(issue)}</strong>
          <div><b>Where:</b> <code>{issue.path}</code></div>
          <div><b>Why:</b> {issue.detail}</div>
          <div><b>Suggested fix:</b> {fixAdvice(issue,report.proposal)}</div>
-       </li>)}</ul>:<p className="review-success"><CheckCircle2 size={16}/> No issues detected in the available checks.</p>}
+       </li>)}</ul>:<p className="review-success"><CheckCircle2 size={16}/> No issues in the checked fields. This does not confirm the entire message is valid.</p>}
        {report.proposal&&<div className="review-proposal"><details><summary>Preview correction</summary><p>{report.proposal.description}</p><pre data-testid="correction-preview">{report.proposal.corrected}</pre></details><button className="primary" onClick={fix}>Apply fix &amp; recheck</button></div>}
        {approved&&<p role="status">Correction applied and checked again.</p>}
       </>}
@@ -75,9 +79,10 @@ export function MessageGateway({openSandbox,embedded=false}:{openSandbox:()=>voi
     </div>
     <div className="actions gateway-actions">
      <button onClick={()=>edit(format==='MT'?MT_EXAMPLE:MX_EXAMPLE)}>Load {format} example</button>
+     <button onClick={()=>edit(format==='MT'?MT_EXAMPLE.replace(/^:71A:.*$/m,'').replace(/^:23B:.*$/m,''):MX_EXAMPLE.replace('<PmtId>','<BadPaymentId>').replace('</PmtId>','</BadPaymentId>'))}>Try example with errors</button>
      <button className="primary" onClick={()=>run()} disabled={!message.trim()}><Play size={16}/> Check {format} message</button>
     </div>
-    {report&&<section className="panel" aria-label="AI error explanation"><h2>AI explanation &amp; recommendations</h2>
+    {rawReport&&<section className="panel" aria-label="AI error explanation"><h2>AI explanation &amp; recommendations</h2>
       <GeminiWorkbench execution={null} rawReport={rawReport}/>
      </section>}
    </div>}

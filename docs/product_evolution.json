@@ -282,6 +282,23 @@
         "apps/workbench/style.css",
         "tests/workbench-messages-browser.mjs"
       ]
+    },
+    {
+      "id": "PUB-024",
+      "date": "2026-10-20",
+      "status": "FEATURE_BRANCH_ONLY",
+      "title": "Field-level message validation and actionable AI findings",
+      "description": "Add targeted missing required FIN MT103/MT202 field checks, limited amount/date/fee checks, and exact-version XML shape checks for pacs.008.001.13/14, pain.001.001.09 and camt.053.001.14 alongside the earlier fxtr.014.001.05 subset. Unsupported versions fail closed instead of appearing validated. Add a deliberately faulty sample for immediate error review and suppress generic AI prompts when no findings. Transfer only bounded error codes and field paths to protected RAG; provider fallback now recommends specific, non-invented actions by location. These are not complete FIN, official XSD or scheme-specific validators.",
+      "evidence": [
+        "apps/workbench/message-rules.mjs",
+        "apps/workbench/raw-review.mjs",
+        "apps/workbench/message-gateway.tsx",
+        "apps/workbench/gemini.tsx",
+        "backend/app.py",
+        "backend/workbench_ai.py",
+        "tests/raw-payment-field-rules.test.mjs",
+        "tests/test_message_rag_gateway.py"
+      ]
     }
   ]
 }
