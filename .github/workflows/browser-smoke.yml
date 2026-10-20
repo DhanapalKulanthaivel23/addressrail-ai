@@ -19,7 +19,9 @@ on:
       - 'tests/workbench-gemini-browser.mjs'
       - 'tests/workbench-messages-browser.mjs'
       - 'tests/workbench-conversion-browser.mjs'
-      - 'tests/mt-mx-conversion.test.mjs'
+      - 'tests/workbench-postal-browser.mjs'
+      - 'tests/postal-address.test.mjs'
+      - 'tests/mt-mx-conversion.test.mjs tests/postal-address.test.mjs'
       - 'tests/raw-message-review.test.mjs'
       - 'tests/raw-payment-field-rules.test.mjs'
       - 'tests/message-success-summary.test.mjs'
@@ -52,4 +54,5 @@ jobs:
       - run: node --test tests/raw-message-review.test.mjs tests/raw-payment-field-rules.test.mjs tests/message-success-summary.test.mjs tests/mt-mx-conversion.test.mjs
       - run: node tests/workbench-messages-browser.mjs
       - run: node tests/workbench-conversion-browser.mjs
+      - run: node tests/workbench-postal-browser.mjs
       - run: node tests/workbench-gemini-browser.mjs
