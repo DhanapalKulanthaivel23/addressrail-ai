@@ -76,6 +76,8 @@ def make_excerpt(analysis: dict[str, Any]) -> list[dict[str, Any]]:
         stages = analysis.get("stages")
         if not isinstance(codes, list) or not isinstance(stages, list) or stages != ["RECEIVED", "CHECKED"]:
             raise HTTPException(422, "Run synthetic payment checks first.")
+        if is_message and not codes:
+            raise HTTPException(422, "No message findings to explain.")
         # Allow only bounded rule identifiers; never forward raw payment fields or prose.
         if len(codes) > 40 or any(not isinstance(c, str) or not re.fullmatch(r"[A-Z][A-Z0-9_]{0,63}", c) for c in codes):
             raise HTTPException(422, "Invalid workbench finding codes.")
