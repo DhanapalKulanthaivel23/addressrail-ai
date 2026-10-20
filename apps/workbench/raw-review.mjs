@@ -1,3 +1,4 @@
+import {mtBusinessIssues,mxBusinessIssues} from './message-rules.mjs';
 /* Local synthetic FIN MT / ISO MX syntax checks. Not an official standard validator. */
 export const MT_EXAMPLE='{1:F01BANKGB2LAXXX}{2:I103BANKDEFFXXXXN}{4:\n:20:AR-DEMO-103\n:23B:CRED\n:32A:261020EUR100,00\n:50K:/DEMO\nSYNTHETIC PAYER\n:59:/DEMO\nSYNTHETIC BENEFICIARY\n:71A:SHA\n-}';
 export const MX_EXAMPLE='<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.14"><FIToFICstmrCdtTrf><GrpHdr><MsgId>AR-DEMO-008</MsgId></GrpHdr><CdtTrfTxInf><PmtId><EndToEndId>AR-DEMO-008</EndToEndId></PmtId><DbtrAgt><FinInstnId><BICFI>bankgb2lxxx</BICFI></FinInstnId></DbtrAgt></CdtTrfTxInf></FIToFICstmrCdtTrf></Document>';
@@ -43,6 +44,7 @@ export function reviewRawMessage(format,raw,Parser=globalThis.DOMParser){
         const amount=body.match(/^:32A:(\S+)/m);
         if(identifier==='MT103'&&amount&&!/^\d{6}[A-Z]{3}\d{1,12},\d{1,2}$/.test(amount[1]))
           issues.push(finding('DEMO_AMOUNT','/FIN/4/32A','Expected YYMMDDCCYamount with a comma decimal separator for this MT103 subset.'));
+        issues.push(...mtBusinessIssues(identifier,body));
       }
     }
   }else{
@@ -75,6 +77,7 @@ export function reviewRawMessage(format,raw,Parser=globalThis.DOMParser){
                 issues.push(finding('DEMO_XML_STRUCTURE','/Document/FxTradInstr/'+name,'Unexpected FX V05 top-level section in this structural subset. Review the exact-version schema.'));
             }
           }
+          issues.push(...mxBusinessIssues(identifier,document));
           const bics=[...document.getElementsByTagNameNS('*','BICFI'),...document.getElementsByTagNameNS('*','BIC'),...document.getElementsByTagNameNS('*','AnyBIC')];
           for(const bic of bics){
             const value=(bic.textContent||'').trim();
@@ -93,5 +96,5 @@ export function reviewRawMessage(format,raw,Parser=globalThis.DOMParser){
       }catch{issues.push(finding('DEMO_XML_STRUCTURE','/Document','XML is not well formed. Review the original source; unknown content is never invented.'))}
     }
   }
-  return {format,identifier,issues,proposal,validated:issues.length===0,scope:'LOCAL_SYNTAX_SUBSET_ONLY',schemaValidated:false,schemeValidated:false};
+  return {format,identifier,issues,proposal,validated:false,checkedFields:issues.length===0,scope:'LOCAL_SYNTAX_SUBSET_ONLY',schemaValidated:false,schemeValidated:false};
 }
