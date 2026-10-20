@@ -18,7 +18,13 @@ from langsmith import tracing_context
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 PROMPT_VERSION = "workbench-review-v2"
-RAILS = ("cbpr", "sct", "sct-inst", "sdd-core", "sdd-b2b")
+# Rail IDs are defined by the vetted, public-safe knowledge catalogue.
+# Product IDs not represented here are rejected rather than misclassified.
+RAILS = tuple(dict.fromkeys(
+    rail
+    for record in json.loads(Path(__file__).with_name("workbench_knowledge.json").read_text(encoding="utf8"))["records"]
+    for rail in record["rails"]
+))
 # Original summaries of this repository's educational checks, not scheme rule IDs.
 RULES = {
     "DEMO_SCENARIO_NOT_APPLICABLE": "Selected fault is not modelled for this learning context.",
@@ -42,12 +48,12 @@ RULES = {
 
 class Evidence(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
-    rail: Literal["cbpr", "sct", "sct-inst", "sdd-core", "sdd-b2b"]
+    rail: str
     stages: list[str]
     finding_codes: list[str] = Field(max_length=40)
 
     def checked(self):
-        if self.stages != ["RECEIVED", "CHECKED"] or any(c not in RULES for c in self.finding_codes):
+        if self.rail not in RAILS or self.stages != ["RECEIVED", "CHECKED"] or any(c not in RULES for c in self.finding_codes):
             raise ValueError("Unsupported execution evidence")
         return self
 
@@ -110,7 +116,7 @@ def retrieve_sources(rail: str, finding_codes: list[str]) -> list[dict[str, Any]
         score = sum(q[t] * v.get(t, 0) for t in q) / (norm(q) * norm(v) or 1)
         if score <= 0:
             continue
-        ranked.append({**record, "reviewed": data["reviewed"], "score": round(score, 4)})
+        ranked.append({**record, "reviewed": record.get("reviewed", data["reviewed"]), "score": round(score, 4)})
     return sorted(ranked, key=lambda r: (-r["score"], r["id"]))[:3]
 
 
