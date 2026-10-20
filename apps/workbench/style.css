@@ -138,3 +138,12 @@ aside .message-nav:hover:not(:disabled),aside .message-nav[aria-current="page"]{
 .message-summary dt{font-size:11px;color:#706559;margin-bottom:4px}
 .message-summary dd{margin:0;font-size:13px;font-weight:600;color:#2f3739;overflow-wrap:anywhere}
 @media(max-width:600px){.message-summary{grid-template-columns:1fr}}
+
+/* Inline MT/MX draft translation, shown only after a conversion attempt. */
+.message-gateway .conversion-result{margin:14px 0;padding:16px 20px;line-height:1.55}
+.message-gateway .conversion-result strong{font-size:15px}
+.message-gateway .conversion-result>p{font-size:12px;margin:9px 0;color:#5b5045}
+.message-gateway .conversion-result details{border-top:1px solid #e2d9ce;padding:8px 0;margin-top:8px}
+.message-gateway .conversion-result summary{font-weight:600;cursor:pointer}
+.message-gateway .conversion-result li{overflow-wrap:anywhere;font-size:12px;margin:5px 0}
+.message-gateway .conversion-result .actions{margin:10px 0}
