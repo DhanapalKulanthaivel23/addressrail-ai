@@ -55,7 +55,7 @@ export function GeminiWorkbench({execution,rawReport=null}:{execution:DemoRespon
  },[supported,consent,execution,rawReport]);
  async function ask(){
   if((!execution&&!rawReport)||!supported||!consent||!enabled||!token||busy)return;
-  const version=generation.current;setBusy(true);setResult(null);setReviewed(false);setMessage('Retrieving trusted source summaries and requesting a Gemini explanation…');
+  const version=generation.current;setBusy(true);setResult(null);setReviewed(false);setMessage('Asking Gemini…');
   try{
    const analysis=rawReport?{product:'AddressRail Message Validator',synthetic:true,rail:rawReport.format.toLowerCase(),stages:['RECEIVED','CHECKED'],finding_codes:rawReport.issues.map(i=>i.code)}:
     {product:'AddressRail Workbench',synthetic:true,rail:execution!.productId,stages:execution!.steps.map(s=>s.id),finding_codes:((execution!.report) as {issues:{code:string}[]}).issues.map(i=>i.code)};
