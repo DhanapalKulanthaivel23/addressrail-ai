@@ -7,7 +7,7 @@ type Format='MT'|'MX';
 type Issue={code:string;path:string;detail:string};
 type Report={format:Format;identifier:string;issues:Issue[];proposal:{description:string;corrected:string}|null;validated:boolean;scope:string;schemaValidated:boolean;schemeValidated:boolean};
 
-export function MessageGateway({openSandbox}:{openSandbox:()=>void}){
+export function MessageGateway({openSandbox,embedded=false}:{openSandbox:()=>void;embedded?:boolean}){
  const [format,setFormat]=useState<Format|null>(null);
  const [message,setMessage]=useState('');
  const [report,setReport]=useState<Report|null>(null);
@@ -18,9 +18,7 @@ export function MessageGateway({openSandbox}:{openSandbox:()=>void}){
  function edit(value:string){setMessage(value);setReport(null);setApproved(false);setNote('Message changed. Run checks again.');}
  function run(text=message){if(!format)return;const result=reviewRawMessage(format,text) as Report;setReport(result);setNote(result.issues.length?result.issues.length+' finding(s). Inspect before applying a proposed correction.':'No issues detected by the limited local checks. NOT XSD or scheme validated.');}
  function fix(){if(!format||!report?.proposal)return;const corrected=report.proposal.corrected;setMessage(corrected);setReport(reviewRawMessage(format,corrected) as Report);setApproved(true);setNote('Reviewed text-only correction applied and local checks re-run. Verify every business field independently.');}
- return <div className="message-gateway">
-  <header className="gateway-header"><a href="../">AddressRail AI</a><span>MT / MX MESSAGE INTELLIGENCE</span><button onClick={openSandbox}>Open existing payment workbench</button></header>
-  <main className="gateway-main">
+ const body=<>
    <p className="eyebrow">VALIDATE · INVESTIGATE · REVIEW CORRECTIONS</p>
    <h1>Payment message validator &amp; AI explanation</h1>
    <p className="gateway-intro">Choose a message format. Paste a synthetic SWIFT FIN MT or ISO 20022 MX message, inspect errors, review deterministic corrections, then optionally ask Gemini for a RAG-grounded explanation.</p>
@@ -61,6 +59,10 @@ export function MessageGateway({openSandbox}:{openSandbox:()=>void}){
      </section>}
    </div>}
    <footer><span>Browser-only structural review · human-approved changes</span><span>No live SWIFT connection · no certified payment decision</span></footer>
-  </main>
+ </>;
+ if(embedded)return <section className="message-gateway embedded" aria-label="MT / MX message validator"><div className="gateway-main"><button className="gateway-back" onClick={openSandbox}>Open existing payment workbench</button>{body}</div></section>;
+ return <div className="message-gateway">
+  <header className="gateway-header"><a href="../">AddressRail AI</a><span>MT / MX MESSAGE INTELLIGENCE</span><button onClick={openSandbox}>Open existing payment workbench</button></header>
+  <main className="gateway-main">{body}</main>
  </div>;
 }
