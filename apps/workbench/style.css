@@ -130,3 +130,11 @@ aside .message-nav:hover:not(:disabled),aside .message-nav[aria-current="page"]{
 .ai-answer h3,.ai-answer h4{margin:10px 0}
 .ai-answer ul{padding-left:20px}
 @media(max-width:760px){.message-gateway .gateway-choice{min-height:120px}.message-gateway .gateway-choices{grid-template-columns:1fr}.review-issues{max-height:none!important}}
+
+/* Concise result for checks without findings: no generic AI review or policy narrative. */
+.message-gateway .review-success{display:flex;align-items:center;gap:8px;font-weight:650;color:#2e6848;margin:14px 0}
+.message-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 20px;border-top:1px solid #e4dcd1;margin:16px 0 0;padding:16px 0 0}
+.message-summary>div{min-width:0}
+.message-summary dt{font-size:11px;color:#706559;margin-bottom:4px}
+.message-summary dd{margin:0;font-size:13px;font-weight:600;color:#2f3739;overflow-wrap:anywhere}
+@media(max-width:600px){.message-summary{grid-template-columns:1fr}}
