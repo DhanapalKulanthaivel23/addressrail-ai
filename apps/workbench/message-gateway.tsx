@@ -1,9 +1,10 @@
 import React,{useMemo,useState} from 'react';
-import {FileCode2,FileText,ArrowLeft,Play,CheckCircle2} from 'lucide-react';
+import {FileCode2,FileText,MapPin,ArrowLeft,Play,CheckCircle2} from 'lucide-react';
 import {GeminiWorkbench} from './gemini';
 import {reviewRawMessage,MT_EXAMPLE,MX_EXAMPLE} from './raw-review.mjs';
 import {summarizeMessage} from './message-summary.mjs';
 import {convertMessage} from './message-conversion.mjs';
+import {convertPostalAddress,POSTAL_SAMPLE} from './postal-address.mjs';
 
 type Format='MT'|'MX';
 type Conversion={ok:boolean;format?:Format;identifier?:string;output?:string;complete?:boolean;reason?:string;
@@ -46,8 +47,12 @@ export function MessageGateway({openSandbox,embedded=false}:{openSandbox:()=>voi
  const [approved,setApproved]=useState(false);
  const [conversion,setConversion]=useState<Conversion|null>(null);
  const [sourceSnapshot,setSourceSnapshot]=useState<{format:Format;message:string}|null>(null);
+ const [addressMode,setAddressMode]=useState(false);
+ const [postalText,setPostalText]=useState('');
+ const [postal,setPostal]=useState<ReturnType<typeof convertPostalAddress>|null>(null);
  const rawReport=useMemo(()=>report&&report.issues.length?{format:report.format,issues:report.issues}:null,[report]);
- function choose(next:Format){setFormat(next);setMessage('');setReport(null);setApproved(false);setConversion(null);setSourceSnapshot(null);}
+ function choose(next:Format){setAddressMode(false);setPostal(null);setFormat(next);setMessage('');setReport(null);setApproved(false);setConversion(null);setSourceSnapshot(null);}
+ function choosePostal(){setAddressMode(true);setFormat(null);setReport(null);setConversion(null);setSourceSnapshot(null);}
  function edit(value:string){setMessage(value);setReport(null);setApproved(false);setConversion(null);setSourceSnapshot(null);}
  function convert(){
   if(!format)return;
@@ -74,10 +79,39 @@ export function MessageGateway({openSandbox,embedded=false}:{openSandbox:()=>voi
     <button className={'gateway-choice '+(format==='MT'?'chosen':'')} onClick={()=>choose('MT')} aria-pressed={format==='MT'}>
      <FileText size={29}/><strong>SWIFT MT messages</strong><span>Validate messages and review corrections</span><em>MT103 · MT202 · other MT identifiers</em>
     </button>
+    <button className={'gateway-choice '+(addressMode?'chosen':'')} onClick={choosePostal} aria-pressed={addressMode}>
+     <MapPin size={29}/><strong>Postal Address Converter</strong><span>Structure address data from free text, MT or MX</span><em>ISO 20022 PstlAdr · structured / hybrid</em>
+    </button>
     <button className={'gateway-choice '+(format==='MX'?'chosen':'')} onClick={()=>choose('MX')} aria-pressed={format==='MX'}>
      <FileCode2 size={29}/><strong>ISO 20022 MX messages</strong><span>Find errors and suggested fixes</span><em>pain.* · pacs.* · camt.* · fxtr.*</em>
     </button>
    </div>
+   {addressMode&&<div className="gateway-review address-review" aria-label="Postal address converter">
+     <h2>Postal Address Converter</h2>
+     <div className="gateway-editor">
+      <label className="panel" htmlFor="postal-source">Original postal address or MT/MX message
+       <textarea id="postal-source" aria-label="Postal address input" spellCheck={false} maxLength={65536}
+        value={postalText} onChange={e=>{setPostalText(e.target.value);setPostal(null)}} placeholder="Paste an address, MT103, pacs.008 or another message with postal address..."/>
+      </label>
+      <div className="panel gateway-results">
+       <h3>ISO 20022 postal address</h3>
+       <textarea data-testid="postal-output" aria-label="Converted postal address XML" readOnly value={postal?.output||''}
+        placeholder="Converted PstlAdr XML will appear here"/>
+       {postal&&!postal.ok&&<p role="alert">{postal.reason}</p>}
+       {postal?.ok&&<>
+        <p data-testid="postal-result-status">{postal.complete?'Converted':'Review required'} · {postal.results.length} address(es)</p>
+        {postal.results.map((p,i)=><div key={i} className="address-item"><strong>{p.party} · {p.mode}</strong>
+         <span>Town: {p.fields.town||'Missing'} · Country: {p.fields.country||'Missing'}</span>
+         {p.issues.length>0&&<ul>{p.issues.map((v,j)=><li key={j}>{v}</li>)}</ul>}
+        </div>)}
+       </>}
+      </div>
+     </div>
+     <div className="actions gateway-actions">
+      <button onClick={()=>{setPostalText(POSTAL_SAMPLE);setPostal(null)}}>Load address example</button>
+      <button className="primary" onClick={()=>setPostal(convertPostalAddress(postalText))} disabled={!postalText.trim()}>Convert postal address</button>
+     </div>
+    </div>}
    {format&&<div className="gateway-review">
     <div className="gateway-review-title"><button onClick={()=>{setFormat(null);setReport(null);setMessage('')}}><ArrowLeft size={16}/> Choose format</button><h2>{format} message review</h2></div>
     <div className="gateway-editor">
