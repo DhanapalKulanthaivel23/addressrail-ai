@@ -72,7 +72,7 @@ export function MessageGateway({openSandbox,embedded=false}:{openSandbox:()=>voi
          <div><b>Where:</b> <code>{issue.path}</code></div>
          <div><b>Why:</b> {issue.detail}</div>
          <div><b>Suggested fix:</b> {fixAdvice(issue,report.proposal)}</div>
-       </li>)}</ul>:<div className="review-success" role="status"><CheckCircle2 size={18}/> Success — checks passed</div>}}
+       </li>)}</ul>:<div className="review-success" role="status"><CheckCircle2 size={18}/> Success — checks passed</div>}
        {!report.issues.length&&<dl className="message-summary" data-testid="message-summary">
         {summarizeMessage(format,message,report.identifier).map(field=><div key={field.label}><dt>{field.label}</dt><dd>{field.value}</dd></div>)}
        </dl>}
