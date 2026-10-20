@@ -1,5 +1,5 @@
 {
-  "version": "workbench-knowledge-2026-10-20-v3",
+  "version": "workbench-knowledge-2026-10-20-v4",
   "reviewed": "2026-10-19",
   "records": [
     {
@@ -474,6 +474,16 @@
       "url": "https://www.iso20022.org/iso-20022-message-definitions",
       "reviewed": "2026-10-20",
       "summary": "The ISO 20022 catalogue contains exact-version XML message definitions and base schemas for pain, pacs and camt families. Well-formed XML and namespace recognition do not demonstrate base XSD or scheme-specific conformance. Uppercasing an existing BIC can repair a basic syntax presentation issue, but does not verify the institution or other payment fields."
+    },
+    {
+      "id": "WB-FXTR-V05",
+      "rails": [
+        "mx"
+      ],
+      "topic": "fxtr.014.001.05 foreign exchange trade instruction CLS ISO 20022",
+      "url": "https://www.iso20022.org/catalogue-messages/iso-20022-messages-archive?page=7",
+      "reviewed": "2026-10-20",
+      "summary": "The ISO catalogue archives fxtr.014.001.05, a CLS ForeignExchangeTradeInstructionV05 message. Its trade instruction body uses sections TradInf, TradgSdId, CtrPtySdId, TradAmts and AgrdRate. A structural XML review cannot substitute for the original exact-version XSD or CLS usage guidelines."
     }
   ]
 }
