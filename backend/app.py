@@ -205,7 +205,7 @@ async def explain(payload: ExplainRequest, request: Request):
     host = request.client.host if request.client else "unknown"
     await verify_turnstile(payload.turnstile_token, host)
     consume_quota(host)
-    if payload.analysis.get("product") == "AddressRail Workbench":
+    if payload.analysis.get("product") in ("AddressRail Workbench", "AddressRail Message Validator"):
         response = await run_review(excerpt, ask_workbench_gemini)
     else:
         response = await ask_gemini(excerpt)
