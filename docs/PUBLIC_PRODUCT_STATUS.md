@@ -96,3 +96,7 @@ The MX editor recognises four-letter ISO 20022 business areas including archived
 ## PUB-022 — Inline MT/MX review in main Workbench (20 October 2026)
 
 The MT/MX validator is no longer presented as a separate initial application shell. It is now the first, prominently highlighted navigation button above **Products** in the existing Workbench sidebar. Clicking it renders the two MT/MX choices, local review and optional protected RAG/Gemini explanation directly in the same content workspace, while the SWIFT/SEPA/UK navigation stays visible. The existing payment scenario testing, AML and transport tools remain accessible and unchanged. This is a user-interface integration only: no new schema-backed FX/SWIFT coverage, real-message acceptance, or live AI guarantee is implied.
+
+## PUB-023 — Cleaner MT/MX error review screen (20 October 2026)
+
+Keep the MT/MX validator in the existing Workbench sidebar and its two MT/MX cards in the main area. Remove long technical notices, unsupported internal validation-status codes and provider branding from the message-review screen. Show human-readable error titles, precise FIN/XML element paths, concise cause and context-specific fix guidance. When a safe text-only correction exists, it still requires explicit approval and recheck. An optional vendor-neutral AI recommendation button remains protected by external-AI consent and verification; pasted raw message data is not included in requests. The underlying checks remain an educational subset, not comprehensive standards or scheme conformance.
