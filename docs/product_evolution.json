@@ -243,6 +243,18 @@
         "tests/workbench-messages-browser.mjs",
         "tests/test_message_rag_gateway.py"
       ]
+    },
+    {
+      "id": "PUB-021",
+      "date": "2026-10-20",
+      "status": "FEATURE_BRANCH_ONLY",
+      "title": "FX trade XML recognition and RAG route fix",
+      "description": "Recognise four-letter ISO business area identifiers, add targeted archived FX instruction structure checks, and route MT/MX explanations to the protected RAG workflow. These educational checks do not provide exact-version schema validation.",
+      "evidence": [
+        "apps/workbench/raw-review.mjs",
+        "backend/app.py",
+        "backend/workbench_knowledge.json"
+      ]
     }
   ]
 }

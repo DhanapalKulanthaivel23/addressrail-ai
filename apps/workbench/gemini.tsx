@@ -68,7 +68,7 @@ export function GeminiWorkbench({execution,rawReport=null}:{execution:DemoRespon
    if(data.retrieval!==undefined&&(!Array.isArray(data.retrieval)||!data.retrieval.every(safeSource)))throw Error('Invalid retrieved source metadata.');
    if(data.citationIds!==undefined&&(!Array.isArray(data.citationIds)||!data.citationIds.every((id:unknown)=>typeof id==='string'&&data.retrieval?.some((s:Source)=>s.id===id))))throw Error('Unsupported citation returned.');
    if(generation.current===version){setResult(data);setMessage(data.mode==='gemini'?'Gemini response received. Human review required.':'Local deterministic fallback retained; Gemini output was unavailable or rejected by evidence checks.');}
-  }catch(error){if(generation.current===version)setMessage((error instanceof Error?error.message:'Gemini unavailable.')+' Local deterministic fallback retained; no Gemini explanation is available.');}
+  }catch(error){if(generation.current===version)setMessage((error instanceof Error&&error.name==='TimeoutError'?'Gemini request timed out. Check whether the backend is online or the provider is responding.':error instanceof Error?error.message:'Gemini unavailable.')+' Local deterministic fallback retained; this was not a successful Gemini response.');}
   finally{if(generation.current===version){setBusy(false);setToken('');if(widget.current!==null)window.turnstile?.reset(widget.current)}}
  }
  if(!supported)return <p>Run a synthetic payment in this registered context first to enable optional Gemini.</p>;
@@ -77,7 +77,7 @@ export function GeminiWorkbench({execution,rawReport=null}:{execution:DemoRespon
   <p>Send only the format/rail, executed review stages and finding codes. The protected service retrieves curated educational context and checks Gemini’s explanation against that evidence. Payment messages, names, accounts and addresses are excluded.</p>
   <label><input type="checkbox" checked={consent} onChange={e=>{generation.current++;setBusy(false);setResult(null);setReviewed(false);setConsent(e.target.checked)}}/> I confirm this is synthetic test data and consent to sending this limited evidence to Gemini.</label>
   <div ref={element} aria-label="Human verification"/>
-  <button className="primary" disabled={!consent||!enabled||!token||busy} onClick={()=>void ask()}>{busy?'Asking Gemini…':'Ask Gemini'}</button>
+  <button className="primary" disabled={!consent||!enabled||!token||busy} onClick={()=>void ask()}>{busy?'Request in progress…':'Ask Gemini'}</button>
   <p aria-live="polite">{message}</p>
   <div data-testid="gemini-provenance"><strong>{result?.mode==='gemini'?'GEMINI · provider: Google · model: '+result.model:'DETERMINISTIC_FALLBACK · model: null · no Gemini response'}</strong>
    {!result?.retrieval?.length?<p>Retrieval: [] — no retrieved sources are available; no RAG citations are shown.</p>:<>

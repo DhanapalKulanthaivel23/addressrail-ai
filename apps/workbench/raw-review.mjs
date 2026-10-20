@@ -35,7 +35,7 @@ export function reviewRawMessage(format,raw,Parser=globalThis.DOMParser){
       }
     }
   }else{
-    if(/<!\s*(?:DOCTYPE|ENTITY)\b/i.test(raw)||/<\?[^x]/i.test(raw))issues.push(finding('DEMO_XML_STRUCTURE','/','DOCTYPE, ENTITY or processing instructions are unsupported.'));
+    if(/<!\s*(?:DOCTYPE|ENTITY)\b/i.test(raw)||/<\?(?!xml\s)/i.test(raw))issues.push(finding('DEMO_XML_STRUCTURE','/','DOCTYPE, ENTITY or non-XML processing instructions are unsupported.'));
     else if(typeof Parser!=='function')issues.push(finding('DEMO_XML_STRUCTURE','/','XML parser unavailable.'));
     else{
       try{
@@ -43,12 +43,28 @@ export function reviewRawMessage(format,raw,Parser=globalThis.DOMParser){
         if(document.getElementsByTagName('parsererror').length)throw Error('Malformed XML.');
         const root=document.documentElement;
         const ns=root.namespaceURI||'';
-        if(root.localName!=='Document'||!/^urn:iso:std:iso:20022:tech:xsd:(pain|pacs|camt)\.\d{3}\.\d{3}\.\d{2,3}$/.test(ns))
-          issues.push(finding('DEMO_XML_STRUCTURE','/Document','Expected ISO 20022 pain.*, pacs.* or camt.* Document namespace.'));
+        const supportedNamespace=/^urn:iso:std:iso:20022:tech:xsd:([a-z]{4})\.\d{3}\.\d{3}\.\d{2,3}$/.test(ns);
+        if(root.localName!=='Document'||!supportedNamespace)
+          issues.push(finding('DEMO_XML_STRUCTURE','/Document','Expected a four-letter ISO 20022 business-area namespace and Document root; no XSD is loaded.'));
         else{
           identifier=ns.split(':').at(-1);
           if(root.children.length!==1)issues.push(finding('DEMO_XML_STRUCTURE','/Document','Expected one ISO business-message element.'));
-          const bics=[...document.getElementsByTagNameNS('*','BICFI'),...document.getElementsByTagNameNS('*','BIC')];
+          if(identifier==='fxtr.014.001.05'&&root.children.length===1){
+            const trade=root.children[0];
+            if(trade.localName!=='FxTradInstr'){
+              issues.push(finding('DEMO_XML_STRUCTURE','/Document','fxtr.014.001.05 expects an FxTradInstr business element.'));
+            }else{
+              // Reviewed FX V05 root-section smoke check only; NOT a full XSD or CLS usage guideline.
+              const required=['TradInf','TradgSdId','CtrPtySdId','TradAmts','AgrdRate'];
+              const allowed=new Set([...required,'NDFConds','TradgSdSttlmInstrs','CtrPtySdSttlmInstrs','OptnlGnlInf','RgltryRptg','SplmtryData']);
+              const present=Array.from(trade.children,el=>el.localName);
+              for(const name of required)if(!present.includes(name))
+                issues.push(finding('DEMO_XML_STRUCTURE','/Document/FxTradInstr/'+name,'Required FX V05 section not found in this structural subset. Do not invent trade details.'));
+              for(const name of present)if(!allowed.has(name))
+                issues.push(finding('DEMO_XML_STRUCTURE','/Document/FxTradInstr/'+name,'Unexpected FX V05 top-level section in this structural subset. Review the exact-version schema.'));
+            }
+          }
+          const bics=[...document.getElementsByTagNameNS('*','BICFI'),...document.getElementsByTagNameNS('*','BIC'),...document.getElementsByTagNameNS('*','AnyBIC')];
           for(const bic of bics){
             const value=(bic.textContent||'').trim();
             if(!/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(value)){

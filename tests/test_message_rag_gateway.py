@@ -29,3 +29,34 @@ def test_unrecognised_evidence_fails_closed(rail,codes):
         return
     with pytest.raises(HTTPException):
         make_excerpt(payload)
+
+def test_message_validator_routes_to_rag_graph_not_legacy_handler(monkeypatch):
+    from fastapi.testclient import TestClient
+    from backend import app as api
+    from backend.workbench_ai import retrieve_sources
+
+    monkeypatch.setattr(api, "ai_ready", lambda: True)
+    async def verified(*args):
+        return None
+    monkeypatch.setattr(api, "verify_turnstile", verified)
+    monkeypatch.setattr(api, "consume_quota", lambda host: None)
+    async def legacy(*args):
+        raise AssertionError("Legacy provider path must not receive MX input")
+    monkeypatch.setattr(api, "ask_gemini", legacy)
+    called = []
+    async def graph(records, generator):
+        called.extend(records)
+        evidence=records[0]
+        found=retrieve_sources.invoke({"rail": evidence["rail"], "finding_codes": evidence["finding_codes"]})
+        return {"mode": "deterministic_fallback", "model": None, "retrieval": found,
+                "advice":{"summary":"Human review of FX XML required","actions":[],"cautions":["XSD not configured"]}}
+    monkeypatch.setattr(api, "run_review", graph)
+    payload=example("mx", ["DEMO_XML_STRUCTURE"])
+    response=TestClient(api.app).post("/api/ai-explain",json={
+        "confirm_synthetic": True, "turnstile_token": "fake-tested-token", "analysis":payload})
+    assert response.status_code==200, response.text
+    data=response.json()
+    assert data["mode"]=="deterministic_fallback"
+    assert any(s["id"]=="WB-FXTR-V05" for s in data["retrieval"])
+    assert called[0]["rail"]=="mx"
+    assert "EXAMPLE_PRIVATE_SHOULD_NOT_ESCAPE" not in str(called)
