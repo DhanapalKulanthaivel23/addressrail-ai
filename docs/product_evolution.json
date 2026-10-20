@@ -268,6 +268,20 @@
         "apps/workbench/style.css",
         "tests/workbench-messages-browser.mjs"
       ]
+    },
+    {
+      "id": "PUB-023",
+      "date": "2026-10-20",
+      "status": "FEATURE_BRANCH_ONLY",
+      "title": "Customer-facing error-first MT/MX Workbench",
+      "description": "Keep MT/MX validator within existing top sidebar navigation and two format cards, simplify page content to error, exact field location, reason and suggested correction, remove lengthy technical banners/corpus status and default fallback metadata. AI recommendation button uses vendor-neutral copy while preserving explicit external AI consent, Turnstile, provenance validation and no raw message forwarding. Explicit human approval remains required for deterministic text corrections. Parser and scheme support are unchanged except displaying actual BIC element locations. This does not claim full SWIFT FIN, ISO XSD or scheme certification.",
+      "evidence": [
+        "apps/workbench/message-gateway.tsx",
+        "apps/workbench/gemini.tsx",
+        "apps/workbench/raw-review.mjs",
+        "apps/workbench/style.css",
+        "tests/workbench-messages-browser.mjs"
+      ]
     }
   ]
 }
