@@ -47,6 +47,22 @@ try{
   await page.getByRole('button',{name:'Mark explanation reviewed',exact:true}).click();
   assert.equal(await page.getByRole('button',{name:'Explanation reviewed in this view'}).isDisabled(),true);
  }
+ for(const [rail,label] of [['gpi','SWIFT gpi Tracker'],['chaps','CHAPS'],['bacs-debit','Bacs Direct Debit'],['t2','T2 (Eurosystem RTGS)'],['cls','CLS FX settlement']]){
+  // Keep the synthetic-only existing test contract across non-SEPA contexts.
+  await page.locator('aside details').evaluateAll(nodes=>nodes.forEach(node=>node.open=true));
+  const buttons=page.locator('.subproducts button');
+  const index=await buttons.evaluateAll((els,name)=>els.findIndex(el=>el.textContent?.includes(name)),label);
+  assert.ok(index>=0,'Missing registered rail navigation '+label);
+  await buttons.nth(index).click();
+  await run.click();await page.getByRole('button',{name:'Review / Ask Gemini'}).click();
+  await consent.check();
+  await page.waitForFunction(()=>!Array.from(document.querySelectorAll('button')).find(b=>b.textContent==='Ask Gemini')?.disabled);
+  await ask.click();
+  await page.getByText('Gemini response received. Human review required.',{exact:true}).waitFor();
+  assert.equal(last.analysis.rail,rail);
+  assert.deepEqual(Object.keys(last.analysis).sort(),['finding_codes','product','rail','stages','synthetic']);
+  assert.match(await provenance.textContent(),/GEMINI · provider: Google/);
+ }
  for(const failure of ['quota','malformed','fallback','bad-source']){
   await consent.uncheck();await consent.check();mode=failure;
   await page.waitForFunction(()=>!Array.from(document.querySelectorAll('button')).find(b=>b.textContent==='Ask Gemini')?.disabled);
@@ -63,5 +79,5 @@ try{
  await page.getByRole('button',{name:'Payment testing',exact:true}).click();await page.getByRole('button',{name:'Load error fixture'}).click();await run.click();
  release();await page.getByRole('button',{name:'Review / Ask Gemini'}).click();
  assert.match(await provenance.textContent(),/DETERMINISTIC_FALLBACK/);assert.equal(await consent.isChecked(),false);
- console.log('GEMINI WORKBENCH PASS: all five rails, opt-in, minimal payload, provider provenance, quota/malformed failure, stale response isolation (mocked provider)');
+ console.log('GEMINI WORKBENCH PASS: original five plus representative cross-rail contexts, opt-in, minimal payload, provider provenance, quota/malformed failure, stale response isolation (mocked provider)');
 }finally{await browser.close()}
