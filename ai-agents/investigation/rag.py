@@ -74,7 +74,8 @@ class KnowledgeStore:
         self.norms = [math.sqrt(sum(w*w for w in vec.values())) for vec in self.vectors]
 
     def search(self, question: str, rail: str | None = None,
-               on_date: str | None = None, limit: int = 3) -> list[Citation]:
+               on_date: str | None = None, limit: int = 3,
+               version: str | None = None) -> list[Citation]:
         if not isinstance(question, str) or not 3 <= len(question) <= MAX_QUESTION:
             raise ValueError("Question must be between 3 and 360 characters")
         if INJECTION.search(question):
@@ -83,6 +84,9 @@ class KnowledgeStore:
             raise ValueError("Unrecognised rail filter")
         if not 1 <= limit <= 5:
             raise ValueError("Limit must be 1 to 5")
+        if version is not None and (not isinstance(version, str) or not 1 <= len(version) <= 100
+                                    or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9 ._+/-]*", version)):
+            raise ValueError("Invalid exact version filter")
         when = date.fromisoformat(on_date) if on_date else date.today()
         query = Counter(tokens(question))
         qvector = {k:(1+math.log(n))*self.idf.get(k,0) for k,n in query.items()}
@@ -92,6 +96,9 @@ class KnowledgeStore:
         scored = []
         for i,record in enumerate(self.records):
             if date.fromisoformat(record["effective_date"]) > when:
+                continue
+            # Exact metadata match only: never infer SR2026 applicability from a 2026 date.
+            if version is not None and record["version"] != version:
                 continue
             if rail and record["rail"] not in (rail, "ISO", "SEPA"):
                 continue
