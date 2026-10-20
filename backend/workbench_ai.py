@@ -27,6 +27,8 @@ RAILS = tuple(dict.fromkeys(
 ))
 # Original summaries of this repository's educational checks, not scheme rule IDs.
 RULES = {
+    "DEMO_MT_ENVELOPE": "An illustrated FIN header or text-block delimiter is missing or malformed; verify the original message against authorised FIN standards.",
+    "DEMO_XML_STRUCTURE": "The ISO Document XML has structural, namespace or well-formedness errors; base XSD and scheme validation have not run.",
     "DEMO_SCENARIO_NOT_APPLICABLE": "Selected fault is not modelled for this learning context.",
     "DEMO_MISSING_REFERENCE": "Illustrative message metadata is incomplete.",
     "DEMO_CURRENCY": "Currency is outside the selected teaching context.",
