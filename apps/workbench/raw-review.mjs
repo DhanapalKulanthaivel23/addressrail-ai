@@ -52,16 +52,16 @@ export function reviewRawMessage(format,raw,Parser=globalThis.DOMParser){
           if(identifier==='fxtr.014.001.05'&&root.children.length===1){
             const trade=root.children[0];
             if(trade.localName!=='FxTradInstr'){
-              issues.push(finding('DEMO_FXTR_STRUCTURE','/Document','fxtr.014.001.05 expects an FxTradInstr business element.'));
+              issues.push(finding('DEMO_XML_STRUCTURE','/Document','fxtr.014.001.05 expects an FxTradInstr business element.'));
             }else{
               // Reviewed FX V05 root-section smoke check only; NOT a full XSD or CLS usage guideline.
               const required=['TradInf','TradgSdId','CtrPtySdId','TradAmts','AgrdRate'];
               const allowed=new Set([...required,'NDFConds','TradgSdSttlmInstrs','CtrPtySdSttlmInstrs','OptnlGnlInf','RgltryRptg','SplmtryData']);
               const present=Array.from(trade.children,el=>el.localName);
               for(const name of required)if(!present.includes(name))
-                issues.push(finding('DEMO_FXTR_STRUCTURE','/Document/FxTradInstr/'+name,'Required FX V05 section not found in this structural subset. Do not invent trade details.'));
+                issues.push(finding('DEMO_XML_STRUCTURE','/Document/FxTradInstr/'+name,'Required FX V05 section not found in this structural subset. Do not invent trade details.'));
               for(const name of present)if(!allowed.has(name))
-                issues.push(finding('DEMO_FXTR_STRUCTURE','/Document/FxTradInstr/'+name,'Unexpected FX V05 top-level section in this structural subset. Review the exact-version schema.'));
+                issues.push(finding('DEMO_XML_STRUCTURE','/Document/FxTradInstr/'+name,'Unexpected FX V05 top-level section in this structural subset. Review the exact-version schema.'));
             }
           }
           const bics=[...document.getElementsByTagNameNS('*','BICFI'),...document.getElementsByTagNameNS('*','BIC'),...document.getElementsByTagNameNS('*','AnyBIC')];
