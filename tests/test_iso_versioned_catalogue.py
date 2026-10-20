@@ -7,7 +7,7 @@ import unittest
 from schemas.iso20022.versioned_catalogue import register_from_manifest, resolve
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "schemas" / "iso20022" / "manifest.json"
 
 
