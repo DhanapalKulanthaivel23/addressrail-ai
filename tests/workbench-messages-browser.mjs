@@ -5,6 +5,11 @@ try{
  const page=await browser.newPage();
  const errors=[];page.on('pageerror',error=>errors.push(error.message));
  await page.goto(process.env.WORKBENCH_URL||'http://127.0.0.1:8765/studio/workbench/');
+ assert.equal(await page.locator('aside').count(),1,'MT/MX must be within the existing product shell');
+ assert.equal(await page.locator('aside .message-nav').count(),1,'MT/MX link must be first in the sidebar');
+ assert.match((await page.locator('aside .message-nav').textContent())||'',/MT \/ MX Message Validator/);
+ assert.equal(await page.getByRole('heading',{name:'Payment message validator & AI explanation'}).count(),1);
+
  await page.getByRole('button',{name:/SWIFT MT messages/}).click();
  await page.getByRole('button',{name:'Load MT synthetic sample'}).click();
  await page.getByRole('button',{name:'Run MT checks'}).click();
@@ -27,6 +32,11 @@ try{
  await page.getByRole('button',{name:'Run MX checks'}).click();
  assert.match(await page.getByTestId('raw-issues').textContent(),/DEMO_XML_STRUCTURE/);
  await page.getByRole('checkbox').count().then(count=>assert.equal(count,1));
+ await page.getByRole('button',{name:'Open existing payment workbench'}).click();
+ assert.equal(await page.getByRole('button',{name:'Payment testing',exact:true}).count(),1);
+ assert.equal(await page.locator('aside .message-nav').count(),1);
+ await page.locator('aside .message-nav').click();
+ assert.equal(await page.getByRole('button',{name:/SWIFT MT messages/}).count(),1);
  await page.setViewportSize({width:375,height:812});
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
  assert.deepEqual(errors,[]);

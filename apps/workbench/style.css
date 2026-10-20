@@ -93,3 +93,14 @@ html{background:#f5f0e8;color-scheme:light}
 .message-gateway .gemini-panel label{display:block;margin:15px 0}
 .message-gateway .gemini-panel ul{line-height:1.65}
 @media(max-width:740px){.gateway-header{gap:12px}.gateway-choices,.gateway-editor{grid-template-columns:1fr}.gateway-main{padding:24px 16px}.gateway-choice{min-height:165px}.gateway-header span{display:none}}
+
+/* Integrated MT/MX validator: fixed home position above Products within existing sidebar. */
+aside .message-nav{width:100%;display:flex;justify-content:flex-start;gap:10px;align-items:center;margin:0 0 18px;padding:13px 11px;text-align:left;background:#36302b;border:1px solid #655344;border-left:4px solid #b5ddf1;color:#f7f2e9;font-weight:650;font-size:12px;line-height:1.35}
+aside .message-nav svg:last-child{margin-left:auto;flex-shrink:0}
+aside .message-nav:hover:not(:disabled),aside .message-nav[aria-current="page"]{background:#493e34;color:#b5ddf1;border-color:#8bbcd7}
+.message-gateway.embedded{min-height:0;background:transparent}
+.message-gateway.embedded .gateway-main{max-width:none;padding:0;margin:0}
+.message-gateway.embedded .gateway-back{margin:0 0 10px;font-size:12px}
+.message-gateway.embedded h1{font-size:clamp(28px,3vw,40px)}
+.message-gateway.embedded .gateway-choices{margin-top:20px}
+@media(max-width:600px){aside .message-nav{margin:0 0 15px;width:100%;max-width:360px}}

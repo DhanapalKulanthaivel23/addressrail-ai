@@ -255,6 +255,19 @@
         "backend/app.py",
         "backend/workbench_knowledge.json"
       ]
+    },
+    {
+      "id": "PUB-022",
+      "date": "2026-10-20",
+      "status": "FEATURE_BRANCH_ONLY",
+      "title": "Inline MT/MX validator placed atop existing payment Workbench navigation",
+      "description": "Move the MT/MX message review into the original Workbench shell with persistent SWIFT/SEPA/UK product navigation. Place a prominent MT/MX validator link above the Products list in the left sidebar and render the two format choices and message editor inside the existing workspace. Preserve the previous product-specific testing, tools, and synthetic correction/Gemini safeguards. No new XSD, FIN, scheme or real-payment validation is claimed.",
+      "evidence": [
+        "apps/workbench/main.tsx",
+        "apps/workbench/message-gateway.tsx",
+        "apps/workbench/style.css",
+        "tests/workbench-messages-browser.mjs"
+      ]
     }
   ]
 }
