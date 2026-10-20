@@ -1,7 +1,10 @@
 import React,{useEffect,useRef,useState} from 'react';
 import type {DemoResponse} from '../../web/studio/shared/contracts';
+import {PRODUCTS} from '../../web/studio/shared/product-registry.mjs';
 const BACKEND='https://addressrail-ai.onrender.com';
-const SUPPORTED=['cbpr','sct','sct-inst','sdd-core','sdd-b2b'];
+// Every registered product may request an optional educational explanation.
+// Backend rejects any ID absent from the vetted public-safe knowledge catalogue.
+const SUPPORTED=PRODUCTS.map(p=>p.id);
 type Turnstile={render:(element:HTMLElement,options:Record<string,unknown>)=>string;remove:(id:string)=>void;reset:(id:string)=>void};
 declare global {interface Window {turnstile?:Turnstile}}
 let script:Promise<Turnstile>|undefined;
@@ -68,7 +71,7 @@ export function GeminiWorkbench({execution}:{execution:DemoResponse|null}){
   }catch(error){if(generation.current===version)setMessage((error instanceof Error?error.message:'Gemini unavailable.')+' Local deterministic fallback retained; no Gemini explanation is available.');}
   finally{if(generation.current===version){setBusy(false);setToken('');if(widget.current!==null)window.turnstile?.reset(widget.current)}}
  }
- if(!supported)return <p>Run a synthetic CBPR+ or SEPA payment first to enable optional Gemini.</p>;
+ if(!supported)return <p>Run a synthetic payment in this registered context first to enable optional Gemini.</p>;
  return <div className="gemini-panel">
   <h3>Optional Gemini review</h3>
   <p>Send only the rail, executed stages and finding codes. The protected service retrieves curated educational context and checks Gemini’s explanation against that evidence. Payment messages, names, accounts and addresses are excluded.</p>

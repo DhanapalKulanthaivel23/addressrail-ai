@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 
 from backend import app as api
 from backend.evaluate_workbench import CASES, evaluate, fixture
-from backend.workbench_ai import (Evidence, build_prompt, catalogue, explain_findings,
+from backend.workbench_ai import (Evidence, RAILS, build_prompt, catalogue, explain_findings,
                                   retrieve_sources, response_schema, run_review, verify_review)
 
 
@@ -180,3 +180,38 @@ def test_real_adapter_mock_transport_full_api_contract(monkeypatch):
     assert result['humanReviewRequired'] is True
     assert calls == ['challenges.cloudflare.com', 'generativelanguage.googleapis.com']
     assert response.headers['cache-control'] == 'no-store'
+
+
+def test_all_43_public_payment_contexts_have_cited_local_evidence():
+    """Every catalogued context has a public-safe research description; no private R1/R2/R3 data."""
+    assert len(RAILS) == 43
+    existing = {'cbpr', 'sct', 'sct-inst', 'sdd-core', 'sdd-b2b'}
+    for rail in RAILS:
+        sources = context(rail, ['DEMO_CURRENCY'])['retrieval']
+        assert sources, rail
+        assert all(rail in source['rails'] for source in sources), rail
+        if rail not in existing:
+            expected = 'WB-CONTEXT-' + rail.upper()
+            assert expected in {source['id'] for source in sources}, (rail, sources)
+            note = next(source for source in sources if source['id'] == expected)
+            assert note['reviewed'] == '2026-10-20'
+            assert 'educational' in note['summary'].lower()
+            assert 'scheme rules' in note['summary'].lower()
+
+
+def test_unknown_context_cannot_trigger_live_ai():
+    with pytest.raises(ValueError):
+        Evidence(rail='other-secret-rail', stages=['RECEIVED', 'CHECKED'], finding_codes=[]).checked()
+    with pytest.raises(ValueError):
+        retrieve_sources.invoke({'rail': 'other-secret-rail', 'finding_codes': []})
+
+
+@pytest.mark.parametrize('rail', ['gpi', 'chaps', 't2', 'bacs-debit', 'cls'])
+def test_other_rails_support_bounded_gemini_schema_and_review(rail):
+    ctx = context(rail, ['DEMO_CURRENCY'])
+    assert ctx['retrieval']
+    review = fixture(ctx)['review']
+    accepted = verify_review(review, ctx)
+    assert accepted.human_review_required is True
+    assert set(accepted.citation_ids) <= {s['id'] for s in ctx['retrieval']}
+    assert accepted.scope == 'SYNTHETIC_EDUCATIONAL_ONLY'
