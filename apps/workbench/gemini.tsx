@@ -25,7 +25,7 @@ function safeSource(source:Source){
  try{const url=new URL(source.url);return url.protocol==='https:'&&!url.username&&!url.password&&['github.com','www.iso20022.org','www.europeanpaymentscouncil.eu','www.swift.com'].includes(url.hostname)
   &&[source.id,source.topic,source.summary,source.reviewed].every(v=>typeof v==='string');}catch{return false}
 }
-export function GeminiWorkbench({execution,rawReport=null}:{execution:DemoResponse|null;rawReport?:{format:'MT'|'MX';issues:{code:string}[]}|null}){
+export function GeminiWorkbench({execution,rawReport=null}:{execution:DemoResponse|null;rawReport?:{format:'MT'|'MX';issues:{code:string;path:string}[]}|null}){
  const [consent,setConsent]=useState(false),[enabled,setEnabled]=useState(false),[token,setToken]=useState(''),[busy,setBusy]=useState(false);
  const [message,setMessage]=useState('Optional: send only the rail, executed stages and finding codes to Gemini.'),[result,setResult]=useState<Advice|null>(null);
  const [reviewed,setReviewed]=useState(false);
@@ -57,7 +57,7 @@ export function GeminiWorkbench({execution,rawReport=null}:{execution:DemoRespon
   if((!execution&&!rawReport)||!supported||!consent||!enabled||!token||busy)return;
   const version=generation.current;setBusy(true);setResult(null);setReviewed(false);setMessage('Asking Gemini…');
   try{
-   const analysis=rawReport?{product:'AddressRail Message Validator',synthetic:true,rail:rawReport.format.toLowerCase(),stages:['RECEIVED','CHECKED'],finding_codes:rawReport.issues.map(i=>i.code)}:
+   const analysis=rawReport?{product:'AddressRail Message Validator',synthetic:true,rail:rawReport.format.toLowerCase(),stages:['RECEIVED','CHECKED'],finding_codes:rawReport.issues.map(i=>i.code),locations:rawReport.issues.map(i=>i.path)}:
     {product:'AddressRail Workbench',synthetic:true,rail:execution!.productId,stages:execution!.steps.map(s=>s.id),finding_codes:((execution!.report) as {issues:{code:string}[]}).issues.map(i=>i.code)};
    const response=await fetch(BACKEND+'/api/ai-explain',{method:'POST',headers:{'Content-Type':'application/json'},signal:AbortSignal.timeout(35000),
     body:JSON.stringify({confirm_synthetic:true,turnstile_token:token,analysis})});
