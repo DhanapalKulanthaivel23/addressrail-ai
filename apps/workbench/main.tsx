@@ -9,6 +9,7 @@ import {executeDemo} from '../../web/studio/shared/demo-engine.mjs';
 import {generateFixture,applyEvidenceRepair} from '../../web/studio/payment-intelligence/engine.mjs';
 import type {DemoResponse,ExecutionStep} from '../../web/studio/shared/contracts';
 import {GeminiWorkbench} from './gemini';
+import {MessageGateway} from './message-gateway';
 import {sessionData} from './storage';
 import {ScreeningWorkbench,ChannelsWorkbench} from './learning-tools';
 const PLATFORM_TABS=['AddressTune / Correction','AML / Compliance','MQ & File transport'];
@@ -17,6 +18,7 @@ const pretty=(v:unknown)=>JSON.stringify(v,null,2);
 const icons={swift:Globe2,sepa:Euro,uk:PoundSterling,other:Layers};
 function download(value:string,name:string){const url=URL.createObjectURL(new Blob([value],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function App(){
+ const [entry,setEntry]=useState<'gateway'|'sandbox'>('gateway');
  const [productId,setProduct]=useState('cbpr'),[scenario,setScenario]=useState('baseline');
  const [input,setInput]=useState(()=>pretty(generateFixture('cbpr'))),[execution,setExecution]=useState<DemoResponse|null>(null);
  const [tab,setTab]=useState('Payment testing'),[selected,setSelected]=useState<ExecutionStep|null>(null);
@@ -58,6 +60,7 @@ function App(){
  const nodes:Node[]=execution?.steps.map((step,i)=>({id:step.id,position:{x:40+i*310,y:70},data:{label:step.id+' · '+step.result},style:{width:240,borderColor:'#06b6d4'}}))??[];
  const edges:Edge[]=execution?.steps.slice(1).map((step,i)=>({id:'edge-'+i,source:execution.steps[i].id,target:step.id,label:step.messageType,markerEnd:{type:MarkerType.ArrowClosed},data:{step},animated:false}))??[];
  const report=execution?.report as {issues?:unknown[];proposals?:unknown[]}|undefined;
+ if(entry==='gateway')return <MessageGateway openSandbox={()=>setEntry('sandbox')}/>;
  return <div className="shell">
   <aside><a className="brand" href="../"><Landmark size={28}/><span>AddressRail <b>AI</b><small>PAYMENT LEARNING PLATFORM</small></span></a>
    <div className="side-label">PRODUCTS</div>
@@ -66,7 +69,7 @@ function App(){
    <div className="side-links"><a href="../../">AddressTune · existing lab ↗</a><a href="../open-demo/">Investigation and guest cases ↗</a><a href="../payment-intelligence/">Cross-rail intelligence ↗</a><a href="../ai-lab/">AI learning lab ↗</a></div>
    <p className="side-note">Fictional payments. Optional protected Gemini explanations. No funds movement or account required.</p>
   </aside>
-  <div className="workspace"><header><span><span className="dot"/> PUBLIC SYNTHETIC SANDBOX</span><a href="../">Banking Studio ↗</a></header>
+  <div className="workspace"><header><button onClick={()=>setEntry('gateway')}>MT / MX message validator</button><span><span className="dot"/> PUBLIC SYNTHETIC SANDBOX</span><a href="../">Banking Studio ↗</a></header>
    <main><div className="heading"><div><p className="eyebrow">PAYMENT WORKBENCH / {product.parentProduct.toUpperCase()}</p><h1>{product.name}</h1><p>Inspect a fictional payment, follow the execution, and review its evidence.</p></div><span className="badge">{product.implementation.status}</span></div>
     <div className="boundary"><ShieldCheck size={19}/><span>Internal educational checks only. Official schema and scheme validation are not configured. Enter synthetic data only.</span></div>
     <nav className="tabs" aria-label="Product views">{[...product.tabs,...PLATFORM_TABS].map(name=><button key={name} aria-pressed={tab===name} onClick={()=>setTab(name)}>{name}</button>)}</nav>
