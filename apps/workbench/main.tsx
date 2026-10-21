@@ -1,7 +1,7 @@
 import React,{useEffect,useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {ReactFlow,Background,Controls,MarkerType,type Node,type Edge} from '@xyflow/react';
-import {Landmark,Globe2,Euro,PoundSterling,Layers,ChevronRight,Play,Download,ShieldCheck,Trash2,ArrowRightLeft,Activity} from 'lucide-react';
+import {Globe2,Euro,PoundSterling,Layers,ChevronRight,Play,Download,ShieldCheck,Trash2,ArrowRightLeft,Activity} from 'lucide-react';
 import '@xyflow/react/dist/style.css';
 import './style.css';
 import {PRODUCT_GROUPS,getProduct} from '../../web/studio/shared/product-registry.mjs';
@@ -60,10 +60,10 @@ function App(){
  const edges:Edge[]=execution?.steps.slice(1).map((step,i)=>({id:'edge-'+i,source:execution.steps[i].id,target:step.id,label:step.messageType,markerEnd:{type:MarkerType.ArrowClosed},data:{step},animated:false}))??[];
  const report=execution?.report as {issues?:unknown[];proposals?:unknown[]}|undefined;
  return <div className="shell">
-  <aside><a className="brand" href="../"><Landmark size={28}/><span>AddressRail <b>AI</b><small>PAYMENT LEARNING PLATFORM</small></span></a>
+  <aside><a className="brand" href="../" aria-label="AddressRail AI Banking Studio"><svg className="brand-bank" viewBox="0 0 76 76" role="img" aria-label="Perspective bank building with three front and two side pillars"><path d="M6 25 43 7 70 19 33 38Z" fill="#e8d2ae" stroke="#ffe9cf" strokeWidth="2"/><path d="M7 25 33 38 33 66 7 52Z" fill="#a9744a"/><path d="M33 38 70 19 70 55 33 71Z" fill="#805336"/><path d="M5 52 33 66 71 51 71 59 33 75 5 59Z" fill="#c39262" stroke="#f4ddbd" strokeWidth="1.5"/><g stroke="#ffe6c5" strokeWidth="1.2"><path d="M10 32 15 34 15 53 10 50Z" fill="#e7c49b"/><path d="M19 36 24 39 24 58 19 55Z" fill="#e7c49b"/><path d="M28 41 33 43 33 65 28 62Z" fill="#e7c49b"/><path d="M39 36 45 33 45 62 39 65Z" fill="#d6a675"/><path d="M57 27 63 24 63 54 57 57Z" fill="#d6a675"/></g><path d="M7 27 33 40 70 22" fill="none" stroke="#fff0d8" strokeWidth="2"/></svg><span>AddressRail <b>AI</b><small>PAYMENT LEARNING PLATFORM</small></span></a>
    <button className="message-nav" aria-current={tab==='MT / MX validator'?'page':undefined} onClick={()=>setTab('MT / MX validator')}><Layers size={19}/> MT / MX Message Validator <ChevronRight size={16}/></button>
    <div className="side-label">PRODUCTS</div>
-   {PRODUCT_GROUPS.map(group=>{const Icon=icons[group.id as keyof typeof icons];return <details key={group.id} open={group.children.includes(productId)||undefined}><summary><Icon size={18}/>{group.name}<ChevronRight size={15}/></summary><div className="subproducts">{group.children.map(id=><button key={id} aria-current={id===productId?'page':undefined} onClick={()=>reset(id)}>{getProduct(id).name}</button>)}</div></details>})}
+   {PRODUCT_GROUPS.map(group=>{const Icon=icons[group.id as keyof typeof icons];return <details key={group.id} open={(tab!=='MT / MX validator'&&group.children.includes(productId))||undefined}><summary><Icon size={18}/>{group.name}<ChevronRight size={15}/></summary><div className="subproducts">{group.children.map(id=><button key={id} aria-current={tab!=='MT / MX validator'&&id===productId?'page':undefined} onClick={()=>reset(id)}>{getProduct(id).name}</button>)}</div></details>})}
    <div className="tool-nav"><div className="side-label">PLATFORM TOOLS</div><button onClick={()=>setTab('AddressTune / Correction')}>AddressTune / Correction</button><button onClick={()=>setTab('AML / Compliance')}>AML / Sanctions / Compliance</button><button onClick={()=>setTab('MQ & File transport')}>REST / MQ / Kafka / Files / SFTP</button></div>
    <div className="side-links"><a href="../../">AddressTune · existing lab ↗</a><a href="../open-demo/">Investigation and guest cases ↗</a><a href="../payment-intelligence/">Cross-rail intelligence ↗</a><a href="../ai-lab/">AI learning lab ↗</a></div>
    <p className="side-note">Review message errors and suggested corrections.</p>

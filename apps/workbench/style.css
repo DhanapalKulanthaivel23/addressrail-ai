@@ -158,3 +158,12 @@ aside .message-nav:hover:not(:disabled),aside .message-nav[aria-current="page"]{
 .address-review .address-item span{color:#544d47}
 .address-review .address-item ul{margin:3px 0;padding-left:18px}
 @media(max-width:900px){.message-gateway .gateway-choices{grid-template-columns:1fr}}
+
+/* Three-front/two-side pillar perspective bank mark; preserve brand text at narrow widths. */
+aside .brand{display:flex;align-items:center;gap:10px;min-width:0;margin-left:2px;margin-right:2px}
+aside .brand .brand-bank{width:60px;height:62px;min-width:60px;flex-shrink:0;overflow:visible;filter:drop-shadow(2px 5px 4px rgba(0,0,0,.35))}
+aside .brand>span{min-width:0;line-height:1.08}
+aside .brand small{line-height:1.45;letter-spacing:1px}
+/* Product expansion and active selection are distinct: never highlight a product on the MT/MX landing page. */
+aside details:not([open]) .subproducts{display:none}
+@media(max-width:900px){aside .brand .brand-bank{width:45px;height:49px;min-width:45px}aside .brand{gap:6px}}
