@@ -1,10 +1,12 @@
 /* Targeted browser-only payment-format checks. Never a substitute for official FIN or XSD rules. */
 const MT_RULES={
  MT103:[['20','Sender reference',/^20$/],['23B','Bank operation code',/^23B$/],['32A','Value date, currency and amount',/^32A$/],['50a','Ordering customer',/^50[AFK]$/],['59a','Beneficiary customer',/^59[AF]?$/],['71A','Charges bearer',/^71A$/]],
- MT202:[['20','Transaction reference',/^20$/],['21','Related reference',/^21$/],['32A','Value date, currency and amount',/^32A$/],['58a','Beneficiary institution',/^58[AD]$/]]
+ MT202:[['20','Transaction reference',/^20$/],['21','Related reference',/^21$/],['32A','Value date, currency and amount',/^32A$/],['58a','Beneficiary institution',/^58[AD]$/]],
+ MT199:[['20','Transaction reference',/^20$/],['79','Narrative',/^79$/]],
+ MT299:[['20','Transaction reference',/^20$/],['79','Narrative',/^79$/]]
 };
 export const KNOWN_MT=Object.keys(MT_RULES);
-export const KNOWN_MX=['pacs.008.001.13','pacs.008.001.14','pacs.009.001.11','pacs.009.001.12','pain.001.001.09','camt.053.001.14','fxtr.014.001.05'];
+export const KNOWN_MX=['pacs.008.001.13','pacs.008.001.14','pacs.009.001.11','pacs.009.001.12','pain.001.001.09','pain.002.001.10','pacs.002.001.12','camt.052.001.13','camt.053.001.14','fxtr.014.001.05'];
 
 export function mtBusinessIssues(identifier,body){
  const issues=[];
@@ -16,7 +18,17 @@ export function mtBusinessIssues(identifier,body){
  for(const [tag,label,pattern] of rules){
   if(!fields.some(f=>pattern.test(f.tag)))issues.push({code:'DEMO_REQUIRED_FIELD',path:'/FIN/4/'+tag,detail:identifier+' requires '+label+' ('+tag+'); obtain the value from the original instruction.'});
  }
- const amount=fields.find(f=>f.tag==='32A')?.value.split(/\s/)[0];
+ if(identifier==='MT199'||identifier==='MT299'){
+  for(const tag of ['20','79']){
+   if(fields.filter(f=>f.tag===tag).length>1)
+    issues.push({code:'DEMO_REQUIRED_FIELD',path:'/FIN/4/'+tag,detail:'Duplicate '+tag+' field in this free-format subset.'});
+  }
+  for(const field of fields){
+   if(!['20','21','79'].includes(field.tag))
+    issues.push({code:'DEMO_UNSUPPORTED_MESSAGE',path:'/FIN/4/'+field.tag,detail:'Field '+field.tag+' is not modelled by this MT free-format subset.'});
+  }
+ }
+ const amount=fields.find(f=>f.tag==='32A')?.value.split(/\\s/)[0];
  if(amount&&!/^\d{6}[A-Z]{3}(?:0|[1-9]\d{0,14}),\d{1,2}$/.test(amount))
    issues.push({code:'DEMO_AMOUNT',path:'/FIN/4/32A',detail:'Field 32A needs YYMMDD, three-letter currency and a comma-decimal amount.'});
  else if(amount){
@@ -35,12 +47,16 @@ const REQUIRED={
  'pacs.009.001.11':[['GrpHdr','Group header'],['GrpHdr/MsgId','Message identification'],['GrpHdr/NbOfTxs','Number of transactions'],['GrpHdr/SttlmInf','Settlement information'],['CdtTrfTxInf','Credit transfer'],['CdtTrfTxInf/PmtId','Payment identification'],['CdtTrfTxInf/IntrBkSttlmAmt','Settlement amount'],['CdtTrfTxInf/Dbtr','Debtor institution'],['CdtTrfTxInf/Cdtr','Creditor institution']],
  'pacs.009.001.12':[['GrpHdr','Group header'],['GrpHdr/MsgId','Message identification'],['GrpHdr/NbOfTxs','Number of transactions'],['GrpHdr/SttlmInf','Settlement information'],['CdtTrfTxInf','Credit transfer'],['CdtTrfTxInf/PmtId','Payment identification'],['CdtTrfTxInf/IntrBkSttlmAmt','Settlement amount'],['CdtTrfTxInf/Dbtr','Debtor institution'],['CdtTrfTxInf/Cdtr','Creditor institution']],
  'pain.001.001.09':[['GrpHdr','Group header'],['GrpHdr/MsgId','Message identification'],['GrpHdr/NbOfTxs','Number of transactions'],['GrpHdr/InitgPty','Initiating party'],['PmtInf','Payment information'],['PmtInf/PmtInfId','Payment information reference'],['PmtInf/PmtMtd','Payment method'],['PmtInf/CdtTrfTxInf','Credit transfer instruction']],
+ 'pain.002.001.10':[['GrpHdr','Group header'],['GrpHdr/MsgId','Message identification'],['OrgnlGrpInfAndSts','Original group status'],['OrgnlGrpInfAndSts/OrgnlMsgId','Original message identification']],
+ 'pacs.002.001.12':[['GrpHdr','Group header'],['GrpHdr/MsgId','Message identification'],['OrgnlGrpInfAndSts','Original group status'],['OrgnlGrpInfAndSts/OrgnlMsgId','Original message identification']],
+ 'camt.052.001.13':[['GrpHdr','Group header'],['GrpHdr/MsgId','Message identification'],['Rpt','Account report'],['Rpt/Id','Report identification']],
  'camt.053.001.14':[['GrpHdr','Group header'],['GrpHdr/MsgId','Message identification'],['Stmt','Account statement'],['Stmt/Id','Statement identifier']]
 };
 const ROOT={
  'pacs.008.001.13':'FIToFICstmrCdtTrf','pacs.008.001.14':'FIToFICstmrCdtTrf',
  'pacs.009.001.11':'FICdtTrf','pacs.009.001.12':'FICdtTrf',
- 'pain.001.001.09':'CstmrCdtTrfInitn','camt.053.001.14':'BkToCstmrStmt'
+ 'pain.001.001.09':'CstmrCdtTrfInitn','pain.002.001.10':'CstmrPmtStsRpt',
+ 'pacs.002.001.12':'FIToFIPmtStsRpt','camt.052.001.13':'BkToCstmrAcctRpt','camt.053.001.14':'BkToCstmrStmt'
 };
 export function mxBusinessIssues(identifier,document){
  if(identifier==='fxtr.014.001.05')return [];
@@ -55,6 +71,7 @@ export function mxBusinessIssues(identifier,document){
  return REQUIRED[identifier].flatMap(([path,label])=>{
   let target=root;
   for(const name of path.split('/'))target=child(target,name);
-  return target?[]:[{code:'DEMO_REQUIRED_FIELD',path:'/Document/'+rootName+'/'+path,detail:label+' is required by this message-structure subset; obtain the actual value from the original record.'}];
+  const nonempty=['GrpHdr/MsgId','OrgnlGrpInfAndSts/OrgnlMsgId','Rpt/Id'].includes(path)&&['pain.002.001.10','pacs.002.001.12','camt.052.001.13'].includes(identifier);
+  return target&&(!nonempty||(target.textContent||'').trim())?[]:[{code:'DEMO_REQUIRED_FIELD',path:'/Document/'+rootName+'/'+path,detail:label+' is required and must not be blank in this message-structure subset; obtain the actual value from the original record.'}];
  });
 }
